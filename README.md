@@ -11,6 +11,8 @@ Code samples to turn data into elements of art.
 
 ![Cyprus precipitation monthly](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/rainfall/Cyprus_precipitation_monthly.png)
 
+[rainfall.wav](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/rainfall/rainfall.wav)
+
 
 ## tourist_arrivals.py
 
