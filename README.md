@@ -16,4 +16,4 @@ Code samples to turn data into elements of art.
 
 ![Cyprus tourist arrivals](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/tourist_arrivals/tourist_arrivals.png)
 
-<video src='https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/tourist_arrivals/tourist_arrivals.wav' width=180/>
+<audio src='https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/tourist_arrivals/tourist_arrivals.wav' width=180/>
