@@ -34,13 +34,13 @@ print(df)
 
 prep_plot()
 
-plt.rcParams["figure.figsize"] = [16, 12]
 
 g=sns.factorplot(x = 'month', y='arrivals',hue = 'year',data=df, kind='bar',
-    legend=False, palette="Blues", linewidth=0)
-legend_height=0.95
-plt.tight_layout(rect=[-.25,0,legend_height, 1])
-plt.legend(loc='center right', bbox_to_anchor=(1, 0, 1,1), mode="expand", frameon=False)
+    legend=False, palette="Blues", linewidth=0,
+    height=9,
+    aspect=16/9)
+plt.subplots_adjust(right=0.85)
+plt.legend(loc='center right', bbox_to_anchor=(1, .05, 1.05,.9), mode="expand", frameon=False)
 plt.savefig(os.path.join(OUTPUT_DIR, 'tourist_arrivals.png'), format='png', dpi=600)
 plt.close('all')
 
