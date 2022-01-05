@@ -19,3 +19,10 @@ Code samples to turn data into elements of art.
 ![Cyprus tourist arrivals](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/tourist_arrivals/tourist_arrivals.png)
 
 [tourist_arrivals.wav](https://soundcloud.com/jj-h-799417297/tourist-arrivals)
+
+
+## worldbank.py
+
+![Wordbank data selected](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/worldbank/worldbank_selected.png)
+
+![Wordbank data stdev](https://github.com/hovjdev/CyprusVitalSigns/blob/main/output/worldbank/worldbank_stdv.png)
