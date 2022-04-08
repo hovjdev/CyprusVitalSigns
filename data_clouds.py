@@ -1,5 +1,6 @@
 import os
 import re
+import tqdm
 import pathlib
 import numpy as np
 import pandas as pd
@@ -13,15 +14,13 @@ from sklearn.random_projection import SparseRandomProjection
 from tools.plot_tools import prep_plot
 
 
-
-
 INPUT_DIR = "input/data_clouds"
-OUTPUT_DIR = "output/data_clouds"
+OUTPUT_DIR = "output/data_clouds/plots"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 
-def plot(countries, series, show=True, test_png_exists=False):
+def plot(countries, series, show=True, test_png_exists=False, seried_name_max_length=-1):
 
     assert isinstance(countries, list)
     assert isinstance(series, list)    
@@ -54,6 +53,8 @@ def plot(countries, series, show=True, test_png_exists=False):
 
     y=series[0]
     yname=wb.series.info(y).items[0]['value']
+    if seried_name_max_length > 0 and len(yname) > seried_name_max_length:
+        return
     df = df.melt('year', var_name='Countries', value_name=yname)
     print(df)
     print(df.dtypes)
@@ -64,30 +65,32 @@ def plot(countries, series, show=True, test_png_exists=False):
 
     print(df)
 
-    prep_plot()
-    plt.rcParams["figure.figsize"] = [16, 9]
+    try:
+        prep_plot()
+        plt.rcParams["figure.figsize"] = [16, 9]
 
 
-    g1=sns.lineplot(data=df[df['Countries']!='Cyprus'], x='year', y=yname, hue='Countries', legend=True,  linewidth=1.0,  color='orange')
-    box = g1.get_position()
-    g1.set_position([box.x0, box.y0, box.width * 0.9, box.height]) 
+        g1=sns.lineplot(data=df[df['Countries']!='Cyprus'], x='year', y=yname, hue='Countries', legend=True,  linewidth=2.0,  color='orange')
+        box = g1.get_position()
+        g1.set_position([box.x0, box.y0, box.width * 0.9, box.height]) 
 
-    g2=sns.lineplot(data=df[df['Countries']=='Cyprus'], x='year', y=yname, legend=True,  linewidth=5.0,  color='orange')
-    box = g2.get_position()
-    g2.set_position([box.x0, box.y0, box.width * 0.9, box.height]) 
+        g2=sns.lineplot(data=df[df['Countries']=='Cyprus'], x='year', y=yname, legend=True,  linewidth=5.0,  color='orange')
+        box = g2.get_position()
+        g2.set_position([box.x0, box.y0, box.width * 0.9, box.height]) 
 
 
-    handles, _ = g2.get_legend_handles_labels()
-    line = mlines.Line2D([], [], color='orange', label='Cyprus', linewidth=5.0)
-    handles.append(line) 
+        handles, _ = g2.get_legend_handles_labels()
+        line = mlines.Line2D([], [], color='orange', label='Cyprus', linewidth=5.0)
+        handles.insert(0, line) 
 
-    # plot the legend
-    plt.legend(handles=handles, loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
-    plt.savefig(output_png, format='png', dpi=600)
-    if show:
-        plt.show()
-    plt.close('all')
-
+        # plot the legend
+        plt.legend(handles=handles, loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
+        plt.savefig(output_png, format='png', dpi=600)
+        if show:
+            plt.show()
+        plt.close('all')
+    except Exception as e:
+        print(str(e))
 
 def data_info():
     series=wb.series.info()
@@ -103,45 +106,51 @@ def data_info():
 
 def concat_images():
     png_files = [os.path.join(OUTPUT_DIR, f) for f in os.listdir(OUTPUT_DIR) if os.path.isfile(os.path.join(OUTPUT_DIR, f)) and pathlib.Path(f).suffix=='.png']
+    nb=1
+    ww=19
+    hh=10
+    png_files=png_files[0:hh*ww*(nb**2)]
     nb = len(png_files)
     print(nb)
-
-
-    png_files=png_files[0:9*16*4]
-
     ccim = None
-    f=int(int(nb/(16*9))**.5)
-    for i in range(f*16):
-        for j in range(f*9):
-            index = j+i*(f*9)
-            im = Image.open(png_files[index])
+    f=int(int(nb/(ww*hh))**.5)
+    print(f)
+    for i in tqdm.tqdm(range(f*ww)):
+        for j in range(f*hh):
+            index = j+i*(f*hh)
+            try:
+                im = Image.open(png_files[index])
+            except Exception as e:
+                print(str(e))
+                continue
+
+            s = im.size
+            ratio = .2
+            im = im.resize((int(s[0]*ratio), int(s[1]*ratio)), Image.LANCZOS)
+            s = im.size
             if ccim is None:
-                s = im.size
-                ratio = .05
-                im = im.resize((int(s[0]*ratio), int(s[1]*ratio)), Image.ANTIALIAS)
-                s = im.size
-                nw=int(s[0]*f*16)
-                nh=int(s[1]*f*16)              
+                nw=int(s[0]*f*ww)
+                nh=int(s[1]*f*hh)              
                 print((nw, nh))  
-                ccim = Image.new("RGB", (int(s[0]*f*16), int(s[1]*f*9)), "white")
-            print(index)
-            ccim.paste(im, (int(s[0]*i), int(s[0]*j)))
+                ccim = Image.new("RGB", (nw, nh), "white")
+            ccim.paste(im, (int(s[0]*i), int(s[1]*j)))
 
     if ccim:
-        ccim.save("img1.png")
+        ccim.save(os.path.join(OUTPUT_DIR, '..', 'tiles.png'))
     
 
 
 #data_info()
 
-if False:
+if True:
     countries=['CYP', 'FRA', 'GTM', 'GRC', 'TUR', 'MLT']
     #series=['NY.GDP.PCAP.CD']
 
     series=wb.series.info()
     for i in series.items:
         try:
-            plot(countries, [i['id']], show=False, test_png_exists=True)
+            plot(countries, [i['id']], show=False, test_png_exists=True,
+                     seried_name_max_length=50)
         except Exception as e:
             print(str(e))
         

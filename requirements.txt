@@ -7,4 +7,5 @@ pytube
 scipy
 scikit-learn
 seaborn
+tqdm
 wbgapi
