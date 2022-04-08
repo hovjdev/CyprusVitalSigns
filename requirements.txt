@@ -1,3 +1,10 @@
 deepface
+matplotlib
 opencv-python
+pandas
+Pillow
 pytube
+scipy
+scikit-learn
+seaborn
+wbgapi

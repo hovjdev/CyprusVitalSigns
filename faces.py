@@ -13,12 +13,14 @@ link = 'https://www.youtube.com/watch?v=Bhl-YBhNFkA'
 download_vid=True
 vid_file=''
 
-def make_directory_if_not_exists(path):
-    shutil.rmtree(path)
+def make_directory(path):
+    try:
+        shutil.rmtree(path)
+    except:
+        pass
     os.makedirs(path)
 
-
-make_directory_if_not_exists(f"{workdir}")
+make_directory(f"{workdir}")
 
 
 
