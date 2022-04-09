@@ -11,7 +11,7 @@ import wbgapi as wb
 from PIL import Image
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
-from sklearn.random_projection import SparseRandomProjection
+from sklearn.svm import SVR
 from tools.plot_tools import prep_plot
 
 
@@ -73,6 +73,8 @@ def get_data(countries, series,
 
         df.to_csv(output_df)
 
+    df = pd.read_csv(output_df)
+
     if plot:
         os.makedirs(os.path.join(OUTPUT_DIR, 'plots'), exist_ok=True)
         output_png = os.path.join(OUTPUT_DIR, 'plots', series['id']+'.png')
@@ -84,11 +86,11 @@ def get_data(countries, series,
             plt.rcParams["figure.figsize"] = [16, 9]
 
 
-            g1=sns.lineplot(data=df[df['Countries']!='Cyprus'], x='year', y=yname, hue='Countries', legend=True,  linewidth=2.0,  color='orange')
+            g1=sns.lineplot(data=df[df['Countries']!='Cyprus'], x='year', y=yname, hue='Countries', legend=True,  linewidth=3.0,  color='orange')
             box = g1.get_position()
             g1.set_position([box.x0, box.y0, box.width * 0.9, box.height])
 
-            g2=sns.lineplot(data=df[df['Countries']=='Cyprus'], x='year', y=yname, legend=True,  linewidth=5.0,  color='orange')
+            g2=sns.lineplot(data=df[df['Countries']=='Cyprus'], x='year', y=yname, legend=True,  linewidth=6.0,  color='orange')
             box = g2.get_position()
             g2.set_position([box.x0, box.y0, box.width * 0.9, box.height])
 
@@ -106,6 +108,7 @@ def get_data(countries, series,
         except Exception as e:
             print(str(e))
 
+
 def data_info():
     series=wb.series.info()
     for i in series.items:
@@ -119,7 +122,7 @@ def data_info():
 
 
 def concat_images():
-    png_files = [os.path.join(OUTPUT_DIR, f) for f in os.listdir(OUTPUT_DIR) if os.path.isfile(os.path.join(OUTPUT_DIR, f)) and pathlib.Path(f).suffix=='.png']
+    png_files = [os.path.join(OUTPUT_DIR,'plots', f) for f in os.listdir(os.path.join(OUTPUT_DIR, 'plots')) if os.path.isfile(os.path.join(OUTPUT_DIR, 'plots', f)) and pathlib.Path(f).suffix=='.png']
     nb=1
     ww=19
     hh=10
@@ -153,23 +156,65 @@ def concat_images():
         ccim.save(os.path.join(OUTPUT_DIR, 'tiles.png'))
 
 
+def reduce_dimensions():
+    csv_files = [os.path.join(OUTPUT_DIR, 'data', f) for f in os.listdir(os.path.join(OUTPUT_DIR, 'data')) if os.path.isfile(os.path.join(OUTPUT_DIR,'data', f)) and pathlib.Path(f).suffix=='.csv']
 
-#data_info()
+    nb_rows = None
+    for f in csv_files:
+        df = pd.read_csv(f)
+        if nb_rows is None:
+            nb_rows = df.shape[0]
+        assert df.shape[0] == nb_rows
 
-if True:
-    countries=['CYP', 'FRA', 'GTM', 'GRC', 'TUR', 'MLT']
-    #series=['NY.GDP.PCAP.CD']
+        df['Countries'] = pd.factorize(df['Countries'])[0]
+        cols = df.columns
 
-    series=wb.series.info()
-    for i in tqdm.tqdm(series.items):
-        try:
-            get_data(countries, i,
-                     seried_name_max_length=55, min_data_count=10,
-                     plot=False, show=False, test_png_exists=True)
-        except Exception as e:
-            print(str(e))
+        df1=df.copy()
+        df1 = df1.dropna()
+        X= df1[cols[1:-1]].to_numpy()
+        Y = df1[cols[-1:]].to_numpy()
+        assert not np.isnan(X).any()
+        assert not np.isnan(Y).any()
+
+        reg = SVR(C=1.0, epsilon=0.2)
+        reg.fit(X, Y.ravel())
+        df2=df.copy()
+        X= df2[cols[1:-1]].to_numpy()
+        Y = df2[cols[-1:]].to_numpy()
+        Ypred = reg.predict(X)
+        Ypred = Ypred.ravel()
+        Y = Y.ravel()
+        inds = np.where(np.isnan(Y))
+        Y[inds]=Ypred[inds]
+
+        assert not np.isnan(X).any()
+        assert not np.isnan(Y).any()
+
+        print(X.shape)
+        print(Y.shape)
 
 
 
-if False:
-    concat_imges()
+if __name__ == "__main__":
+
+    if False:
+        data_info()
+
+    if False:
+        countries=['CYP', 'FRA', 'GTM', 'GRC', 'TUR', 'MLT']
+        #series=['NY.GDP.PCAP.CD']
+
+        series=wb.series.info()
+        for i in tqdm.tqdm(series.items):
+            try:
+                get_data(countries, i,
+                         seried_name_max_length=55, min_data_count=10,
+                         plot=True, show=False, test_png_exists=False)
+            except Exception as e:
+                print(str(e))
+
+    if False:
+        concat_imges()
+
+    if True:
+        reduce_dimensions()
