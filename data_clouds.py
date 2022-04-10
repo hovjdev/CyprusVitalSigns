@@ -1,4 +1,5 @@
 
+import copy
 import os
 import re
 import tqdm
@@ -9,9 +10,12 @@ import seaborn as sns
 import wbgapi as wb
 
 from PIL import Image
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+
 from sklearn.svm import SVR
+from sklearn.manifold import TSNE
 from tools.plot_tools import prep_plot
 
 
@@ -160,13 +164,16 @@ def reduce_dimensions():
     csv_files = [os.path.join(OUTPUT_DIR, 'data', f) for f in os.listdir(os.path.join(OUTPUT_DIR, 'data')) if os.path.isfile(os.path.join(OUTPUT_DIR,'data', f)) and pathlib.Path(f).suffix=='.csv']
 
     nb_rows = None
+    yy=[]
+    xx=None
+    uniques=None
     for f in csv_files:
         df = pd.read_csv(f)
         if nb_rows is None:
             nb_rows = df.shape[0]
         assert df.shape[0] == nb_rows
 
-        df['Countries'] = pd.factorize(df['Countries'])[0]
+        df['Countries'], uniques = pd.factorize(df['Countries'])
         cols = df.columns
 
         df1=df.copy()
@@ -190,9 +197,57 @@ def reduce_dimensions():
         assert not np.isnan(X).any()
         assert not np.isnan(Y).any()
 
-        print(X.shape)
-        print(Y.shape)
+        if xx is None:
+            xx=X
 
+        assert np.array_equal(X,xx)
+        yy.append([Y])
+
+    yy=np.concatenate(yy, axis=0)
+    yy=np.swapaxes(yy,0,1)
+    print(xx.shape)
+    print(yy.shape)
+
+    yy_embeded = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(yy)
+    data=np.concatenate([xx, yy_embeded], axis=1)
+    print(data.shape)
+    prep_plot()
+    plt.rcParams["figure.figsize"] = [16, 9]
+    df = pd.DataFrame(data, columns = ['Year', 'Countries', 'X','Y'])
+
+    for c, country in enumerate(uniques):
+        df.loc[df['Countries'] == c, 'Countries'] = country
+
+
+    prep_plot()
+    plt.rcParams["figure.figsize"] = [16, 9]
+
+    g1=sns.scatterplot(data=df[df['Countries']!='Cyprus'], x='X', y='Y', hue='Countries', size='Year', legend=True,   sizes=(10, 400),)
+    box = g1.get_position()
+    g1.set_position([box.x0, box.y0, box.width * 0.9, box.height])
+
+    g2=sns.scatterplot(data=df[df['Countries']=='Cyprus'], x='X', y='Y',  size='Year', legend=False,   sizes=(10, 400),  color='orange')
+    box = g2.get_position()
+    g2.set_position([box.x0, box.y0, box.width * 0.9, box.height])
+
+    handles, _ = g2.get_legend_handles_labels()
+    h = copy.copy(handles[1])
+    h.set_label('Cyprus')
+    h.set_color('orange')
+    handles.insert(1, h)
+
+    for h in handles:
+        l = h.get_label()
+        res = re.match(r"\d\d\d\d",l)
+        if res is not None:
+            cs=False
+            h.set_color('grey')
+        if isinstance(h, matplotlib.collections.PathCollection)and res is None:
+            h.set_sizes(h.get_sizes()*10)
+    # plot the legend
+    plt.legend(handles=handles, loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
+
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -209,7 +264,7 @@ if __name__ == "__main__":
             try:
                 get_data(countries, i,
                          seried_name_max_length=55, min_data_count=10,
-                         plot=True, show=False, test_png_exists=False)
+                         plot=True, show=False, test_png_exists=True)
             except Exception as e:
                 print(str(e))
 
