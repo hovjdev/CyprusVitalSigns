@@ -160,7 +160,7 @@ def concat_images():
         ccim.save(os.path.join(OUTPUT_DIR, 'tiles.png'))
 
 
-def reduce_dimensions():
+def reduce_dimensions(show=True):
     csv_files = [os.path.join(OUTPUT_DIR, 'data', f) for f in os.listdir(os.path.join(OUTPUT_DIR, 'data')) if os.path.isfile(os.path.join(OUTPUT_DIR,'data', f)) and pathlib.Path(f).suffix=='.csv']
 
     nb_rows = None
@@ -247,7 +247,11 @@ def reduce_dimensions():
     # plot the legend
     plt.legend(handles=handles, loc='center right', bbox_to_anchor=(1.3, 0.5), ncol=1)
 
-    plt.show()
+    output_png = os.path.join(OUTPUT_DIR, 'reduced.png')
+    plt.savefig(output_png, format='png', dpi=600)
+    if show:
+        plt.show()
+    plt.close('all')
 
 
 if __name__ == "__main__":
@@ -269,7 +273,7 @@ if __name__ == "__main__":
                 print(str(e))
 
     if False:
-        concat_imges()
+        concat_images()
 
-    if True:
+    if False:
         reduce_dimensions()
