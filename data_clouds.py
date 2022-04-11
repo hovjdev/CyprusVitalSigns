@@ -21,7 +21,7 @@ from tools.plot_tools import prep_plot
 
 INPUT_DIR = "input/data_clouds"
 OUTPUT_DIR = "output/data_clouds"
-
+matplotlib.use('pdf')
 
 def get_data(countries, series,
         seried_name_max_length=-1, min_data_count=-1,
@@ -60,8 +60,6 @@ def get_data(countries, series,
             print(str(e))
         df=df.reset_index()
         df=df.rename(columns={'index': 'year'})
-
-
 
         df = df.melt('year', var_name='Countries', value_name=yname)
         print(df)
@@ -109,6 +107,7 @@ def get_data(countries, series,
             if show:
                 plt.show()
             plt.close('all')
+            plt.clf()
         except Exception as e:
             print(str(e))
 
@@ -127,31 +126,48 @@ def data_info():
 
 def concat_images():
     png_files = [os.path.join(OUTPUT_DIR,'plots', f) for f in os.listdir(os.path.join(OUTPUT_DIR, 'plots')) if os.path.isfile(os.path.join(OUTPUT_DIR, 'plots', f)) and pathlib.Path(f).suffix=='.png']
-    nb=1
-    ww=19
-    hh=10
-    png_files=png_files[0:hh*ww*(nb**2)]
-    nb = len(png_files)
-    print(nb)
+    nb_files = len(png_files)
+    assert nb_files > 0
+    im_size = Image.open(png_files[0]).size
+    
+    w=19
+    h=10
+    ratio = .1
+    
+    ni=1
+    nj=1
+
+    while ni*nj < nb_files:
+        if (ni*im_size[0])/(nj*im_size[1]) > w/h:
+            nj=nj+1
+        else:
+            ni=ni+1
+    
+    if ni*nj > nb_files:
+        if (ni*im_size[0])/(nj*im_size[1]) > w/h:
+            ni=ni-1
+        else:
+            nj=nj-1    
+
+    print(f'ni={ni}, nj={nj}, ni*nj={ni*nj}, nb_files={nb_files}')
+    assert ni*nj < nb_files
+    
     ccim = None
-    f=int(int(nb/(ww*hh))**.5)
-    print(f)
-    for i in tqdm.tqdm(range(f*ww)):
-        for j in range(f*hh):
-            index = j+i*(f*hh)
+    for i in tqdm.tqdm(range(ni)):
+        for j in range(nj):
+            index = j+i*nj
             try:
                 im = Image.open(png_files[index])
             except Exception as e:
                 print(str(e))
                 continue
 
-            s = im.size
-            ratio = .2
-            im = im.resize((int(s[0]*ratio), int(s[1]*ratio)), Image.LANCZOS)
-            s = im.size
+            im = im.resize((int(im_size[0]*ratio), int(im_size[1]*ratio)), Image.LANCZOS)
+            s =im.size
+
             if ccim is None:
-                nw=int(s[0]*f*ww)
-                nh=int(s[1]*f*hh)
+                nw=int(s[0]*ni)
+                nh=int(s[1]*nj)
                 print((nw, nh))
                 ccim = Image.new("RGB", (nw, nh), "white")
             ccim.paste(im, (int(s[0]*i), int(s[1]*j)))
@@ -252,6 +268,7 @@ def reduce_dimensions(show=True):
     if show:
         plt.show()
     plt.close('all')
+    plt.clf()
 
 
 if __name__ == "__main__":
@@ -260,7 +277,7 @@ if __name__ == "__main__":
         data_info()
 
     if False:
-        countries=['CYP', 'FRA', 'GTM', 'GRC', 'TUR', 'MLT']
+        countries=['CYP', 'GRC', 'TUR', 'MLT', 'PRT', 'FRA', 'GTM']
         #series=['NY.GDP.PCAP.CD']
 
         series=wb.series.info()
@@ -272,8 +289,8 @@ if __name__ == "__main__":
             except Exception as e:
                 print(str(e))
 
-    if False:
+    if True:
         concat_images()
 
-    if False:
+    if True:
         reduce_dimensions()
