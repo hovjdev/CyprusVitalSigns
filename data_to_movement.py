@@ -224,12 +224,12 @@ def reduce_dimensions(show=True):
     print(xx.shape)
     print(yy.shape)
 
-    yy_embeded = TSNE(n_components=2, learning_rate='auto', init='random').fit_transform(yy)
+    yy_embeded = TSNE(n_components=3, learning_rate='auto', init='random').fit_transform(yy)
     data=np.concatenate([xx, yy_embeded], axis=1)
     print(data.shape)
     prep_plot()
     plt.rcParams["figure.figsize"] = [16, 9]
-    df = pd.DataFrame(data, columns = ['Year', 'Countries', 'X','Y'])
+    df = pd.DataFrame(data, columns = ['Year', 'Countries', 'X','Y', 'Z'])
 
     for c, country in enumerate(uniques):
         df.loc[df['Countries'] == c, 'Countries'] = country
@@ -270,6 +270,8 @@ def reduce_dimensions(show=True):
     plt.close('all')
     plt.clf()
 
+    return df
+
 
 if __name__ == "__main__":
 
@@ -289,8 +291,11 @@ if __name__ == "__main__":
             except Exception as e:
                 print(str(e))
 
-    if True:
+    if False:
         concat_images()
 
     if True:
-        reduce_dimensions()
+        df = reduce_dimensions()
+        output_csv = os.path.join(OUTPUT_DIR, 'reduced.csv')
+        df.to_csv(output_csv)
+
