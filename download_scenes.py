@@ -15,7 +15,8 @@ p = Playlist('https://www.youtube.com/playlist?list=PLYbhKoo69xSNy42PHYaiO88E3AI
 def make_directory(path):
     try:
         shutil.rmtree(path)
-    except:
+    except Exception as e:
+        print(str(e))
         pass
     os.makedirs(path)
 
