@@ -47,7 +47,6 @@ def get_economie_name(id):
     if not len(l): return ""
     return l[0]['value']
 
-
 def get_random_indicators(topic_nb, nb_inds):
     inds = list(get_indicators(topic_nb=topic_nb))
     random.shuffle(inds)
@@ -77,7 +76,6 @@ def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
         f.write(topic_description) 
         f.write('\n\n')                
 
-
         for index,  ind in enumerate(data['inds']):
             info=wb.series.list(ind)
             title='None'
@@ -87,7 +85,6 @@ def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
                 f.write('\n\n')
             f.write("Data is...")  
             f.write('\n\n')   
-
 
             df=wb.data.DataFrame(ind, economies)
             df.columns = df.columns.str.replace("YR", "")
@@ -104,7 +101,6 @@ def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
 
             title = title.replace(', ', ',\n')
             ax.set_title(title)
-
 
             nbticks=5
             nbt = int(len(ax.xaxis.get_ticklabels())/nbticks)+1
