@@ -64,19 +64,50 @@ def get_random_data(economies, nb=5):
     data = {'df':df, 'inds': inds, 'topic':topic}
     return data
 
+def plot_df(df,title, economies, index, output_dir):
+    df.columns = df.columns.str.replace("YR", "")
+    df=df.T
+
+    for c in economies:
+        name=get_economie_name(c)
+        df.columns = df.columns.str.replace(c, name)
+
+    linewidth=10
+    font_scale=3
+    prep_plot(font_scale=font_scale)
+    ax=sns.lineplot(data=df, linewidth=linewidth, dashes=False)
+
+    title = title.replace(', ', ',\n')
+    ax.set_title(title)
+
+    nbticks=5
+    nbt = int(len(ax.xaxis.get_ticklabels())/nbticks)+1
+    for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
+        if i % nbt != 0:
+            tick.set_visible(False) 
+    nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
+    for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
+        if i % nbt != 0:
+            tick.set_visible(False)         
+
+    leg = ax.legend()
+    for line in leg.get_lines():
+        line.set_linewidth(linewidth)
+
+    ax.figure.savefig(os.path.join(output_dir, f'image{index}.png'))
+    plt.close(ax.figure)
+
 def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
 
     topic_name=data['topic']['value']
     topic_description=data['topic']['sourceNote']
     text_file = os.path.join(OUTPUT_DIR, 'notes.txt')
 
-
     def get_title(info):
         title='None'
         for i in info:
             title=str(i['value'])
         return title
-
 
     with open(text_file, 'w') as f:
         f.write(topic_name)
@@ -96,41 +127,9 @@ def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
         info=wb.series.list(ind)
         title=get_title(info)
         df=wb.data.DataFrame(ind, economies)
-        df.columns = df.columns.str.replace("YR", "")
-        df=df.T
-
-        for c in economies:
-            name=get_economie_name(c)
-            df.columns = df.columns.str.replace(c, name)
-
-        linewidth=10
-        font_scale=3
-        prep_plot(font_scale=font_scale)
-        ax=sns.lineplot(data=df, linewidth=linewidth, dashes=False)
-
-        title = title.replace(', ', ',\n')
-        ax.set_title(title)
-
-        nbticks=5
-        nbt = int(len(ax.xaxis.get_ticklabels())/nbticks)+1
-        for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
-            if i % nbt != 0:
-                tick.set_visible(False) 
-        nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
-        for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
-            if i % nbt != 0:
-                tick.set_visible(False)         
-
-        leg = ax.legend()
-        for line in leg.get_lines():
-            line.set_linewidth(linewidth)
-
-        ax.figure.savefig(os.path.join(output_dir, f'image{index}.png'))
-        plt.close(ax.figure)
+        plot_df(df,title, economies, index, output_dir)
 
     return
-
-
 
 if __name__ == "__main__":
 
