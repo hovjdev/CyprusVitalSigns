@@ -69,55 +69,64 @@ def create_media(data, economies=ECONOMIES, output_dir=OUTPUT_DIR):
     topic_name=data['topic']['value']
     topic_description=data['topic']['sourceNote']
     text_file = os.path.join(OUTPUT_DIR, 'notes.txt')
-    
+
+
+    def get_title(info):
+        title='None'
+        for i in info:
+            title=str(i['value'])
+        return title
+
+
     with open(text_file, 'w') as f:
         f.write(topic_name)
         f.write('\n\n')        
         f.write(topic_description) 
-        f.write('\n\n')                
+        f.write('\n\n')
 
         for index,  ind in enumerate(data['inds']):
             info=wb.series.list(ind)
-            title='None'
-            for i in info:
-                title=str(i['value'])
-                f.write(str(i['value']))  
-                f.write('\n\n')
+            title=get_title(info)
+            f.write(title)  
+            f.write('\n\n')
             f.write("Data is...")  
             f.write('\n\n')   
 
-            df=wb.data.DataFrame(ind, economies)
-            df.columns = df.columns.str.replace("YR", "")
-            df=df.T
+    for index,  ind in enumerate(data['inds']):
+        info=wb.series.list(ind)
+        title=get_title(info)
+        df=wb.data.DataFrame(ind, economies)
+        df.columns = df.columns.str.replace("YR", "")
+        df=df.T
 
-            for c in economies:
-                name=get_economie_name(c)
-                df.columns = df.columns.str.replace(c, name)
+        for c in economies:
+            name=get_economie_name(c)
+            df.columns = df.columns.str.replace(c, name)
 
-            linewidth=10
-            font_scale=3
-            prep_plot(font_scale=font_scale)
-            ax=sns.lineplot(data=df, linewidth=linewidth, dashes=False)
+        linewidth=10
+        font_scale=3
+        prep_plot(font_scale=font_scale)
+        ax=sns.lineplot(data=df, linewidth=linewidth, dashes=False)
 
-            title = title.replace(', ', ',\n')
-            ax.set_title(title)
+        title = title.replace(', ', ',\n')
+        ax.set_title(title)
 
-            nbticks=5
-            nbt = int(len(ax.xaxis.get_ticklabels())/nbticks)+1
-            for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
-                if i % nbt != 0:
-                    tick.set_visible(False) 
-            nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
-            for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
-                if i % nbt != 0:
-                    tick.set_visible(False)         
+        nbticks=5
+        nbt = int(len(ax.xaxis.get_ticklabels())/nbticks)+1
+        for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
+            if i % nbt != 0:
+                tick.set_visible(False) 
+        nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
+        for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
+            if i % nbt != 0:
+                tick.set_visible(False)         
 
-            leg = ax.legend()
-            for line in leg.get_lines():
-                line.set_linewidth(linewidth)
+        leg = ax.legend()
+        for line in leg.get_lines():
+            line.set_linewidth(linewidth)
 
-            ax.figure.savefig(os.path.join(output_dir, f'image{index}.png'))
-            plt.close(ax.figure)
+        ax.figure.savefig(os.path.join(output_dir, f'image{index}.png'))
+        plt.close(ax.figure)
 
     return
 
