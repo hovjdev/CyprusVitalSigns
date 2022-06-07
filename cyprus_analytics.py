@@ -51,16 +51,24 @@ def get_random_indicators(topic_nb, nb_inds):
     inds = list(get_indicators(topic_nb=topic_nb))
     random.shuffle(inds)
     nb_inds = min(len(inds), nb_inds)
+    if nb_inds<0:
+        return inds
     return inds[:nb_inds]
+
+def filter_df(df, inds, nb):
+    pass
 
 def get_random_data(economies, nb=5):
     topic=get_random_topic()
     if DEBUG:
         print(topic)
-    inds = get_random_indicators(topic['id'], nb_inds=nb)
+    inds = get_random_indicators(topic['id'], nb_inds=-1)
     if DEBUG:
         print(inds)
     df = wb.data.DataFrame(inds, economies)
+
+    filter_df(df, inds, nb)
+
     data = {'df':df, 'inds': inds, 'topic':topic}
     return data
 
