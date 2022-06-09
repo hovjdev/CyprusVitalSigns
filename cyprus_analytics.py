@@ -175,6 +175,41 @@ def get_min_maxmin(df):
 
     return min_mixmax
 
+def get_avg_slope(df):
+
+    avg_slope = 0
+    n=0
+
+    d = df.to_numpy()
+    nb_dim = d.ndim
+    if nb_dim == 1:
+        d = np.reshape(d, (d.shape[0], -1))
+
+    tmp=np.nanmax(d)-np.nanmin(d)
+    d = (d - np.nanmin(d))/tmp
+    
+    x=np.arange(d.shape[0])
+    tmp=np.nanmax(x)-np.nanmin(x)
+    x = (x - np.nanmin(x))/tmp
+
+    d=np.insert(d, 0, x, axis=1) 
+    d=d[~np.isnan(d).any(axis=1)]
+
+    for i in range(d.shape[1]-1):
+        x = np.copy(d[::,0]).reshape(-1, 1)
+        y = np.copy(d[::,i+1]).reshape(-1, 1)
+        try:
+            reg = LinearRegression().fit(x, y)
+        except Exception as e:
+            print(str(e))
+            return -1
+        avg_slope = avg_slope + reg.coef_[0][0]
+        n=n+1
+
+    return avg_slope/n
+
+
+
 def get_min_slope(df):
 
     min_slope = -1
@@ -385,20 +420,29 @@ def narrate_df(df, title, economies, index, output_dir):
     df = df.interpolate(method='linear', axis=0, limit_direction='both')
     df = df.astype(float)
 
+    topic =  re.sub("\(.*?\)","",title)
     topic = title.split(',')[0]
 
-    trend = 'stayed the same'
+    def find_trend(df, c):
+        trend = 'stayed the same'
+        slope = get_avg_slope(df[c])
+        if slope > .1:
+            trend="increased"
+        if slope < -.1:
+            trend="decreased"            
+        return trend
 
     with open(output_txt, "w") as f:
-        f.write(f"Let's look at the {topic}.\n")
+        f.write(f"Let's look at the {title}.\n")
         for c in countries_cyp:
+            trend=find_trend(df, c)
             f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} {c}.\n")
-            f.write(f"Has seen {topic} {trend}.\n")
+            f.write(f"The {topic} {trend}.\n")
 
-        f.write(f"During that same period\n")
+        f.write(f"Whereas, during that same period\n")
         for c in countries_nocyp:
+            trend=find_trend(df, c)
             f.write(f"The {topic} {trend} for the {c}\n")      
-
 
 
 
