@@ -123,13 +123,6 @@ def filter_inds_nb_outliers(df, inds, min_nb_data, max_nb_outliers):
         if skip:
             continue
 
-
-        if skip:
-            continue
-        indsf.append(ind)
-
-
-
         indsf.append(ind)
 
     return indsf
