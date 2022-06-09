@@ -12,8 +12,9 @@ from sklearn.covariance import EllipticEnvelope
 from tools.plot_tools import prep_plot
 
 CO2_DATA_URL ="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt"
-ECONOMIES_1 = ['GRC', 'USA', 'CYP', 'FRA', 'WLD']
-ECONOMIES_2 = ['CYP', 'GRC']
+ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
+ECONOMIES_1 = ['GRC', 'CYP', 'WLD']
+ECONOMIES_2 = ['CYP', 'WLD']
 SERIES = ['NY.GDP.PCAP.CD', 'SP.POP.TOTL']
 OUTPUT_DIR = 'output/cyprus_analytics'
 DEBUG=False
@@ -21,8 +22,10 @@ DEBUG=False
 
 MAX_IND_LENGTH = 50
 MAX_IND = 5
-MIN_NB_DATA=20
+MIN_NB_DATA=15
 MAX_NB_OUTLIERS=2
+MIN_SLOPE=.2
+MIN_MAXMIN=.2
 
 def get_co2_data():
     df=pd.read_csv(CO2_DATA_URL, delim_whitespace=True,  comment='#', header=None)
@@ -38,10 +41,15 @@ def get_ecolomic_data(series=SERIES, economies=ECONOMIES_1):
     return df
 
 def create_dir(path):
+    created=False
     try: 
-        os.mkdir(path) 
-    except OSError as error: 
-        print(error)  
+        if not os.path.isdir(path):
+            os.mkdir(path) 
+            created=True
+    except Exception as e:
+        print(str(e)) 
+    return created
+    
 
 def get_random_topic():
     topics=get_wb_topics()
@@ -91,7 +99,7 @@ def count_outliers(df):
     return nb_outliers
 
 
-def filter_df(df, inds, min_nb_data):
+def filter_inds_nb_outliers(df, inds, min_nb_data, max_nb_outliers):
     #print(df)
     indsf=[]
     for ind in inds:
@@ -105,17 +113,119 @@ def filter_df(df, inds, min_nb_data):
         if tmp < min_nb_data:
             continue
 
-        nb_outliers  = count_outliers(d.T)
+        nb_outliers  = count_outliers(d.transpose())
 
-        if nb_outliers > MAX_NB_OUTLIERS:
+        skip=False
+        if nb_outliers > max_nb_outliers:
+            skip = True
+        print(f'>>> nb_outliers:{nb_outliers}, max_nb_outliers:{max_nb_outliers}, skip:{skip}')
+
+        if skip:
             continue
+
+
+        if skip:
+            continue
+        indsf.append(ind)
+
+
 
         indsf.append(ind)
 
-    return df, indsf
+    return indsf
 
-def filter_inds(inds, max_ind, max_ind_length):
+def get_min_maxmin(df):
+    min_mixmax = -1
+    d = df.to_numpy()
+
+    tmp=np.nanmax(d)-np.nanmin(d)
+    d = (d - np.nanmin(d))/tmp
+    d=d[~np.isnan(d).any(axis=1)]
+
+    for i in range(d.shape[1]):
+        y = np.copy(d[::,i]).reshape(-1, 1)
+        try:
+            mm = np.nanmax(y)-np.nanmin(y)
+        except Exception as e:
+            print(str(e))
+            return -1
+
+        assert mm >= 0
+        if min_mixmax < 0:
+            min_mixmax=mm
+        else:
+            min_mixmax=min(min_mixmax, mm)
+
+    return min_mixmax
+
+def get_min_slope(df):
+
+    min_slope = -1
+    d = df.to_numpy()
+
+    tmp=np.nanmax(d)-np.nanmin(d)
+    d = (d - np.nanmin(d))/tmp
+    
+    x=np.arange(d.shape[0])
+    tmp=np.nanmax(x)-np.nanmin(x)
+    x = (x - np.nanmin(x))/tmp
+
+    d=np.insert(d, 0, x, axis=1) 
+    d=d[~np.isnan(d).any(axis=1)]
+
+    for i in range(d.shape[1]-1):
+        x = np.copy(d[::,0]).reshape(-1, 1)
+        y = np.copy(d[::,i+1]).reshape(-1, 1)
+        try:
+            reg = LinearRegression().fit(x, y)
+        except Exception as e:
+            print(str(e))
+            return -1
+        if min_slope < 0:
+            min_slope=abs(reg.coef_[0][0])
+        else:
+            min_slope=min(abs(reg.coef_[0][0]), min_slope)
+
+    return min_slope
+
+
+def filter_inds_on_slope(df, inds, min_slope):
+ 
     indsf=[]
+    for ind in inds:
+        d=df[df.index.map(lambda x: x[1]==ind)]
+        slope = get_min_slope(d.transpose())
+        skip=False
+        if slope < min_slope:
+            skip=True
+        print(f'>>> slope:{slope}, min_slope:{min_slope}, skip:{skip}')
+        if skip:
+            continue
+        indsf.append(ind)
+
+    return indsf
+
+
+def filter_inds_on_maxmin(df, inds, min_maxmin):
+ 
+    indsf=[]
+    for ind in inds:
+        d=df[df.index.map(lambda x: x[1]==ind)]
+        maxmin = get_min_maxmin(d.transpose())
+        skip=False
+        if maxmin < min_maxmin:
+            skip=True
+        print(f'>>> min_maxmin:{min_maxmin}, maxmin:{maxmin}, skip:{skip}')
+        if skip:
+            continue
+        indsf.append(ind)
+
+    return indsf
+
+
+def filter_inds_on_length(inds, max_ind, max_ind_length):
+    indsf=[]
+    random.shuffle(inds)
     for ind in inds:
         title = get_title(ind)
         if len(title)<=max_ind_length:
@@ -127,7 +237,10 @@ def filter_inds(inds, max_ind, max_ind_length):
 def get_random_data(economies, 
                     max_ind=MAX_IND, 
                     max_ind_length=MAX_IND_LENGTH,
-                    min_nb_data=MIN_NB_DATA):
+                    min_nb_data=MIN_NB_DATA,
+                    min_slope=MIN_SLOPE,
+                    min_maxmin=MIN_MAXMIN,
+                    max_nb_outliers=MAX_NB_OUTLIERS):
 
     topic=get_random_topic()
     if DEBUG:
@@ -136,12 +249,24 @@ def get_random_data(economies,
     if DEBUG:
         print(inds)
     
-    inds=filter_inds(inds, max_ind=3*max_ind, max_ind_length=max_ind_length)
+    inds=filter_inds_on_length(inds, max_ind=10*max_ind, max_ind_length=max_ind_length)
     assert len(inds)>0
+    print('1 >>> inds:', inds)
+
     df = wb.data.DataFrame(inds, economies)
-    df, inds=filter_df(df, inds, min_nb_data=min_nb_data)
-    inds=filter_inds(inds, max_ind=max_ind, max_ind_length=max_ind_length)
-    df = wb.data.DataFrame(inds, economies)    
+
+    inds=filter_inds_on_maxmin(df, inds, min_maxmin=min_maxmin)
+    print('2 >>> inds:', inds)
+
+    inds=filter_inds_on_slope(df, inds, min_slope=min_slope)
+    print('3 >>> inds:', inds)
+    
+    inds=filter_inds_nb_outliers(df, inds, min_nb_data=min_nb_data, max_nb_outliers=max_nb_outliers)
+    print('4 >>> inds:', inds)
+
+    inds=filter_inds_on_length(inds, max_ind=max_ind, max_ind_length=max_ind_length)
+    print('5 >>> inds:', inds)
+    df = wb.data.DataFrame(inds, economies)
 
     data = {'df':df, 'inds': inds, 'topic':topic}
     return data
@@ -167,10 +292,11 @@ def plot_df(df,title, economies, index, output_dir):
     for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
         if i % nbt != 0:
             tick.set_visible(False) 
-    nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
+    '''nbt = int(len(ax.yaxis.get_ticklabels())/nbticks)+1     
     for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
         if i % nbt != 0:
             tick.set_visible(False)         
+    '''
 
     leg = ax.legend()
     for line in leg.get_lines():
@@ -223,6 +349,7 @@ if __name__ == "__main__":
 
 
     for i in range(10):
+        data=None
         try:
             create_dir(OUTPUT_DIR)
             data = get_random_data(economies=ECONOMIES_1)
@@ -230,6 +357,8 @@ if __name__ == "__main__":
             create_media(data=data, economies=ECONOMIES_2, output_dir=OUTPUT_DIR)
         except Exception as e:
             print(str(e))
+            print(f"Try {i} failed")
+            print(data)
             continue
         break
 
