@@ -28,12 +28,12 @@ OUTPUT_DIR = 'output/cyprus_analytics'
 DEBUG=False
 
 
-MAX_IND_LENGTH = 60
+MAX_IND_LENGTH = 65
 MAX_IND = 5
-MIN_NB_DATA=20
+MIN_NB_DATA=15
 MAX_NB_OUTLIERS=3
-MIN_SLOPE=.15
-MIN_MAXMIN=.15
+MIN_SLOPE=.1
+MIN_MAXMIN=.1
 
 
 def get_co2_data():
@@ -175,10 +175,12 @@ def get_min_maxmin(df):
 
     return min_mixmax
 
-def get_avg_slope(df):
+def get_slope(df, c):
 
     avg_slope = 0
     n=0
+
+    cols = df.columns
 
     d = df.to_numpy()
     nb_dim = d.ndim
@@ -196,6 +198,8 @@ def get_avg_slope(df):
     d=d[~np.isnan(d).any(axis=1)]
 
     for i in range(d.shape[1]-1):
+        if cols[i] != c:
+            continue
         x = np.copy(d[::,0]).reshape(-1, 1)
         y = np.copy(d[::,i+1]).reshape(-1, 1)
         try:
@@ -362,11 +366,11 @@ def plot_df(df,title, economies, index, output_dir):
     prep_plot(font_scale=font_scale)
     plt.rcParams["figure.figsize"] = [16, 9]
 
-    g1=sns.lineplot(data=df[countries_nocyp], legend=True,  sizes=(10, 400),linewidth=linewidth, dashes=False)
+    g1=sns.lineplot(data=df[countries_nocyp], legend=True,  sizes=(10, 600),linewidth=linewidth, dashes=False)
     box = g1.get_position()
     g1.set_position([box.x0, box.y0, box.width * 0.9, box.height])
 
-    g2=sns.lineplot(data=df[countries_cyp],  legend=False,   sizes=(10, 400),  palette=['orange'], linewidth=linewidth, dashes=False)
+    g2=sns.lineplot(data=df[countries_cyp],  legend=False,   sizes=(10, 600),  palette=['orange'], linewidth=linewidth, dashes=False)
     box = g2.get_position()
     g2.set_position([box.x0, box.y0, box.width * 0.9, box.height])
 
@@ -421,22 +425,30 @@ def narrate_df(df, title, economies, index, output_dir):
     df = df.astype(float)
 
     topic =  re.sub("\(.*?\)","",title)
-    topic = title.split(',')[0]
+    topic = topic.split(',')[0]
 
     def find_trend(df, c):
-        trend = 'stayed the same'
-        slope = get_avg_slope(df[c])
+        trend = 'stayed more or less the same'
+        slope = get_slope(df, c)
         if slope > .1:
+            trend="increased slightly"
+        if slope > .25:
             trend="increased"
+        if slope > .5:
+            trend="increased significantly"      
         if slope < -.1:
-            trend="decreased"            
+            trend="decreased slightly"        
+        if slope < -.25:
+            trend="decreased"     
+        if slope < -.5:
+            trend="decreased significantly"                                 
         return trend
 
     with open(output_txt, "w") as f:
         f.write(f"Let's look at the {title}.\n")
         for c in countries_cyp:
             trend=find_trend(df, c)
-            f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} {c}.\n")
+            f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c}.\n")
             f.write(f"The {topic} {trend}.\n")
 
         f.write(f"Whereas, during that same period\n")
