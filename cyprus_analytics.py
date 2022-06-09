@@ -28,7 +28,7 @@ OUTPUT_DIR = 'output/cyprus_analytics'
 DEBUG=False
 
 
-MAX_IND_LENGTH = 65
+MAX_IND_LENGTH = 60
 MAX_IND = 5
 MIN_NB_DATA=15
 MAX_NB_OUTLIERS=3
@@ -448,13 +448,13 @@ def narrate_df(df, title, economies, index, output_dir):
         f.write(f"Let's look at the {title}.\n")
         for c in countries_cyp:
             trend=find_trend(df, c)
-            f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c}.\n")
+            f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c},\n")
             f.write(f"The {topic} {trend}.\n")
 
-        f.write(f"Whereas, during that same period\n")
+        f.write(f"Whereas, during that same period,\n")
         for c in countries_nocyp:
             trend=find_trend(df, c)
-            f.write(f"The {topic} {trend} for the {c}\n")      
+            f.write(f"The {topic} {trend} for the {c}.\n")      
 
 
 
@@ -470,18 +470,10 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
         f.write(topic_description) 
         f.write('\n\n')
 
-        for index,  ind in enumerate(data['inds']):
-            title=get_title(ind)
-            f.write(title)  
-            f.write('\n\n')
-            f.write("Data is...")  
-            f.write('\n\n')   
-
     for index,  ind in enumerate(data['inds']):
         title=get_title(ind)
         df=wb.data.DataFrame(ind, economies)
         plot_df(df,title, economies, index, output_dir)
-
         narrate_df(df,title, economies, index, output_dir)
 
     return
