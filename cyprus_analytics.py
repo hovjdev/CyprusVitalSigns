@@ -2,6 +2,7 @@ import os
 import re
 import copy
 import random
+import shutil
 from re import I
 import wbgapi as wb
 import pandas as pd
@@ -21,18 +22,19 @@ from tools.plot_tools import prep_plot
 CO2_DATA_URL ="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt"
 ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
 ECONOMIES_1 = ['GRC', 'CYP', 'WLD']
-ECONOMIES_2 = ['CYP', 'GRC', 'FRA', 'WLD']
+ECONOMIES_2 = ['CYP',  'WLD']
 SERIES = ['NY.GDP.PCAP.CD', 'SP.POP.TOTL']
 OUTPUT_DIR = 'output/cyprus_analytics'
 DEBUG=False
 
 
-MAX_IND_LENGTH = 55
+MAX_IND_LENGTH = 60
 MAX_IND = 5
-MIN_NB_DATA=15
-MAX_NB_OUTLIERS=2
-MIN_SLOPE=.2
-MIN_MAXMIN=.2
+MIN_NB_DATA=20
+MAX_NB_OUTLIERS=3
+MIN_SLOPE=.15
+MIN_MAXMIN=.15
+
 
 def get_co2_data():
     df=pd.read_csv(CO2_DATA_URL, delim_whitespace=True,  comment='#', header=None)
@@ -56,7 +58,22 @@ def create_dir(path):
     except Exception as e:
         print(str(e)) 
     return created
-    
+
+def delete_previous_files(path):
+    try: 
+        if os.path.isdir(path):
+            for filename in os.listdir(path):
+                file_path = os.path.join(path, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {str(e)}')
+    except Exception as e:
+        print(str(e))
+    return
 
 def get_random_topic():
     topics=get_wb_topics()
@@ -243,35 +260,40 @@ def get_random_data(economies,
                     max_nb_outliers=MAX_NB_OUTLIERS):
 
     topic=get_random_topic()
+    print('>>> topic:',topic)
+
+
     if DEBUG:
         print(topic)
     inds = get_indicators(topic['id'])
     if DEBUG:
         print(inds)
+
+    print('0 >>> inds:', len(inds))
     
     inds=filter_inds_on_length(inds, max_ind=20*max_ind, max_ind_length=max_ind_length)
-    assert len(inds)>0
-    print('1 >>> inds:', inds)
+    print('1 >>> inds:', len(inds))
 
     df = wb.data.DataFrame(inds, economies)
 
     inds=filter_inds_on_maxmin(df, inds, min_maxmin=min_maxmin)
-    print('2 >>> inds:', inds)
+    print('2 >>> inds:', len(inds))
 
     inds=filter_inds_on_slope(df, inds, min_slope=min_slope)
-    print('3 >>> inds:', inds)
-    
+    print('3 >>> inds:', len(inds))
+
     inds=filter_inds_nb_outliers(df, inds, min_nb_data=min_nb_data, max_nb_outliers=max_nb_outliers)
-    print('4 >>> inds:', inds)
+    print('4 >>> inds:', len(inds))
 
     inds=filter_inds_on_length(inds, max_ind=max_ind, max_ind_length=max_ind_length)
-    print('5 >>> inds:', inds)
+    print('5 >>> inds:', len(inds))
     df = wb.data.DataFrame(inds, economies)
 
     data = {'df':df, 'inds': inds, 'topic':topic}
     return data
 
-def plot_df(df,title, economies, index, output_dir):
+
+def pref_df(df, economies):
     df.columns = df.columns.str.replace("YR", "")
     df=df.T
 
@@ -292,6 +314,12 @@ def plot_df(df,title, economies, index, output_dir):
     print(f'>>> countries_nocyp: {countries_nocyp}')
     print(f'>>> countries_cyp: {countries_cyp}')
 
+    return df, countries_nocyp, countries_cyp
+
+
+def plot_df(df,title, economies, index, output_dir):
+
+    df, countries_nocyp, countries_cyp=pref_df(df, economies)
 
     linewidth=5
     font_scale=3
@@ -338,7 +366,7 @@ def plot_df(df,title, economies, index, output_dir):
                 tick.set_visible(False)          
 
     # plot the legend
-    output_png=os.path.join(output_dir, f'image{index}.png')
+    output_png=os.path.join(output_dir, f'data_plot_{index}.png')
 
     plt.savefig(output_png, format='png', dpi=600)
     show=False
@@ -347,6 +375,29 @@ def plot_df(df,title, economies, index, output_dir):
     plt.close('all')
     plt.clf()
 
+
+def narrate_df(df, title, economies, index, output_dir):
+
+    df, countries_nocyp, countries_cyp=pref_df(df, economies)
+    output_txt=os.path.join(output_dir, f'data_text_{index}.txt')
+
+    df_nonan=df[~np.isnan(df).any(axis=1)]
+    df = df.interpolate(method='linear', axis=0, limit_direction='both')
+    df = df.astype(float)
+
+    topic = title.split(',')[0]
+
+    trend = 'stayed the same'
+
+    with open(output_txt, "w") as f:
+        f.write(f"Let's look at the {topic}.\n")
+        for c in countries_cyp:
+            f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} {c}.\n")
+            f.write(f"Has seen {topic} {trend}.\n")
+
+        f.write(f"During that same period\n")
+        for c in countries_nocyp:
+            f.write(f"The {topic} {trend} for the {c}\n")      
 
 
 
@@ -375,6 +426,8 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
         df=wb.data.DataFrame(ind, economies)
         plot_df(df,title, economies, index, output_dir)
 
+        narrate_df(df,title, economies, index, output_dir)
+
     return
 
 if __name__ == "__main__":
@@ -398,6 +451,7 @@ if __name__ == "__main__":
         data=None
         try:
             create_dir(OUTPUT_DIR)
+            delete_previous_files(OUTPUT_DIR)
             data = get_random_data(economies=ECONOMIES_1)
             print(data)
         except Exception as e:
