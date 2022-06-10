@@ -457,16 +457,16 @@ def narrate_df(df, title, economies, index, output_dir):
         for c in countries_nocyp:
             trend2=find_trend(df, c)
 
-            liaison="Wheareas"
+            liaison=random.choice(["Whereas", "Instead", "Meanwhile", "In contrast", "However"])    
             if "increase" in trend1 and "increase" in trend2:
-                liaison="Likewise"
+                liaison=random.choice(["Likewise", "Similarly", "By the same token", "Moreover", "Furthermore"])
             if "decrease" in trend1 and "decrease" in trend2:
-                liaison="Likewise"                
+                liaison=random.choice(["Likewise", "Similarly", "By the same token", "Moreover", "Furthermore"])         
 
             if ok:
                 f.write(f"{liaison}, during that same period,\n")
                 ok=False
-                
+
             f.write(f"The {topic} {trend2} for the {c}.\n")      
 
 
