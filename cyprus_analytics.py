@@ -310,7 +310,7 @@ def get_random_data(economies,
 
     print('0 >>> inds:', len(inds))
     
-    inds=filter_inds_on_length(inds, max_ind=20*max_ind, max_ind_length=max_ind_length)
+    inds=filter_inds_on_length(inds, max_ind=30*max_ind, max_ind_length=max_ind_length)
     print('1 >>> inds:', len(inds))
 
     df = wb.data.DataFrame(inds, economies)
@@ -444,18 +444,30 @@ def narrate_df(df, title, economies, index, output_dir):
             trend="decreased significantly"                                 
         return trend
 
+    trend1=-1
+    trend2=-1    
     with open(output_txt, "w") as f:
         f.write(f"Let's look at the {title}.\n")
         for c in countries_cyp:
-            trend=find_trend(df, c)
+            trend1=find_trend(df, c)
             f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c},\n")
-            f.write(f"The {topic} {trend}.\n")
+            f.write(f"The {topic} {trend1}.\n")
 
-        f.write(f"Whereas, during that same period,\n")
+        ok=True
         for c in countries_nocyp:
-            trend=find_trend(df, c)
-            f.write(f"The {topic} {trend} for the {c}.\n")      
+            trend2=find_trend(df, c)
 
+            liaison="Wheareas"
+            if "increase" in trend1 and "increase" in trend2:
+                liaison="Likewise"
+            if "decrease" in trend1 and "decrease" in trend2:
+                liaison="Likewise"                
+
+            if ok:
+                f.write(f"{liaison}, during that same period,\n")
+                ok=False
+                
+            f.write(f"The {topic} {trend2} for the {c}.\n")      
 
 
 def create_media(data, economies, output_dir=OUTPUT_DIR):
