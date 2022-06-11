@@ -125,7 +125,7 @@ for s in stations_list:
 	if fp> 50:
 		color="red"
 	if fp> 100:
-		color="brown"
+		color="purple"
 
 	plt.text(
 	        x,
@@ -136,6 +136,9 @@ for s in stations_list:
 	        horizontalalignment='center',
 	        verticalalignment='bottom',
 	        zorder=6,
+			weight="bold"
 	    )
+	plt.title("Air Quality in Cyprus: PM 2.5", fontsize = 40)
+
 
 plt.show()
