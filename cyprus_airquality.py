@@ -2,7 +2,8 @@
 import requests
 import json
 import datetime
-
+import os
+import shutil
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +12,36 @@ import matplotlib as mpl
 
 from mpl_toolkits.basemap import Basemap
 from pytz import timezone
+
+OUTPUT_DIR = 'output/cyprus_airquality'
+
+
+def create_dir(path):
+    created=False
+    try:
+        if not os.path.isdir(path):
+            os.mkdir(path)
+            created=True
+    except Exception as e:
+        print(str(e))
+    return created
+
+def delete_previous_files(path):
+    try:
+        if os.path.isdir(path):
+            for filename in os.listdir(path):
+                file_path = os.path.join(path, filename)
+                try:
+                    if os.path.isfile(file_path) or os.path.islink(file_path):
+                        os.unlink(file_path)
+                    elif os.path.isdir(file_path):
+                        shutil.rmtree(file_path)
+                except Exception as e:
+                    print(f'Failed to delete {file_path}. Reason: {str(e)}')
+    except Exception as e:
+        print(str(e))
+    return
+
 
 
 pollutants_list = [
@@ -39,8 +70,6 @@ stations_list = [
 #{"code" : 12,"label": "KALIND", "label_en":"Kalavasos Industrial Station", "label_el":'Καλαβασός Βιομηχανικός Σταθμός', "index":10, "color":"olive", "long":33.30798, "lat":34.7584},
 {"code" : 13,"label": "ORMIND", "label_en":"Ormidia Industrial Station", "label_el":'Ορμήδια Βιομηχανικός', "index":11, "color":"skyblue", "long":33.7803, "lat":34.9925},
 ]
-
-
 
 
 ratio = 720.0 / 1280.0 * 1.0
@@ -72,8 +101,6 @@ m.arcgisimage(
 tz = timezone('EET')
 now =datetime.datetime.now(tz)
 ytd = now - datetime.timedelta(days=1)
-
-
 
 
 for s in stations_list:
@@ -141,4 +168,8 @@ for s in stations_list:
 	plt.title("Air Quality in Cyprus: PM 2.5", fontsize = 40)
 
 
-plt.show()
+
+
+create_dir(OUTPUT_DIR)
+delete_previous_files(OUTPUT_DIR)
+plt.savefig(os.path.join(OUTPUT_DIR, 'airquality.png'))

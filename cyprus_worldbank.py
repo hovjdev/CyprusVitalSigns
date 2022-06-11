@@ -24,7 +24,7 @@ ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
 ECONOMIES_1 = ['GRC', 'CYP', 'WLD']
 ECONOMIES_2 = ['CYP',  'WLD']
 SERIES = ['NY.GDP.PCAP.CD', 'SP.POP.TOTL']
-OUTPUT_DIR = 'output/cyprus_analytics'
+OUTPUT_DIR = 'output/cyprus_worldbank'
 DEBUG=False
 
 
@@ -46,21 +46,21 @@ def get_wb_topics():
     return topics
 
 def get_ecolomic_data(series=SERIES, economies=ECONOMIES_1):
-    df = wb.data.DataFrame(series, economies) 
+    df = wb.data.DataFrame(series, economies)
     return df
 
 def create_dir(path):
     created=False
-    try: 
+    try:
         if not os.path.isdir(path):
-            os.mkdir(path) 
+            os.mkdir(path)
             created=True
     except Exception as e:
-        print(str(e)) 
+        print(str(e))
     return created
 
 def delete_previous_files(path):
-    try: 
+    try:
         if os.path.isdir(path):
             for filename in os.listdir(path):
                 file_path = os.path.join(path, filename)
@@ -115,7 +115,7 @@ def count_outliers(df):
         outliers = EllipticEnvelope(random_state = 0).fit_predict(coeffs)
     except Exception as e:
         return True
-    
+
     nb_outliers = 0
     for o in outliers:
         if o==-1: nb_outliers=nb_outliers+1
@@ -189,12 +189,12 @@ def get_slope(df, c):
 
     tmp=np.nanmax(d)-np.nanmin(d)
     d = (d - np.nanmin(d))/tmp
-    
+
     x=np.arange(d.shape[0])
     tmp=np.nanmax(x)-np.nanmin(x)
     x = (x - np.nanmin(x))/tmp
 
-    d=np.insert(d, 0, x, axis=1) 
+    d=np.insert(d, 0, x, axis=1)
     d=d[~np.isnan(d).any(axis=1)]
 
     for i in range(d.shape[1]-1):
@@ -221,12 +221,12 @@ def get_min_slope(df):
 
     tmp=np.nanmax(d)-np.nanmin(d)
     d = (d - np.nanmin(d))/tmp
-    
+
     x=np.arange(d.shape[0])
     tmp=np.nanmax(x)-np.nanmin(x)
     x = (x - np.nanmin(x))/tmp
 
-    d=np.insert(d, 0, x, axis=1) 
+    d=np.insert(d, 0, x, axis=1)
     d=d[~np.isnan(d).any(axis=1)]
 
     for i in range(d.shape[1]-1):
@@ -246,7 +246,7 @@ def get_min_slope(df):
 
 
 def filter_inds_on_slope(df, inds, min_slope):
- 
+
     indsf=[]
     for ind in inds:
         d=df[df.index.map(lambda x: x[1]==ind)]
@@ -263,7 +263,7 @@ def filter_inds_on_slope(df, inds, min_slope):
 
 
 def filter_inds_on_maxmin(df, inds, min_maxmin):
- 
+
     indsf=[]
     for ind in inds:
         d=df[df.index.map(lambda x: x[1]==ind)]
@@ -290,8 +290,8 @@ def filter_inds_on_length(inds, max_ind, max_ind_length):
             break
     return indsf
 
-def get_random_data(economies, 
-                    max_ind=MAX_IND, 
+def get_random_data(economies,
+                    max_ind=MAX_IND,
                     max_ind_length=MAX_IND_LENGTH,
                     min_nb_data=MIN_NB_DATA,
                     min_slope=MIN_SLOPE,
@@ -309,7 +309,7 @@ def get_random_data(economies,
         print(inds)
 
     print('0 >>> inds:', len(inds))
-    
+
     inds=filter_inds_on_length(inds, max_ind=30*max_ind, max_ind_length=max_ind_length)
     print('1 >>> inds:', len(inds))
 
@@ -377,7 +377,7 @@ def plot_df(df,title, economies, index, output_dir):
     handles, _ = g2.get_legend_handles_labels()
     line = mlines.Line2D([], [], color='orange', label='Cyprus', linewidth=linewidth)
     handles.insert(0, line)
-   
+
     for h in handles:
         h.set_linewidth(linewidth)
 
@@ -396,13 +396,13 @@ def plot_df(df,title, economies, index, output_dir):
         for i, tick in enumerate(reversed(ax.xaxis.get_ticklabels())):
             if i % nbt != 0:
                 tick.set_visible(False)
-    
+
     nty=len(ax.xaxis.get_ticklabels())
     if nty>nbticks:
-        nbt = int(nty/nbticks)+1     
+        nbt = int(nty/nbticks)+1
         for i, tick in enumerate(reversed(ax.yaxis.get_ticklabels())):
             if i % nbt != 0:
-                tick.set_visible(False)          
+                tick.set_visible(False)
 
     # plot the legend
     output_png=os.path.join(output_dir, f'data_plot_{index}.png')
@@ -435,17 +435,17 @@ def narrate_df(df, title, economies, index, output_dir):
         if slope > .25:
             trend="increased"
         if slope > .5:
-            trend="increased significantly"      
+            trend="increased significantly"
         if slope < -.1:
-            trend="decreased slightly"        
+            trend="decreased slightly"
         if slope < -.25:
-            trend="decreased"     
+            trend="decreased"
         if slope < -.5:
-            trend="decreased significantly"                                 
+            trend="decreased significantly"
         return trend
 
     trend1=-1
-    trend2=-1    
+    trend2=-1
     with open(output_txt, "w") as f:
         f.write(f"Let's look at the {title}.\n")
         for c in countries_cyp:
@@ -457,17 +457,17 @@ def narrate_df(df, title, economies, index, output_dir):
         for c in countries_nocyp:
             trend2=find_trend(df, c)
 
-            liaison=random.choice(["Whereas", "Instead", "Meanwhile", "In contrast", "However"])    
+            liaison=random.choice(["Whereas", "Instead", "Meanwhile", "In contrast", "However"])
             if "increase" in trend1 and "increase" in trend2:
                 liaison=random.choice(["Likewise", "Similarly", "By the same token", "Moreover", "Furthermore"])
             if "decrease" in trend1 and "decrease" in trend2:
-                liaison=random.choice(["Likewise", "Similarly", "By the same token", "Moreover", "Furthermore"])         
+                liaison=random.choice(["Likewise", "Similarly", "By the same token", "Moreover", "Furthermore"])
 
             if ok:
                 f.write(f"{liaison}, during that same period,\n")
                 ok=False
 
-            f.write(f"The {topic} {trend2} for the {c}.\n")      
+            f.write(f"The {topic} {trend2} for the {c}.\n")
 
 
 def create_media(data, economies, output_dir=OUTPUT_DIR):
@@ -478,8 +478,8 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
 
     with open(text_file, 'w') as f:
         f.write(topic_name)
-        f.write('\n\n')        
-        f.write(topic_description) 
+        f.write('\n\n')
+        f.write(topic_description)
         f.write('\n\n')
 
     for index,  ind in enumerate(data['inds']):
@@ -498,13 +498,13 @@ if __name__ == "__main__":
         print(f'type(df)={type(df)}')
         topics=get_wb_topics()
         print(topics)
-        print(f'type(topics)={type(topics)}')    
+        print(f'type(topics)={type(topics)}')
         df = get_ecolomic_data()
         print(df)
-        print(f'type(df)={type(df)}')        
+        print(f'type(df)={type(df)}')
         inds = get_indicators(topic_nb=19)
         print(inds)
-        print(f'type(inds)={type(inds)}')           
+        print(f'type(inds)={type(inds)}')
 
 
     for i in range(10):
@@ -521,9 +521,3 @@ if __name__ == "__main__":
             continue
         create_media(data=data, economies=ECONOMIES_2, output_dir=OUTPUT_DIR)
         break
-        
-
-
-
-
-
