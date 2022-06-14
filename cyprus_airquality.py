@@ -87,7 +87,7 @@ FIGSIZE = (width / MYDPI, width * ratio / MYDPI)
 create_dir(OUTPUT_DIR)
 delete_previous_files(OUTPUT_DIR)
 
-
+date_time = None
 for p in pollutants_list:
 
     pollutant_label= p['label']
@@ -102,7 +102,7 @@ for p in pollutants_list:
     plt.rcParams['font.family'] = 'Bauhaus'
 
     m = Basemap(llcrnrlat=34.45, urcrnrlat=35.75,
-                llcrnrlon=32.2, urcrnrlon=34.82,
+                llcrnrlon=32.1, urcrnrlon=34.72,
                 epsg=4230,
                 projection='cyl',
                 resolution='c',
@@ -144,6 +144,7 @@ for p in pollutants_list:
             k=list(res['data'].keys())[-1]
             pollution=res['data'][k][pollutant_fullname]
             pollution=round(float(pollution))
+            date_time=res['data'][k]['date_time']
         except Exception as e:
             print(str(e))
 
@@ -232,6 +233,8 @@ for p in pollutants_list:
             t.set_fontsize(15)
             t.set_x(t._x-.7)
 
+
+    plt.text(0.06, 0.02,date_time, ha='center', va='center', transform=axes.transAxes)
 
     plt.savefig(os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png'), 
             bbox_inches='tight', dpi='figure',pad_inches=-.05)

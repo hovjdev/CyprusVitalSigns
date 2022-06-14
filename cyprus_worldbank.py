@@ -21,7 +21,7 @@ from tools.plot_tools import prep_plot
 
 CO2_DATA_URL ="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt"
 ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
-ECONOMIES_1 = ['GRC', 'CYP', 'WLD']
+ECONOMIES_1 = ['CYP', 'WLD']
 ECONOMIES_2 = ['CYP',  'WLD']
 SERIES = ['NY.GDP.PCAP.CD', 'SP.POP.TOTL']
 OUTPUT_DIR = 'output/cyprus_worldbank'
@@ -447,7 +447,9 @@ def narrate_df(df, title, economies, index, output_dir):
     trend1=-1
     trend2=-1
     with open(output_txt, "w") as f:
-        f.write(f"Let's look at the {title}.\n")
+        opening2=random.choice(["Let's", "Let's", "And now let's", "We will now", "We shall now"])
+        opening1=random.choice(["look at", "review", "examine"])
+        f.write(f"{opening2} {opening1} the {title}.\n")
         for c in countries_cyp:
             trend1=find_trend(df, c)
             f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c},\n")
