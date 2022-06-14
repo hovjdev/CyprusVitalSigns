@@ -1,16 +1,19 @@
 
+from asyncore import poll
 import requests
 import json
 import datetime
 import os
 import shutil
+from unidecode import unidecode
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-#mpl.use('Agg')
+mpl.use('Agg')
 
 from mpl_toolkits.basemap import Basemap
+import matplotlib.font_manager as fm
 from pytz import timezone
 
 OUTPUT_DIR = 'output/cyprus_airquality'
@@ -45,15 +48,15 @@ def delete_previous_files(path):
 
 
 pollutants_list = [
-{"code":  38, "label": "NO", "fullname" :"pollutant_38", "index":1, "color": 'lightgreen', "label_en": "Nitrogen monoxide (air)", "label_el":"Μονοξείδιο Αζώτου"},
-{"code": 8, "label": "NO₂", "fullname" :	"pollutant_8", "index":2 , "color": 'aqua', "label_en": "Nitrogen dioxide (air)", "label_el":"Διοξείδιο Αζώτου"},
-{"code": 9, "label": "NOx", "fullname" :"pollutant_9", "index":3, "color": 'violet' , "label_en": "Nitrogen oxides (air)", "label_el":"Οξείδια του Αζώτου"},
-{"code": 1, "label": "SO₂", "fullname" :"pollutant_1", "index":4, "color": 'orange' , "label_en": "Sulphur dioxide (air)", "label_el":"Διοξείδιο Θείου"},
-{"code": 7, "label": "O₃", "fullname" :"pollutant_7", "index":5, "color": 'green', "label_en": "Ozone (air)", "label_el":"Όζον"},
-{"code": 10, "label": "CO", "fullname" :"pollutant_10", "index":6, "color": 'gray' , "label_en": "Carbon monoxide (air)", "label_el":"Μονοξείδιο Άνθρακα"},
-{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter < 10 μm (aerosol)", "label_el":"Σωματίδια < 10 μm"},
-{"code": 6001, "label": "PM₂.₅", "fullname" :"pollutant_6001", "index":8 , "color": 'red', "label_en": "Particulate matter < 2.5 μm (aerosol)", "label_el":"Σωματίδια < 2.5 μm"},
-{"code": 20, "label": "C₆H₆", "fullname" :	"pollutant_20", "index":9, "color": 'magenta' , "label_en": "Benzene (air)", "label_el":"Βενζόλιο"}
+#{"code":  38, "label": "NO", "fullname" :"pollutant_38", "index":1, "color": 'lightgreen', "label_en": "Nitrogen monoxide (air)", "label_el":"Μονοξείδιο Αζώτου", levels=[-1,-1,-1]},
+#{"code": 8, "label": "NO₂", "fullname" :	"pollutant_8", "index":2 , "color": 'aqua', "label_en": "Nitrogen dioxide (air)", "label_el":"Διοξείδιο Αζώτου", levels=[-1,-1,-1]},
+#{"code": 9, "label": "NOx", "fullname" :"pollutant_9", "index":3, "color": 'violet' , "label_en": "Nitrogen oxides (air)", "label_el":"Οξείδια του Αζώτου", levels=[-1,-1,-1]},
+#{"code": 1, "label": "SO₂", "fullname" :"pollutant_1", "index":4, "color": 'orange' , "label_en": "Sulphur dioxide (air)", "label_el":"Διοξείδιο Θείου", levels=[-1,-1,-1]},
+{"code": 7, "label": "O₃", "fullname" :"pollutant_7", "index":5, "color": 'green', "label_en": "Ozone (air)", "label_el":"Όζον", "levels":[100,140,180]},
+#{"code": 10, "label": "CO", "fullname" :"pollutant_10", "index":6, "color": 'gray' , "label_en": "Carbon monoxide (air)", "label_el":"Μονοξείδιο Άνθρακα", levels=[-1,-1,-1]},
+#{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter < 10 μm (aerosol)", "label_el":"Σωματίδια < 10 μm", levels=[-1,-1,-1]},
+{"code": 6001, "label": "PM₂.₅", "fullname" :"pollutant_6001", "index":8 , "color": 'red', "label_en": "Particulate matter < 2.5 μm (aerosol)", "label_el":"Σωματίδια < 2.5 μm", "levels":[25,50,100]},
+#{"code": 20, "label": "C₆H₆", "fullname" :	"pollutant_20", "index":9, "color": 'magenta' , "label_en": "Benzene (air)", "label_el":"Βενζόλιο", levels=[-1,-1,-1]}
 ]
 
 
@@ -78,98 +81,110 @@ width = 1660.0
 MYDPI = float(plt.gcf().get_dpi())
 FIGSIZE = (width / MYDPI, width * ratio / MYDPI)
 
-plt.figure(figsize=FIGSIZE, dpi=MYDPI)
-
-m = Basemap(llcrnrlat=34.5, urcrnrlat=35.8,
-            llcrnrlon=32.2, urcrnrlon=34.6,
-            epsg=4230,
-            projection='cyl',
-            resolution='c' )
-
-
-m.drawcoastlines(color='#6D5F47', linewidth=.4)
-m.drawcountries(color='#6D5F47', linewidth=.4)
-
-m.drawmeridians(np.arange(-180, 180, 10), color='#bbbbbb')
-m.drawparallels(np.arange(-90, 90, 10), color='#bbbbbb')
-m.arcgisimage(
-    server='https://server.arcgisonline.com/arcgis',
-    service='World_Shaded_Relief', xpixels = 3500, dpi=500, verbose= True)
-#m.bluemarble(scale=8)
-#m.etopo(scale=10, alpha=0.5)
-
-tz = timezone('EET')
-now =datetime.datetime.now(tz)
-ytd = now - datetime.timedelta(days=1)
-
-
-for s in stations_list:
-	lat=s['lat']
-	lon=s['long']
-	code = s['code']
-	label=s['label_en']
-	label = label.split(' ')[0]
-	x, y = m(lon, lat)
-
-	url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
-	print(url)
-	res = requests.get(url)
-	res = res.json()
-	print(res)
-
-	pollution=''
-	try:
-		k=list(res['data'].keys())[-1]
-		pollution=res['data'][k]['pollutant_6001']
-		pollution=round(float(pollution))
-	except Exception as e:
-		print(str(e))
-
-
-	if not pollution:
-		continue
-
-	text = f"{label}"
-
-	plt.plot(x, y, marker="o", color="grey")
-
-	plt.text(
-	        x,
-	        y-.01,
-	        text,
-	        color='black',
-	        fontsize=20,
-	        horizontalalignment='center',
-	        verticalalignment='top',
-	        zorder=6,
-	    )
-
-	fp=float(pollution)
-	if fp> 0:
-		color="green"
-	if fp> 25:
-		color="orange"
-	if fp> 50:
-		color="red"
-	if fp> 100:
-		color="purple"
-
-	plt.text(
-	        x,
-	        y+.01,
-	        pollution,
-	        color=color,
-	        fontsize=40,
-	        horizontalalignment='center',
-	        verticalalignment='bottom',
-	        zorder=6,
-			weight="bold"
-	    )
-	plt.title("Air Quality in Cyprus: PM 2.5", fontsize = 40)
-
-
-
 
 create_dir(OUTPUT_DIR)
 delete_previous_files(OUTPUT_DIR)
-plt.savefig(os.path.join(OUTPUT_DIR, 'airquality.png'))
+
+
+for p in pollutants_list:
+
+    pollutant_label= p['label']
+    pollutant_label=unidecode(pollutant_label)
+    pollutant_code= p['code']
+    pollutant_fullname=p['fullname']
+    pollutant_levels=p["levels"]
+
+    plt.figure(figsize=FIGSIZE, dpi=MYDPI)
+    fm.fontManager.addfont("input/fonts/bauhaus/BauhausRegular.ttf")
+    plt.rcParams['font.family'] = 'Bauhaus'
+
+    m = Basemap(llcrnrlat=34.5, urcrnrlat=35.8,
+                llcrnrlon=32.2, urcrnrlon=34.6,
+                epsg=4230,
+                projection='cyl',
+                resolution='c' )
+
+
+    m.drawcoastlines(color='#6D5F47', linewidth=.4)
+    m.drawcountries(color='#6D5F47', linewidth=.4)
+
+    m.drawmeridians(np.arange(-180, 180, 10), color='#bbbbbb')
+    m.drawparallels(np.arange(-90, 90, 10), color='#bbbbbb')
+    m.arcgisimage(
+        server='https://server.arcgisonline.com/arcgis',
+        service='World_Shaded_Relief', xpixels = 3500, dpi=500, verbose= True)
+    #m.bluemarble(scale=8)
+    #m.etopo(scale=10, alpha=0.5)
+
+    tz = timezone('EET')
+    now =datetime.datetime.now(tz)
+    ytd = now - datetime.timedelta(days=1)
+
+
+    for s in stations_list:
+        lat=s['lat']
+        lon=s['long']
+        code = s['code']
+        label_en=s['label_en']
+        label_en = label_en.split(' ')[0]  
+        x, y = m(lon, lat)
+
+        url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
+        print(url)
+        res = requests.get(url)
+        res = res.json()
+        print(res)
+
+        pollution=''
+        try:
+            k=list(res['data'].keys())[-1]
+            pollution=res['data'][k][pollutant_fullname]
+            pollution=round(float(pollution))
+        except Exception as e:
+            print(str(e))
+
+
+        if not pollution:
+            continue
+
+        text = f"{label_en}"
+
+        plt.plot(x, y, marker="o", color="grey")
+
+        plt.text(
+                x,
+                y-.01,
+                text,
+                color='black',
+                fontsize=20,
+                horizontalalignment='center',
+                verticalalignment='top',
+                zorder=6,
+            )
+
+        fp=float(pollution)
+        if fp> 0:
+            color="green"
+        if fp> pollutant_levels[0]:
+            color="orange"
+        if fp> pollutant_levels[1]:
+            color="red"
+        if fp> pollutant_levels[2]:
+            color="purple"
+
+        plt.text(
+                x,
+                y+.01,
+                pollution,
+                color=color,
+                fontsize=40,
+                horizontalalignment='center',
+                verticalalignment='bottom',
+                zorder=6,
+                weight="bold"
+            )
+
+        plt.title(f"Air Quality in Cyprus: {pollutant_label}", fontsize = 40, y=1.0, pad=-45)
+
+    plt.savefig(os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png'), 
+            bbox_inches='tight', dpi='figure',pad_inches=-.05)
