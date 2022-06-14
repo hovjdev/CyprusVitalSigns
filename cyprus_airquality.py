@@ -230,7 +230,7 @@ for p in pollutants_list:
         if i%2 == 0:
             t.set_rotation(90)
             t.set_fontsize(15)
-            t.set_x(t._x-.8)
+            t.set_x(t._x-.7)
 
 
     plt.savefig(os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png'), 
