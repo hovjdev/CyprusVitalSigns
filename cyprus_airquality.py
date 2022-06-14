@@ -56,8 +56,8 @@ pollutants_list = [
 #{"code": 1, "label": "SO₂", "fullname" :"pollutant_1", "index":4, "color": 'orange' , "label_en": "Sulphur dioxide (air)", "label_el":"Διοξείδιο Θείου", "levels":[-1,-1,-1]},
 {"code": 7, "label": "O₃", "fullname" :"pollutant_7", "index":5, "color": 'green', "label_en": "Ozone (air)", "label_el":"Όζον", "levels":[100,140,180]},
 {"code": 10, "label": "CO", "fullname" :"pollutant_10", "index":6, "color": 'gray' , "label_en": "Carbon monoxide (air)", "label_el":"Μονοξείδιο Άνθρακα", "levels":[7000,15000,20000]},
-#{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter < 10 μm (aerosol)", "label_el":"Σωματίδια < 10 μm", "levels":[-1,-1,-1]},
-{"code": 6001, "label": "PM₂.₅", "fullname" :"pollutant_6001", "index":8 , "color": 'red', "label_en": "Particulate matter < 2.5 μm (aerosol)", "label_el":"Σωματίδια < 2.5 μm", "levels":[25,50,100]},
+#{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter less than 10 microns (aerosol)", "label_el":"Σωματίδια < 10 μm", "levels":[-1,-1,-1]},
+{"code": 6001, "label": "PM₂.₅", "fullname" :"pollutant_6001", "index":8 , "color": 'red', "label_en": "Particulate matter less than 2.5 microns (aerosol)", "label_el":"Σωματίδια < 2.5 μm", "levels":[25,50,100]},
 #{"code": 20, "label": "C₆H₆", "fullname" :	"pollutant_20", "index":9, "color": 'magenta' , "label_en": "Benzene (air)", "label_el":"Βενζόλιο", "levels":[-1,-1,-1]}
 ]
 
@@ -124,6 +124,7 @@ for p in pollutants_list:
     now =datetime.datetime.now(tz)
     ytd = now - datetime.timedelta(days=1)
 
+    air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
 
     for s in stations_list:
         lat=s['lat']
@@ -170,12 +171,16 @@ for p in pollutants_list:
         fp=float(pollution)
         if fp> 0:
             color="green"
+            air_quality['good'].append(label_en)
         if fp> pollutant_levels[0]:
             color="orange"
+            air_quality['moderate'].append(label_en)
         if fp> pollutant_levels[1]:
             color="red"
+            air_quality['unhealthy'].append(label_en)
         if fp> pollutant_levels[2]:
             color="purple"
+            air_quality['toxic'].append(label_en)
 
         plt.text(
                 x,
@@ -192,10 +197,7 @@ for p in pollutants_list:
         plt.title(f"Air Quality in Cyprus: {pollutant_label}", fontsize = 30, y=1.0, pad=-45)
 
 
-
-
-
-    cmap = mpl.colors.ListedColormap(['green', 'green', 'orange', 'orange', 'red', 'red', 'purple'])
+    cmap = mpl.colors.ListedColormap(['green', 'green', 'orange', 'orange', 'red', 'red', 'purple', 'purple'])
     bounds = [0, 
               pollutant_levels[0]/2, 
               pollutant_levels[0] , 
@@ -203,14 +205,16 @@ for p in pollutants_list:
               pollutant_levels[1],
               (pollutant_levels[1]+pollutant_levels[2])/2,
               pollutant_levels[2],
-              pollutant_levels[2]*1.2]
+              (pollutant_levels[2]+pollutant_levels[2]*1.4)/2,
+              pollutant_levels[2]*1.3]
     labels = [ 
               "Good",
               pollutant_levels[0] , 
               "Moderate",
               pollutant_levels[1],
               "Unhealthy",  
-              pollutant_levels[2]]              
+              pollutant_levels[2],
+              "Toxic"]              
     ticks = bounds[1:-1]
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
@@ -236,7 +240,17 @@ for p in pollutants_list:
 
     plt.text(0.06, 0.02,date_time, ha='center', va='center', transform=axes.transAxes)
 
-    plt.savefig(os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png'), 
-            bbox_inches='tight', dpi='figure',pad_inches=-.05)
 
+    png_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png')
+    plt.savefig(png_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
+
+
+    text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
     
+    with open(text_file, "w") as f:
+        aqi = max(0, len(air_quality['good']))
+        aqi = max(0, len(air_quality['moderate']))
+        aqi = max(0, len(air_quality['unhealthy']))
+        aqi = max(0, len(air_quality['toxic']))
+
+        f.write("Air quality in cyprys is mostly good.")
