@@ -102,7 +102,7 @@ for p in pollutants_list:
     plt.rcParams['font.family'] = 'Bauhaus'
 
     m = Basemap(llcrnrlat=34.45, urcrnrlat=35.75,
-                llcrnrlon=32, urcrnrlon=34.62,
+                llcrnrlon=32.2, urcrnrlon=34.82,
                 epsg=4230,
                 projection='cyl',
                 resolution='c',
