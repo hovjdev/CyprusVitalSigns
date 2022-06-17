@@ -86,6 +86,7 @@ if __name__ == "__main__":
         pollutant_label=unidecode(pollutant_label)
         pollutant_code= p['code']
         pollutant_fullname=p['fullname']
+        pollutant_label_en=p['label_en'].split("(")[0]
         pollutant_levels=p["levels"]
 
         #figure = plt.figure(figsize=FIGSIZE, dpi=MYDPI)
@@ -237,12 +238,16 @@ if __name__ == "__main__":
         plt.savefig(png_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
 
 
-        text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
-        
-        with open(text_file, "w") as f:
-            aqi = max(0, len(air_quality['good']))
-            aqi = max(0, len(air_quality['moderate']))
-            aqi = max(0, len(air_quality['unhealthy']))
-            aqi = max(0, len(air_quality['toxic']))
+        tmp = []
+        for a in air_quality:
+            tmp.append({'quality':a, 'locations':air_quality[a]})
+        tmp = sorted(tmp, key=lambda d: len(d['locations']), reverse=True)
 
-            f.write("Air quality in cyprys is mostly good.")
+
+        text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
+        with open(text_file, "w") as f:
+            for t in tmp:
+                if len(t['locations'])>0:
+                    locations = ', '.join(t['locations'])
+                    f.write(f"{pollutant_label_en} levels are {t['quality']} in {locations}\n")
+
