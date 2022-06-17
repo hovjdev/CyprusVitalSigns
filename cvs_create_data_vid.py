@@ -17,8 +17,8 @@ data_items = {
 for d in data_items:
     folder = d
     script = data_items[d]['script']
-    OUTPUT_DIR_AIRQ= os.path.join(OUTPUT_DIR, folder)
-    cmd = f'python  {script} -o {OUTPUT_DIR_AIRQ}'
+    OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
+    cmd = f'python  {script} -o {OUTPUT_DIR_D}'
     print(cmd)
     os.system(cmd)
 
