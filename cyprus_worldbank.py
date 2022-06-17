@@ -1,3 +1,4 @@
+import argparse
 import os
 import re
 import copy
@@ -18,6 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
 from tools.plot_tools import prep_plot
+from tools.file_utils import create_dir, delete_previous_files
 
 CO2_DATA_URL ="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt"
 ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
@@ -48,32 +50,6 @@ def get_wb_topics():
 def get_ecolomic_data(series=SERIES, economies=ECONOMIES_1):
     df = wb.data.DataFrame(series, economies)
     return df
-
-def create_dir(path):
-    created=False
-    try:
-        if not os.path.isdir(path):
-            os.mkdir(path)
-            created=True
-    except Exception as e:
-        print(str(e))
-    return created
-
-def delete_previous_files(path):
-    try:
-        if os.path.isdir(path):
-            for filename in os.listdir(path):
-                file_path = os.path.join(path, filename)
-                try:
-                    if os.path.isfile(file_path) or os.path.islink(file_path):
-                        os.unlink(file_path)
-                    elif os.path.isdir(file_path):
-                        shutil.rmtree(file_path)
-                except Exception as e:
-                    print(f'Failed to delete {file_path}. Reason: {str(e)}')
-    except Exception as e:
-        print(str(e))
-    return
 
 def get_random_topic():
     topics=get_wb_topics()
@@ -493,6 +469,22 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
     return
 
 if __name__ == "__main__":
+
+    # Initialize parser
+    parser = argparse.ArgumentParser()
+    
+    # Adding optional argument
+    parser.add_argument("-o", "--output", help = "Provide path to output forlder")
+    
+    # Read arguments from command line
+    args = parser.parse_args()
+    
+    if args.output:
+        OUTPUT_DIR=args.output
+    
+    print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
+
+
 
     if DEBUG:
         df = get_co2_data()
