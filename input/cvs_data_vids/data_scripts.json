@@ -1,0 +1,8 @@
+{
+  "airq": {
+    "script": "cyprus_airquality.py"
+  },
+  "wrbk": {
+    "script": "cyprus_worldbank.py"
+  }
+}

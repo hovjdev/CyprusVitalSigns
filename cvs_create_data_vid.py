@@ -1,20 +1,36 @@
 import os
+import json
 import uuid
 import shutil
 from pathlib import Path
 from tools.file_utils import create_dir, delete_previous_files
 
+INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
 id=uuid.uuid4().hex
 
 OUTPUT_DIR = os.path.join(OUTPUT_DIR, id)
 create_dir(OUTPUT_DIR)
+create_dir(INPUT_DIR)
 
 
+json_file = os.path.join(INPUT_DIR, 'data_scripts.json')
+
+data_items=None
+'''
 data_items = {
     "airq" : {"script": "cyprus_airquality.py" },
     "wrbk" : {"script": "cyprus_worldbank.py" },
 }
+
+with open(json_file, 'w+') as f:
+    json.dump(data_items, f, indent=2)
+'''
+
+with open(json_file) as f:
+    data = f.read()
+    print(data)
+    data_items = json.loads(data)
 
 
 def enhance_images(dir_path):
@@ -44,9 +60,9 @@ def enhance_images(dir_path):
             shutil.copyfile(images[i+1], os.path.join(files_path, "image2.png"))
             if has_data:
                 shutil.copyfile(data_files[i], os.path.join(files_path, "data.npy"))
-                print(f">>>>>>>> {images[i]}, {data_files[i]}")
+                #print(f">>>>>>>> {images[i]}, {data_files[i]}")
             else:
-                print(f">>>>>>>> {images[i]}")
+                #print(f">>>>>>>> {images[i]}")
                 os.remove(os.path.join(files_path, "data.npy"))
 
         except:
