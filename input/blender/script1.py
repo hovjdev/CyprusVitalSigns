@@ -6,6 +6,11 @@ import numpy as np
 import bpy
 from mathutils import Vector
 
+
+bpy.context.scene.render.resolution_percentage = 300
+
+
+
 DATA_FILE = os.path.join(os.path.dirname(bpy.data.filepath), "files", "data.npy")
 X=None
 
@@ -61,12 +66,22 @@ def create_curve(X, bevel_depth=0.05,
 curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.005,
         material_name="Material_neon_inside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
-curve.scale[0] = 30 / (x_max-x_min)
-curve.scale[2] = 6 / (z_max-z_min)
-curve.location[0] = -12
-curve.location[1] = 4
-curve.location[2] = 3
-curve.rotation_euler[2] = 1
+
+width=20
+height=6
+depth=3
+
+rotation_0=-np.pi/2
+rotation_1=0
+rotation_2=0
+curve.scale[0] = width / (x_max-x_min)
+curve.scale[2] = height / (z_max-z_min)
+curve.location[0] = -width/2
+curve.location[1] = depth
+curve.location[2] = 0
+curve.rotation_euler[0] = rotation_0
+curve.rotation_euler[1] = rotation_1
+curve.rotation_euler[2] = rotation_2
 curve.select_set(True)
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
@@ -74,11 +89,13 @@ bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.01,
         material_name="Material_neon_outside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
-curve.scale[0] = 30 / (x_max-x_min)
-curve.scale[2] = 6 / (z_max-z_min)
-curve.location[0] = -12
-curve.location[1] = 4
-curve.location[2] =3
-curve.rotation_euler[2] = 1
+curve.scale[0] = width / (x_max-x_min)
+curve.scale[2] = height / (z_max-z_min)
+curve.location[0] = -width/2
+curve.location[1] = depth
+curve.location[2] = 0
+curve.rotation_euler[0] = rotation_0
+curve.rotation_euler[1] = rotation_1
+curve.rotation_euler[2] = rotation_2
 curve.select_set(True)
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
