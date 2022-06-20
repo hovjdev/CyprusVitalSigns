@@ -380,10 +380,15 @@ def plot_df(df,title, economies, index, output_dir):
             if i % nbt != 0:
                 tick.set_visible(False)
 
-    # plot the legend
+    # save plot
     output_png=os.path.join(output_dir, f'data_plot_{index}.png')
-
     plt.savefig(output_png, format='png', dpi=600)
+
+    # save data
+    output_data=os.path.join(output_dir, f'data_{index}.npy')
+    with open(output_data, 'wb') as f:
+        np.save(f, df[countries_cyp].to_numpy())
+
     show=False
     if show:
         plt.show()
@@ -472,16 +477,16 @@ if __name__ == "__main__":
 
     # Initialize parser
     parser = argparse.ArgumentParser()
-    
+
     # Adding optional argument
     parser.add_argument("-o", "--output", help = "Provide path to output forlder")
-    
+
     # Read arguments from command line
     args = parser.parse_args()
-    
+
     if args.output:
         OUTPUT_DIR=args.output
-    
+
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
 
