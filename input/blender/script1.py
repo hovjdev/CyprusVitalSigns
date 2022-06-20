@@ -61,12 +61,12 @@ def create_curve(X, bevel_depth=0.05,
 curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.005,
         material_name="Material_neon_inside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
-curve.scale[0] = 60 / (x_max-x_min)
-curve.scale[2] = 10 / (z_max-z_min)
+curve.scale[0] = 30 / (x_max-x_min)
+curve.scale[2] = 6 / (z_max-z_min)
 curve.location[0] = -12
 curve.location[1] = 4
-curve.location[2] = 5
-curve.rotation_euler[2] = .5
+curve.location[2] = 3
+curve.rotation_euler[2] = 1
 curve.select_set(True)
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
@@ -74,11 +74,11 @@ bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.01,
         material_name="Material_neon_outside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
-curve.scale[0] = 60 / (x_max-x_min)
-curve.scale[2] = 10 / (z_max-z_min)
+curve.scale[0] = 30 / (x_max-x_min)
+curve.scale[2] = 6 / (z_max-z_min)
 curve.location[0] = -12
 curve.location[1] = 4
-curve.location[2] =5
-curve.rotation_euler[2] = .5
+curve.location[2] =3
+curve.rotation_euler[2] = 1
 curve.select_set(True)
 bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)

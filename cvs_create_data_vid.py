@@ -21,6 +21,9 @@ def enhance_images(dir_path):
     images = list(Path(dir_path).glob("*.png"))
     data_files = list(Path(dir_path).glob("*.npy"))
 
+    images.sort()
+    data_files.sort()
+
     has_data=False
     if data_files and len(data_files) == len(images):
         has_data=True
@@ -35,12 +38,15 @@ def enhance_images(dir_path):
     create_dir(files_path)
 
     for i in range(len(images)-1):
+
         try:
             shutil.copyfile(images[i], os.path.join(files_path, "image1.png"))
             shutil.copyfile(images[i+1], os.path.join(files_path, "image2.png"))
             if has_data:
                 shutil.copyfile(data_files[i], os.path.join(files_path, "data.npy"))
+                print(f">>>>>>>> {images[i]}, {data_files[i]}")
             else:
+                print(f">>>>>>>> {images[i]}")
                 os.remove(os.path.join(files_path, "data.npy"))
 
         except:
