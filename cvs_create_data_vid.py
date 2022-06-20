@@ -52,7 +52,7 @@ def enhance_images(dir_path):
         except:
             pass
 
-        output_image = os.path.join(dir_path, f"frame_{i}.png")
+        output_image = os.path.join(dir_path, f"frame_{i}_####.png")
         cmd = f'python  enhance_image_with_blender.py -o {output_image}'
         print(cmd)
         os.system(cmd)
