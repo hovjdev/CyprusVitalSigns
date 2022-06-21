@@ -3,34 +3,45 @@ import json
 import uuid
 import shutil
 from pathlib import Path
+from PIL import Image
 from tools.file_utils import create_dir, delete_previous_files
 
 INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
-id=uuid.uuid4().hex
-
-OUTPUT_DIR = os.path.join(OUTPUT_DIR, id)
-create_dir(OUTPUT_DIR)
-create_dir(INPUT_DIR)
 
 
-json_file = os.path.join(INPUT_DIR, 'data_scripts.json')
 
-data_items=None
-'''
-data_items = {
-    "airq" : {"script": "cyprus_airquality.py" },
-    "wrbk" : {"script": "cyprus_worldbank.py" },
-}
+def create_texture_image(dir_path):
+    output_image = os.path.join(dir_path, f"texture_####.png")
+    cmd = f'python  create_texture.py -o {output_image}'
+    print(cmd)
+    os.system(cmd)
 
-with open(json_file, 'w+') as f:
-    json.dump(data_items, f, indent=2)
-'''
+    try:
+        output_image = os.path.join(dir_path, f"texture_0001.png")
+        assert os.path.exists(output_image)
+        return output_image
+    except Exception as e:
+        print(str(e))
 
-with open(json_file) as f:
-    data = f.read()
-    print(data)
-    data_items = json.loads(data)
+    return None
+
+def combine_frames_and_texture_images(dir_path):
+    images = list(Path(dir_path).glob("frame*.png"))
+    texture = list(Path(dir_path).glob("texture*.png"))
+
+    try:
+        assert len(texture) == 1
+        assert len(images)>0
+    except Exception as e:
+        print(str(e))
+        return
+    for im in images:
+        background = Image.open(texture[0])
+        foreground = Image.open(im)
+
+        background.paste(foreground, (0, 0), foreground)
+        background.save(im)
 
 
 def enhance_images(dir_path):
@@ -74,13 +85,49 @@ def enhance_images(dir_path):
         os.system(cmd)
 
 
-for d in data_items:
-    folder = d
-    script = data_items[d]['script']
-    OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
-    cmd = f'python  {script} -o {OUTPUT_DIR_D}'
-    print(cmd)
-    os.system(cmd)
+def get_script_items():
+    json_file = os.path.join(INPUT_DIR, 'data_scripts.json')
+
+    script_items=None
+    '''
+    script_items = {
+        "airq" : {"script": "cyprus_airquality.py" },
+        "wrbk" : {"script": "cyprus_worldbank.py" },
+    }
+
+    with open(json_file, 'w+') as f:
+        json.dump(script_items, f, indent=2)
+    '''
+
+    with open(json_file) as f:
+        data = f.read()
+        print(data)
+        script_items = json.loads(data)
+
+    return script_items
 
 
-    enhance_images(OUTPUT_DIR_D)
+
+if __name__ == "__main__":
+
+    id=uuid.uuid4().hex
+
+    OUTPUT_DIR = os.path.join(OUTPUT_DIR, id)
+    create_dir(OUTPUT_DIR)
+    create_dir(INPUT_DIR)
+
+
+    script_items = get_script_items()
+
+    for d in script_items:
+        folder = d
+        script = script_items[d]['script']
+        OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
+        cmd = f'python  {script} -o {OUTPUT_DIR_D}'
+        print(cmd)
+        os.system(cmd)
+
+
+        enhance_images(OUTPUT_DIR_D)
+        texture_image = create_texture_image(OUTPUT_DIR_D)
+        combine_frames_and_texture_images(OUTPUT_DIR_D)
