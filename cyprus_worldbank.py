@@ -396,10 +396,9 @@ def plot_df(df,title, economies, index, output_dir):
     plt.clf()
 
 
-def narrate_df(df, title, economies, index, output_dir):
+def narrate_df(df, title, economies, output_txt_file):
 
     df, countries_nocyp, countries_cyp=pref_df(df, economies)
-    output_txt=os.path.join(output_dir, f'data_text_{index}.txt')
 
     df_nonan=df[~np.isnan(df).any(axis=1)]
     df = df.interpolate(method='linear', axis=0, limit_direction='both')
@@ -427,7 +426,7 @@ def narrate_df(df, title, economies, index, output_dir):
 
     trend1=-1
     trend2=-1
-    with open(output_txt, "w") as f:
+    with open(output_txt_file, "a") as f:
         opening2=random.choice(["Let's", "Let's", "And now let's", "We will now", "We shall now"])
         opening1=random.choice(["look at", "review", "examine"])
         f.write(f"{opening2} {opening1} the {title}.\n")
@@ -459,17 +458,27 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
     topic_description=data['topic']['sourceNote']
     text_file = os.path.join(OUTPUT_DIR, 'notes.txt')
 
-    with open(text_file, 'w') as f:
+    '''with open(text_file, 'w') as f:
         f.write(topic_name)
         f.write('\n\n')
         f.write(topic_description)
-        f.write('\n\n')
+        f.write('\n\n')'''
+
+    topic_description = topic_description.split(". ")
 
     for index,  ind in enumerate(data['inds']):
+        
         title=get_title(ind)
         df=wb.data.DataFrame(ind, economies)
         plot_df(df,title, economies, index, output_dir)
-        narrate_df(df,title, economies, index, output_dir)
+
+        output_txt_file=os.path.join(output_dir, f'data_text_{index}.txt')
+
+        with open(output_txt_file, "w") as f:
+            if index < len(topic_description):
+                f.write(topic_description[index])
+
+        narrate_df(df,title, economies, output_txt_file)
 
     return
 

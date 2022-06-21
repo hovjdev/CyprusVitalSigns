@@ -1,3 +1,4 @@
+from distutils import text_file
 import os
 import json
 import uuid
@@ -5,6 +6,7 @@ import shutil
 from pathlib import Path
 from PIL import Image
 from tools.file_utils import create_dir, delete_previous_files
+from cvs_text_to_audio import textfile_to_mp3
 
 INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
@@ -106,6 +108,16 @@ def get_script_items():
 
     return script_items
 
+def create_mp3_files(dir_path):
+    text_files = list(Path(dir_path).glob("*.txt"))
+    text_files.sort()
+
+    for t in text_files:
+        t=str(t)
+        assert t[-4:]=='.txt'
+        mp3_file = t[:-4]+'.mp3'
+        textfile_to_mp3(t, mp3_file)
+
 
 
 if __name__ == "__main__":
@@ -128,6 +140,14 @@ if __name__ == "__main__":
         os.system(cmd)
 
 
+        print(f'>>>> enhance_images({OUTPUT_DIR_D})')
         enhance_images(OUTPUT_DIR_D)
-        texture_image = create_texture_image(OUTPUT_DIR_D)
+
+        print(f'>>>> create_texture_image({OUTPUT_DIR_D})')
+        create_texture_image(OUTPUT_DIR_D)
+
+        print(f'>>>> combine_frames_and_texture_images({OUTPUT_DIR_D})')
         combine_frames_and_texture_images(OUTPUT_DIR_D)
+
+        print(f'>>>> create_mp3_files({OUTPUT_DIR_D})')
+        create_mp3_files(OUTPUT_DIR_D)

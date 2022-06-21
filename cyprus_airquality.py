@@ -162,16 +162,16 @@ if __name__ == "__main__":
                 )
 
             fp=float(pollution)
-            if fp> 0:
+            if fp>= 0 and fp <pollutant_levels[0]:
                 color="green"
                 air_quality['good'].append(label_en)
-            if fp> pollutant_levels[0]:
+            if fp>= pollutant_levels[0] and fp < pollutant_levels[1]:
                 color="orange"
                 air_quality['moderate'].append(label_en)
-            if fp> pollutant_levels[1]:
+            if fp>= pollutant_levels[1] and fp < pollutant_levels[2]:
                 color="red"
                 air_quality['unhealthy'].append(label_en)
-            if fp> pollutant_levels[2]:
+            if fp>= pollutant_levels[2]:
                 color="purple"
                 air_quality['toxic'].append(label_en)
 

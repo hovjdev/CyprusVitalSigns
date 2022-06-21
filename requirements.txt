@@ -12,3 +12,5 @@ wbgapi
 basemap
 unidecode
 xlrd
+gTTS
+pydub
