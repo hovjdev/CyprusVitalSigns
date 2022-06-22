@@ -7,6 +7,7 @@ from pathlib import Path
 from PIL import Image
 from tools.file_utils import create_dir, delete_previous_files
 from cvs_text_to_audio import textfile_to_mp3
+from cvs_vid_tools import create_vid_files
 
 INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
@@ -151,3 +152,9 @@ if __name__ == "__main__":
 
         print(f'>>>> create_mp3_files({OUTPUT_DIR_D})')
         create_mp3_files(OUTPUT_DIR_D)
+
+        print(f'>>>> create_vid_files({OUTPUT_DIR_D})')
+        create_vid_files(OUTPUT_DIR_D)
+        exit(1)
+
+   

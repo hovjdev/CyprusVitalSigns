@@ -464,7 +464,8 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
         f.write(topic_description)
         f.write('\n\n')'''
 
-    topic_description = topic_description.split(". ")
+    topic_description = topic_description.replace(". ", ".. ")    
+    topic_description= re.split(r'\. |\n', topic_description)
 
     for index,  ind in enumerate(data['inds']):
         
@@ -474,10 +475,12 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
 
         output_txt_file=os.path.join(output_dir, f'data_text_{index}.txt')
 
+        # narrate topic
         with open(output_txt_file, "w") as f:
             if index < len(topic_description):
                 f.write(topic_description[index])
 
+        # narrate data
         narrate_df(df,title, economies, output_txt_file)
 
     return
@@ -497,7 +500,6 @@ if __name__ == "__main__":
         OUTPUT_DIR=args.output
 
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
-
 
 
     if DEBUG:
