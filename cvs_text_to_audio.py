@@ -5,22 +5,22 @@ from pydub import AudioSegment
 from gtts import gTTS
 
 
-def textfile_to_mp3(text_file, output_mp3_file):
+def textfile_to_wav(text_file, output_wav_file):
 
     with open(text_file, 'r') as f:
         text = f.read()
-        text_to_speach(text, output_mp3_file)
+        text_to_speach(text, output_wav_file)
         
     return
 
-def text_to_speach(text, output_mp3_file):
+def text_to_speach(text, output_wav_file):
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         text = text.replace(". ", ".. ")
         text = text.replace(", ", ",, ")
         text_list= re.split(r', |\. |\n', text)
 
-        mp3_files = []
+        wav_files = []
         for i, t in enumerate(text_list):
             print(f'>>> gTTS({t})')
             tts=None
@@ -34,28 +34,42 @@ def text_to_speach(text, output_mp3_file):
             tmp = '0'*(4-len(str(i)))+str(i)+'.mp3'
             tmp = os.path.join(tmpdirname, tmp)
             tts.save(tmp)
-            mp3_files.append(tmp)
+
+            audio = AudioSegment.from_mp3(tmp)
+            tmp = '0'*(4-len(str(i)))+str(i)+'.wav'
+            audio.export(tmp, format="wav")
+
+            wav_files.append(tmp)
 
 
-        combine_mp3_files(mp3_files, output_mp3_file)
+        combine_wav_files(wav_files, output_wav_file)
 
 
-def combine_mp3_files(mp3_files, output_mp3_file, silence_duration_ms=300):
-        combined_audio=None
+def combine_wav_files(wav_files, output_wav_file, silence_duration_ms=300):
+       
+        combined_audio=None 
         silence=None
+
         if silence_duration_ms>0:
             silence = AudioSegment.silent(duration=silence_duration_ms) 
+            combined_audio = AudioSegment.silent(duration=silence_duration_ms) 
 
-        for m in mp3_files:
-            m = AudioSegment.from_file(m, "mp3")
+        for m in wav_files:
+            m = AudioSegment.from_file(m)
+
             if combined_audio is None:
                 combined_audio=m
             else:
                 combined_audio = combined_audio+m
-                
+
             if silence:
                 combined_audio=combined_audio+silence
 
-        combined_audio.export(output_mp3_file, format="mp3")
+        if silence:
+            for i in range(5):
+                combined_audio=combined_audio+silence
+
+        combined_audio.export(output_wav_file, format="wav")
+
         return
 

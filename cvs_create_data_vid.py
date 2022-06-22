@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from PIL import Image
 from tools.file_utils import create_dir, delete_previous_files
-from cvs_text_to_audio import textfile_to_mp3
+from cvs_text_to_audio import textfile_to_wav
 from cvs_vid_tools import create_vid_files
 
 INPUT_DIR = 'input/cvs_data_vids'
@@ -60,8 +60,8 @@ def enhance_images(dir_path):
 
     if len(images) == 0:
         return
-    if len(images) % 2 != 0:
-        images.append(images[0])
+
+    images.append(images[0])
 
     files_path = os.path.join('input', 'blender', 'files')
     delete_previous_files(files_path)
@@ -109,15 +109,15 @@ def get_script_items():
 
     return script_items
 
-def create_mp3_files(dir_path):
+def create_wav_files(dir_path):
     text_files = list(Path(dir_path).glob("*.txt"))
     text_files.sort()
 
     for t in text_files:
         t=str(t)
         assert t[-4:]=='.txt'
-        mp3_file = t[:-4]+'.mp3'
-        textfile_to_mp3(t, mp3_file)
+        wav_file = t[:-4]+'.wav'
+        textfile_to_wav(t, wav_file)
 
 
 
@@ -150,8 +150,8 @@ if __name__ == "__main__":
         print(f'>>>> combine_frames_and_texture_images({OUTPUT_DIR_D})')
         combine_frames_and_texture_images(OUTPUT_DIR_D)
 
-        print(f'>>>> create_mp3_files({OUTPUT_DIR_D})')
-        create_mp3_files(OUTPUT_DIR_D)
+        print(f'>>>> create_wav_files({OUTPUT_DIR_D})')
+        create_wav_files(OUTPUT_DIR_D)
 
         print(f'>>>> create_vid_files({OUTPUT_DIR_D})')
         create_vid_files(OUTPUT_DIR_D)
