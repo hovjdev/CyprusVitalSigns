@@ -6,7 +6,7 @@ from PIL import Image
 
 from cvs_text_to_audio import combine_wav_files
 
-def create_vid_files(dir_path):
+def create_vid_file(dir_path):
 
     current_dir = Path(__file__).parent.absolute()
 
@@ -27,7 +27,6 @@ def create_vid_files(dir_path):
         print(str(e))
         return
 
-    scale=None
     ffmpeg_input_png_file = os.path.join(dir_path, "ffmpeg_input_png_file.txt")
 
     with open(ffmpeg_input_png_file, "w") as f:
@@ -46,9 +45,6 @@ def create_vid_files(dir_path):
             
             f.write(f"outpoint {outpoint}\n\n")
 
-            im = Image.open(image_file)
-            scale=str(im.size[0])+"x"+str(im.size[1])
-
         image_file=os.path.join(current_dir, str(image_files[-1]))
         f.write(f"file '{image_file}'\n")
         f.write(f"outpoint {.1}\n\n")
@@ -65,13 +61,42 @@ def create_vid_files(dir_path):
     output_audio_file = os.path.join(current_dir, dir_path, "audio.wav")
     combine_wav_files(audio_files, output_audio_file, silence_duration_ms=0)
 
-
+    # add audio to video
     output_video_with_audio_file = os.path.join(current_dir, dir_path, "video_with_audio.mp4")
     cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -vcodec libx264 -acodec libmp3lame "{output_video_with_audio_file}"'
     print(cmd)
     os.system(cmd)
+
+    if os.path.exists(output_video_with_audio_file):
+        return output_video_with_audio_file
+
+    return None
     
+
+def concat_video_files(video_files, output_video):
+
+    dir_path = os.path.dirname(output_video)
+    ffmpeg_input_mp4_file = os.path.join(dir_path, "ffmpeg_input_mp4_file.txt")
+
+
+    with open(ffmpeg_input_mp4_file, "w") as f:
+
+        f.write(f"ffconcat version 1.0\n\n")
+
+        for mp4 in video_files:
+            f.write(f"file '{mp4}'\n")
+
+    cmd = f'ffmpeg -f concat -safe 0 -i "{ffmpeg_input_mp4_file}" -c copy "{output_video}"'
+    print(cmd)
+    os.system(cmd)
+
+    if os.path.exists(output_video):
+        return output_video
+
+    return None
+
 
 
 if __name__ == "__main__":
-    create_vid_files('output/cvs_data_vids/05b33fdd58414e229a77ae097a09bb40/airq')
+    #create_vid_files('output/cvs_data_vids/05b33fdd58414e229a77ae097a09bb40/airq')
+    pass

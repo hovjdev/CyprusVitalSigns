@@ -37,6 +37,7 @@ def text_to_speach(text, output_wav_file):
 
             audio = AudioSegment.from_mp3(tmp)
             tmp = '0'*(4-len(str(i)))+str(i)+'.wav'
+            tmp = os.path.join(tmpdirname, tmp)
             audio.export(tmp, format="wav")
 
             wav_files.append(tmp)

@@ -180,7 +180,7 @@ if __name__ == "__main__":
                     y+.01,
                     pollution,
                     color=color,
-                    fontsize=40,
+                    fontsize=35,
                     horizontalalignment='center',
                     verticalalignment='bottom',
                     zorder=6,

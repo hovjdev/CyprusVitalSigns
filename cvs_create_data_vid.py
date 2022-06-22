@@ -7,7 +7,8 @@ from pathlib import Path
 from PIL import Image
 from tools.file_utils import create_dir, delete_previous_files
 from cvs_text_to_audio import textfile_to_wav
-from cvs_vid_tools import create_vid_files
+from cvs_vid_tools import create_vid_file, concat_video_files
+from upload_to_vimeo import upload_mp4_to_vimeo
 
 INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
@@ -132,6 +133,8 @@ if __name__ == "__main__":
 
     script_items = get_script_items()
 
+    video_files = []
+
     for d in script_items:
         folder = d
         script = script_items[d]['script']
@@ -154,7 +157,24 @@ if __name__ == "__main__":
         create_wav_files(OUTPUT_DIR_D)
 
         print(f'>>>> create_vid_files({OUTPUT_DIR_D})')
-        create_vid_files(OUTPUT_DIR_D)
+        video_file = create_vid_file(OUTPUT_DIR_D)
+
+        video_files.append(video_file)
+
+    
+    output_video = os.path.join(OUTPUT_DIR, 'video.mp4')
+    output_video=concat_video_files(video_files, output_video)
+
+    if output_video:
+        data={
+                'video_title': 'Cyprus Vital Signs',
+                'video_file_path': output_video,
+                'video_tags': 'Cyprus Vital Signs',
+                'video_thumbnail_path': None,
+                'public': False,
+                'playlist_name': None
+            }
+        upload_mp4_to_vimeo(output_video, data)
 
 
    
