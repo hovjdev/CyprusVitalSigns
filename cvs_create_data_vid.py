@@ -155,6 +155,6 @@ if __name__ == "__main__":
 
         print(f'>>>> create_vid_files({OUTPUT_DIR_D})')
         create_vid_files(OUTPUT_DIR_D)
-        exit(1)
+
 
    
