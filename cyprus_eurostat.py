@@ -3,19 +3,20 @@ import eurostat
 
 
 avail_sdmx_df = eurostat.get_avail_sdmx_df()
-keyword = 'tourism'
+keyword = 'tourist'
 subset = eurostat.subset_avail_sdmx_df(avail_sdmx_df, keyword)
-print(subset)
+print(subset.to_string())
 
 
 codes = subset.index.values.tolist()
 print(codes)
 
 
+code_selection=['tour_occ_nim',
+                #'tour_occ_ninat'
+                ]
 
-
-
-for code in codes:
+for code in code_selection:
     dims = eurostat.get_sdmx_dims(code)
     has_cy = False
     dim_cy=None
@@ -37,7 +38,7 @@ for code in codes:
 
 
     print(code)
-    print(subset.loc[[code]]['name'])
+    print(subset.loc[[code]].to_string())
     print(dim_cy)
     dic = eurostat.get_sdmx_dic(code, dim_cy)
     print(dic)
@@ -52,4 +53,5 @@ for code in codes:
     
     df=eurostat.get_sdmx_data_df(code, StartPeriod, EndPeriod, filter_pars, flags = False, verbose=True)
     print(df)
-    break
+    print(df.columns.to_list())
+    
