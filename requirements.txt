@@ -16,3 +16,4 @@ gTTS
 pydub
 python-dotenv
 PyVimeo
+eurostat
