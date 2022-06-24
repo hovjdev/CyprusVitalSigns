@@ -74,6 +74,14 @@ def get_data(code, filters):
         
 
 
+def prep_df(df):
+
+    df=df.T
+    
+    print(df)
+    return df
+
+
 if __name__ == "__main__":
 
     codes = get_codes(keyword = 'goals')
@@ -93,6 +101,6 @@ if __name__ == "__main__":
 
     for code in code_selection:
         df = get_data(code, filters)
-        print(df)
+        df = prep_df(df)
 
 
