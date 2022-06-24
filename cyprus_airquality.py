@@ -4,7 +4,7 @@ import requests
 import json
 import datetime
 import os
-import shutil
+import random
 from unidecode import unidecode
 
 import numpy as np
@@ -248,6 +248,12 @@ if __name__ == "__main__":
         with open(text_file, "w") as f:
             for t in tmp:
                 if len(t['locations'])>0:
-                    locations = ', '.join(t['locations'])
-                    f.write(f"{pollutant_label_en} levels are {t['quality']} in {locations}\n")
+                    locations = t['locations']
+                    locations = [f'"{l}"' for l in locations]
+                    locations = ', '.join(locations)
+                    first=random.choice(["Today, ", "Now, ", "", ""])
+                    levels=random.choice(["levels", "levels", "measurements", "concentrations"])
+                    cities=random.choice(["the collowing cities: ", "these locations: ", "", ""])
+                    quality = t['quality']
+                    f.write(f'{first}{pollutant_label_en} {levels} are {quality} in {cities}{locations}.\n')
 

@@ -21,6 +21,10 @@ import matplotlib.lines as mlines
 from tools.plot_tools import prep_plot
 from tools.file_utils import create_dir, delete_previous_files
 
+from parrot import Parrot
+from paraphrase import paraphrase_text
+
+
 CO2_DATA_URL ="https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_annmean_mlo.txt"
 ECONOMIES_1 = ['GRC',  'CYP', 'FRA', 'WLD']
 ECONOMIES_1 = ['CYP', 'WLD']
@@ -332,7 +336,7 @@ def pref_df(df, economies):
     return df, countries_nocyp, countries_cyp
 
 
-def plot_df(df,title, economies, index, output_dir):
+def plot_df(df, title, economies, index, output_dir):
 
     df, countries_nocyp, countries_cyp=pref_df(df, economies)
 
@@ -452,7 +456,7 @@ def narrate_df(df, title, economies, output_txt_file):
             f.write(f"The {topic} {trend2} for the {c}.\n")
 
 
-def create_media(data, economies, output_dir=OUTPUT_DIR):
+def create_media(data, economies, output_dir=OUTPUT_DIR, parrot=None):
 
     topic_name=data['topic']['value']
     topic_description=data['topic']['sourceNote']
@@ -478,7 +482,10 @@ def create_media(data, economies, output_dir=OUTPUT_DIR):
         # narrate topic
         with open(output_txt_file, "w") as f:
             if index < len(topic_description):
-                f.write(topic_description[index])
+
+                text = topic_description[index]
+                text=paraphrase_text(text=text, parrot=parrot)
+                f.write(text)
 
         # narrate data
         narrate_df(df,title, economies, output_txt_file)
@@ -516,6 +523,7 @@ if __name__ == "__main__":
         print(inds)
         print(f'type(inds)={type(inds)}')
 
+    parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5")
 
     for i in range(10):
         data=None
@@ -529,5 +537,5 @@ if __name__ == "__main__":
             print(f"Try {i} failed")
             print(data)
             continue
-        create_media(data=data, economies=ECONOMIES_2, output_dir=OUTPUT_DIR)
+        create_media(data=data, economies=ECONOMIES_2, output_dir=OUTPUT_DIR, parrot=parrot)
         break

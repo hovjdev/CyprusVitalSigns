@@ -17,3 +17,5 @@ pydub
 python-dotenv
 PyVimeo
 eurostat
+git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git
+

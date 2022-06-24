@@ -10,8 +10,11 @@ from cvs_text_to_audio import textfile_to_wav
 from cvs_vid_tools import create_vid_file, concat_video_files
 from upload_to_vimeo import upload_mp4_to_vimeo
 
+
 INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
+
+
 
 
 
@@ -110,7 +113,7 @@ def get_script_items():
 
     return script_items
 
-def create_wav_files(dir_path):
+def create_wav_files(dir_path, parrot=None):
     text_files = list(Path(dir_path).glob("*.txt"))
     text_files.sort()
 
@@ -118,7 +121,7 @@ def create_wav_files(dir_path):
         t=str(t)
         assert t[-4:]=='.txt'
         wav_file = t[:-4]+'.wav'
-        textfile_to_wav(t, wav_file)
+        textfile_to_wav(t, wav_file, parrot)
 
 
 
@@ -129,7 +132,6 @@ if __name__ == "__main__":
     OUTPUT_DIR = os.path.join(OUTPUT_DIR, id)
     create_dir(OUTPUT_DIR)
     create_dir(INPUT_DIR)
-
 
     script_items = get_script_items()
 

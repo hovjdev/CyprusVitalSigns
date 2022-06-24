@@ -65,9 +65,9 @@ curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.005,
         material_name="Material_neon_inside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
 
-width=20
+width=22
 height=6
-depth=3
+depth=2
 
 rotation_0=-np.pi/2
 rotation_1=0

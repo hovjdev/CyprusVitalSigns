@@ -1,14 +1,41 @@
 import os
 import re
 import tempfile
+import random
 from pydub import AudioSegment
 from gtts import gTTS
 
 
-def textfile_to_wav(text_file, output_wav_file):
+def paraphrase_text(text, parrot, do_diverse=True, use_gpu=False) :
+
+    if not parrot:
+        print("Warning: parrot not provided")
+        return text
+
+    texts = text.split('\n')
+    ptexts = []
+    for text in texts:
+        if not text: continue
+        para_phrases = parrot.augment(input_phrase=text, use_gpu=use_gpu, do_diverse=do_diverse)
+        print(f">>This is the original text:{text}")
+        if para_phrases is None: continue
+        if len(para_phrases) < 1: para_phrases=[""]
+        text=random.choice(para_phrases)[0]
+        print(f">> And the paraphrased text:{text}")
+        ptexts.append(text)
+    text='\n'.join(ptexts)
+
+    return text
+
+
+def textfile_to_wav(text_file, output_wav_file, parrot=None):
 
     with open(text_file, 'r') as f:
         text = f.read()
+        
+        if parrot:
+            text = paraphrase_text(text, parrot)
+            
         text_to_speach(text, output_wav_file)
         
     return
