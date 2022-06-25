@@ -403,9 +403,11 @@ def narrate_df(df, title, economies, output_txt_file):
 
     df, countries_nocyp, countries_cyp=pref_df(df, economies)
 
-    df_nonan=df[~np.isnan(df).any(axis=1)]
-    df = df.interpolate(method='linear', axis=0, limit_direction='both')
+    df = df.interpolate(method='linear', axis=0, limit_direction='both', limit_area='inside')
+    df_nonan = df[~np.isnan(df).any(axis=1)]
     df = df.astype(float)
+    df_nonan = df_nonan.astype(float)
+
 
     topic =  re.sub("\(.*?\)","",title)
     topic = topic.split(',')[0]
@@ -434,7 +436,7 @@ def narrate_df(df, title, economies, output_txt_file):
         opening1=random.choice(["look at", "review", "examine"])
         f.write(f"{opening2} {opening1} the {title}.\n")
         for c in countries_cyp:
-            trend1=find_trend(df, c)
+            trend1=find_trend(df_nonan, c)
             f.write(f"From {df_nonan.index[0]} to {df_nonan.index[-1]} in {c},\n")
             f.write(f"The {topic} {trend1}.\n")
 
