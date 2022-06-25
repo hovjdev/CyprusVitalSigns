@@ -99,8 +99,15 @@ def get_data(code, filters):
 def prep_df(df):
 
     df=df.T
+
     
-    assert len(df.columns.to_list())==1
+    try:
+        assert len(df.columns.to_list())==1
+    except Exception as e:
+        print(str(e))
+        print(df)
+        print(f"len(df.columns.to_list()): {len(df.columns.to_list())}")
+        raise(e)
     df.columns = ['Cyprus']
     
     indices = list(df.index.values)
@@ -126,9 +133,12 @@ def prep_df(df):
         df.index.name='Year'
 
     df=df.sort_index()
-    df=df.dropna()
+    #df=df.dropna()
     df["Cyprus"] = pd.to_numeric(df["Cyprus"], errors='coerce')
     
+    df = df.interpolate(method='linear', axis=0, limit_direction='both', limit_area='inside')
+    df = df[~np.isnan(df).any(axis=1)]
+
     df.reset_index(inplace=True)
 
 
@@ -350,13 +360,14 @@ if __name__ == "__main__":
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
     
-
-    codes = get_codes(keyword = 'goals')
+    if False:
+        codes = get_codes(keyword = 'hotel')
+        exit(1)
 
     code_selection=['avia_tf_cm',
                     'tour_occ_arm',
                     't2020_rd300',
-
+                    'tour_occ_mnor'
     ]
 
     metadata = {
@@ -374,8 +385,12 @@ if __name__ == "__main__":
                 'filters': {'GEO': ['CY']}, 
                 'title':"Greenhouse gas emissions per capita (tonnes)",
                 'title_short':"emissions",
-                'unit': "tonnes"},
-
+                'unit': "tonnes"},     
+        'tour_occ_mnor' : {
+                'filters': {'GEO': ['CY'], 'ACCOMUNIT': ['BEDRM']}, 
+                'title':"Net occupancy rate of bedrooms in hotels and similar accommodations",
+                'title_short':"Net occupancy rate",
+                'unit': ""},                
     }
 
 
