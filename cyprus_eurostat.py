@@ -1,5 +1,6 @@
 import os
 import re
+import random
 import argparse
 import eurostat
 import datetime
@@ -9,11 +10,15 @@ import pandas as pd
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
+
+from sklearn.linear_model import LinearRegression
 
 from tools.plot_tools import prep_plot
 from tools.file_utils import create_dir, delete_previous_files
 
+
+from parrot import Parrot
+from paraphrase import paraphrase_text
 
 
 DEBUG=True
@@ -198,6 +203,136 @@ def plot_df(df, title,  index, output_dir):
     plt.close('all')
     plt.clf()
 
+
+
+def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parrot=None):
+
+    df = df.copy()
+    output_txt_file=os.path.join(output_dir, f'data_plot_{index}.txt')
+
+    has_year = 'Year' in df.columns.to_list()
+
+    assert has_year
+    df = df.groupby(['Year']).mean()
+
+
+    def get_min_year_min(df):
+        min_year = df[['']].idxmin(skipna=True)
+        return min_year[0], df.loc[min_year[0]]['']
+
+    def get_max_year_max(df):
+        max_year = df[['']].idxmax(skipna=True)
+        return max_year[0], df.loc[max_year[0]]['']
+
+    def get_mean(df):
+        return df[''].mean()
+
+    def get_slope_pct(df):
+
+        d = df[''].to_numpy()
+        slope = 0
+        d = np.reshape(d, (d.shape[0], -1))
+
+        d_mean=np.nanmean(d)
+        x=np.arange(d.shape[0])
+        x = (x - np.nanmin(x))
+
+        d=np.insert(d, 0, x, axis=1)
+        d=d[~np.isnan(d).any(axis=1)]
+
+        x = np.copy(d[::,0]).reshape(-1, 1)
+        y = np.copy(d[::,1]).reshape(-1, 1)
+        try:
+            reg = LinearRegression().fit(x, y)
+        except Exception as e:
+            print(str(e))
+            return -1
+        slope = + reg.coef_[0][0]
+
+        slope_pct = (slope / d_mean)*100
+        return slope_pct
+
+    slope_pct = get_slope_pct(df)
+    min_year, min = get_min_year_min(df)
+    max_year, max = get_max_year_max(df)
+    mean = get_mean(df)
+
+    print(f'slope_pct: {slope_pct}')
+    print(f'min_year: {min_year}')    
+    print(f'max_year: {max_year}') 
+
+    
+
+    with open(output_txt_file, "w") as f:
+        first=random.choice([
+                    "We shall now examine", 
+                    "Let's take a look at",
+                    "Let's review"])
+        title_split = title.split('(')[0]
+        third=random.choice([
+                    "data", 
+                    "time series",
+                    "chart"])
+
+        fourth=random.choice([
+                    "with the highest", 
+                    "with the biggest",
+                    "with most"])
+
+        fifth=random.choice([
+                    "with the lowest", 
+                    "with the smallest",
+                    "with least"])
+
+        max_val= random.choice([
+            f"with {str(round(max))} {unit}",
+            ""
+        ])
+
+        min_val= random.choice([
+            f"with {str(round(min))} {unit}",
+            ""
+        ])
+
+        sixth=random.choice([
+            "Overall,",
+            "On average,",
+            "Overall,",
+            "On average,",
+            "In recent years,"
+            "On the whole,"
+        ])
+
+        seventh = ""
+        if slope_pct > 0:
+            seventh=random.choice([
+                "increased by",
+                "rose by"
+            ])
+        else:
+            seventh=random.choice([
+                "decreased by",
+                "fell by"
+            ])
+
+
+        text = ''
+        text += f'{first} the {third} of the {title_split}.\n'
+        text += f'{str(max_year)} {max_val} was the  year {fourth} {title_short}.\n'
+        text += f'{str(min_year)} {min_val} was the  year {fifth} {title_short}.\n'
+        text += f'{sixth} the {title_split} {seventh} {round(slope_pct)} percent each year.\n'
+
+        if parrot: 
+            text = paraphrase_text(text, parrot)
+
+        print(">>>>text:")
+        print(text)
+        f.write(text)
+
+        
+
+
+
 if __name__ == "__main__":
 
     # Initialize parser
@@ -227,18 +362,28 @@ if __name__ == "__main__":
     metadata = {
         'avia_tf_cm': {
                 'filters':{'GEO': ['CY'], 'UNIT':['NR']}, 
-                'title':"Number of commercial flights reported monthly"},
+                'title':"Number of commercial flights reported monthly",
+                'title_short':"Number of commercial flights",
+                'unit': ""},
         'tour_occ_arm': {
                 'filters': {'GEO': ['CY'], 'UNIT':['NR'], 'NACE_R2':['I551'], 'C_RESID':['FOR']}, 
-                'title':"Arrivals at tourist accommodation establishments"},
+                'title':"Arrivals at tourist accommodation establishments",
+                'title_short':"arrivals",
+                'unit': ""},
         't2020_rd300' : {
                 'filters': {'GEO': ['CY']}, 
-                'title':"Greenhouse gas emissions per capita (tonnes)"},
+                'title':"Greenhouse gas emissions per capita (tonnes)",
+                'title_short':"emissions",
+                'unit': "tonnes"},
+
     }
 
 
     create_dir(OUTPUT_DIR)
     delete_previous_files(OUTPUT_DIR)
+
+    #parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5")
+    parrot=None
 
     for index, code in enumerate(code_selection):
 
@@ -247,5 +392,9 @@ if __name__ == "__main__":
         df = prep_df(df)
 
         plot_df(df, title=metadata[code]['title'],  index=index, output_dir=OUTPUT_DIR)
+        narrate_df(df, title=metadata[code]['title'],
+                    title_short=metadata[code]['title_short'],
+                    unit=metadata[code]['unit'],  
+                    index=index, output_dir=OUTPUT_DIR, parrot=parrot)
 
 

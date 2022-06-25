@@ -14,7 +14,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.covariance import EllipticEnvelope
 
 
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
@@ -484,8 +483,9 @@ def create_media(data, economies, output_dir=OUTPUT_DIR, parrot=None):
             if index < len(topic_description):
 
                 text = topic_description[index]
-                text=paraphrase_text(text=text, parrot=parrot)
-                f.write(text)
+                if parrot:
+                    text=paraphrase_text(text=text, parrot=parrot)
+                f.write(text + '\n')
 
         # narrate data
         narrate_df(df,title, economies, output_txt_file)

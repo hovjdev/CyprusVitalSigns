@@ -57,6 +57,10 @@ def create_curve(X, bevel_depth=0.05,
 
     material = bpy.data.materials[material_name]
     curveOB.active_material = material
+    
+    curveOB.select_set(True)
+    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='MEDIAN')
+
 
     return curveOB, x_min, x_max, z_min, z_max
 
@@ -66,15 +70,15 @@ curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.005,
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
 
 width=22
-height=6
-depth=2
+height=8
+depth=9
 
 rotation_0=-np.pi/2
 rotation_1=0
 rotation_2=0
 curve.scale[0] = width / (x_max-x_min)
 curve.scale[2] = height / (z_max-z_min)
-curve.location[0] = -width/2
+curve.location[0] = 0
 curve.location[1] = depth
 curve.location[2] = 0
 curve.rotation_euler[0] = rotation_0
@@ -87,9 +91,10 @@ bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 curve, x_min, x_max, z_min, z_max = create_curve(X, bevel_depth=0.01,
         material_name="Material_neon_outside",
         x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
+        
 curve.scale[0] = width / (x_max-x_min)
 curve.scale[2] = height / (z_max-z_min)
-curve.location[0] = -width/2
+curve.location[0] = 0
 curve.location[1] = depth
 curve.location[2] = 0
 curve.rotation_euler[0] = rotation_0

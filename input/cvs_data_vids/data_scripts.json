@@ -4,5 +4,8 @@
   },
   "wrbk": {
     "script": "cyprus_worldbank.py"
+  },
+  "euro": {
+    "script": "cyprus_eurostat.py"
   }
 }

@@ -5,6 +5,8 @@ import uuid
 import shutil
 from pathlib import Path
 from PIL import Image
+
+
 from tools.file_utils import create_dir, delete_previous_files
 from cvs_text_to_audio import textfile_to_wav
 from cvs_vid_tools import create_vid_file, concat_video_files
