@@ -253,7 +253,7 @@ if __name__ == "__main__":
                     locations = ', '.join(locations)
                     first=random.choice(["Today, ", "Now, ", "", ""])
                     levels=random.choice(["levels", "levels", "measurements", "concentrations"])
-                    cities=random.choice(["the collowing cities: ", "these locations: ", "", ""])
+                    cities=random.choice(["the following cities: ", "these locations: ", "", ""])
                     quality = t['quality']
                     f.write(f'{first}{pollutant_label_en} {levels} are {quality} in {cities}{locations}.\n')
 
