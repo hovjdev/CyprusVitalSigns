@@ -7,7 +7,9 @@ import bpy
 from mathutils import Vector
 
 
-bpy.context.scene.render.resolution_percentage = 50
+#bpy.context.scene.render.resolution_percentage = 50
+bpy.context.scene.render.resolution_percentage = 300
+
 
 DATA_FILE = os.path.join(os.path.dirname(bpy.data.filepath), "files", "data.npy")
 X=None

@@ -90,7 +90,6 @@ def concat_video_files(video_files, output_video):
         for mp4 in video_files:
             f.write(f"file '{mp4}'\n")
 
-    #cmd = f'ffmpeg -f concat -safe 0 -i "{ffmpeg_input_mp4_file}" -c copy -filter_complex xfade=transition=dissolve:duration=2:offset=2 "{output_video}"'
     cmd = f'ffmpeg -f concat -safe 0 -i "{ffmpeg_input_mp4_file}" -c copy "{output_video}"'
 
     print(cmd)
@@ -104,5 +103,20 @@ def concat_video_files(video_files, output_video):
 
 
 if __name__ == "__main__":
-    create_vid_file('output/cvs_data_vids/8173e3d90da744fda7eb4ba75500ae40/end')
-    pass
+    
+    id = '85008b1f2f254034afc61b54059c1eaa'
+    OUTPUT_DIR = f'output/cvs_data_vids/{id}'
+    
+    #create_vid_file(f'output/cvs_data_vids/{id}/end')
+
+    video_files=[
+        os.path.join('intro/video_with_audio.mp4'),
+        os.path.join('euro/video_with_audio.mp4'),
+        os.path.join('wrbk/video_with_audio.mp4'),
+        os.path.join('airq/video_with_audio.mp4'),
+        os.path.join('end/video_with_audio.mp4'),
+
+    ]
+    output_video = os.path.join(OUTPUT_DIR, 'video.mp4')
+    output_video=concat_video_files(video_files, output_video)
+    

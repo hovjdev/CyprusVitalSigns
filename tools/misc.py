@@ -47,7 +47,7 @@ def fit_text_in_shape(
     draw = ImageDraw.Draw(image)
 
     smallest_font_size = 5
-    largest_front_size = 200
+    largest_front_size = 600
     font_size = smallest_font_size
     font = ImageFont.truetype(font_ttf, font_size)
 
