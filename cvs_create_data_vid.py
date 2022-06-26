@@ -7,6 +7,7 @@ from pathlib import Path
 from PIL import Image
 
 
+from tools.misc import create_texture_image
 from tools.file_utils import create_dir, delete_previous_files
 from cvs_text_to_audio import textfile_to_wav
 from cvs_vid_tools import create_vid_file, concat_video_files
@@ -17,23 +18,6 @@ INPUT_DIR = 'input/cvs_data_vids'
 OUTPUT_DIR = 'output/cvs_data_vids'
 
 
-
-
-
-def create_texture_image(dir_path):
-    output_image = os.path.join(dir_path, f"texture_####.png")
-    cmd = f'python  create_texture.py -o {output_image}'
-    print(cmd)
-    os.system(cmd)
-
-    try:
-        output_image = os.path.join(dir_path, f"texture_0001.png")
-        assert os.path.exists(output_image)
-        return output_image
-    except Exception as e:
-        print(str(e))
-
-    return None
 
 def combine_frames_and_texture_images(dir_path):
     images = list(Path(dir_path).glob("frame*.png"))
@@ -53,7 +37,7 @@ def combine_frames_and_texture_images(dir_path):
         background.save(im)
 
 
-def enhance_images(dir_path):
+def enhance_images(dir_path, enhance_with_blender=True):
     images = list(Path(dir_path).glob("*.png"))
     data_files = list(Path(dir_path).glob("*.npy"))
 
@@ -88,10 +72,16 @@ def enhance_images(dir_path):
         except:
             pass
 
+
         output_image = os.path.join(dir_path, f"frame_{i}_####.png")
-        cmd = f'python  enhance_image_with_blender.py -o {output_image}'
-        print(cmd)
-        os.system(cmd)
+        if enhance_with_blender:
+            
+            cmd = f'python  enhance_image_with_blender.py -o {output_image}'
+            print(cmd)
+            os.system(cmd)
+        else:
+            output_image = os.path.join(dir_path, f"frame_{i}_0000.png")
+            shutil.copyfile(images[i], output_image)
 
 
 def get_script_items():
@@ -140,16 +130,24 @@ if __name__ == "__main__":
     video_files = []
 
     for d in script_items:
+        print(f'>>>{d}')
         folder = d
         script = script_items[d]['script']
         OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
-        cmd = f'python  {script} -o {OUTPUT_DIR_D}'
+        
+        enhance_with_blender = True
+
+        if "enhance_with_blender" in script_items[d]:
+            enhance_with_blender=script_items[d]['enhance_with_blender']
+            print(f'enhance_with_blender: {enhance_with_blender}')
+
+        cmd = f'python  {script} --output {OUTPUT_DIR_D}'
         print(cmd)
         os.system(cmd)
 
 
         print(f'>>>> enhance_images({OUTPUT_DIR_D})')
-        enhance_images(OUTPUT_DIR_D)
+        enhance_images(OUTPUT_DIR_D, enhance_with_blender=enhance_with_blender)
 
         print(f'>>>> create_texture_image({OUTPUT_DIR_D})')
         create_texture_image(OUTPUT_DIR_D)
@@ -163,7 +161,8 @@ if __name__ == "__main__":
         print(f'>>>> create_vid_files({OUTPUT_DIR_D})')
         video_file = create_vid_file(OUTPUT_DIR_D)
 
-        video_files.append(video_file)
+        if  video_file:
+            video_files.append(video_file)
 
     
     output_video = os.path.join(OUTPUT_DIR, 'video.mp4')

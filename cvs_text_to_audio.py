@@ -5,6 +5,7 @@ import random
 from pydub import AudioSegment
 from gtts import gTTS
 
+from paraphrase import paraphrase_text
 
 
 def textfile_to_wav(text_file, output_wav_file, parrot=None):
@@ -46,8 +47,7 @@ def text_to_speach(text, output_wav_file):
             tmp = os.path.join(tmpdirname, tmp)
             audio.export(tmp, format="wav")
 
-            wav_files.append(tmp)
-
+            wav_files.append(tmp)          
 
         combine_wav_files(wav_files, output_wav_file)
 

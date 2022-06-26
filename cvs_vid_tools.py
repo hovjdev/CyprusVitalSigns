@@ -13,6 +13,10 @@ def create_vid_file(dir_path):
     image_files = list(Path(dir_path).glob("frame*.png"))
     audio_files = list(Path(dir_path).glob("*.wav"))
 
+    if len(image_files) < 1: return None
+    if len(audio_files) < 1: return None
+
+
     image_files.sort()
     audio_files.sort()
 
@@ -63,7 +67,7 @@ def create_vid_file(dir_path):
 
     # add audio to video
     output_video_with_audio_file = os.path.join(current_dir, dir_path, "video_with_audio.mp4")
-    cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -vcodec libx264 -acodec libmp3lame "{output_video_with_audio_file}"'
+    cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -vcodec libx264 -acodec libmp3lame  -strict -1 "{output_video_with_audio_file}"'
     print(cmd)
     os.system(cmd)
 
@@ -86,7 +90,9 @@ def concat_video_files(video_files, output_video):
         for mp4 in video_files:
             f.write(f"file '{mp4}'\n")
 
+    #cmd = f'ffmpeg -f concat -safe 0 -i "{ffmpeg_input_mp4_file}" -c copy -filter_complex xfade=transition=dissolve:duration=2:offset=2 "{output_video}"'
     cmd = f'ffmpeg -f concat -safe 0 -i "{ffmpeg_input_mp4_file}" -c copy "{output_video}"'
+
     print(cmd)
     os.system(cmd)
 
@@ -98,5 +104,5 @@ def concat_video_files(video_files, output_video):
 
 
 if __name__ == "__main__":
-    #create_vid_files('output/cvs_data_vids/05b33fdd58414e229a77ae097a09bb40/airq')
+    create_vid_file('output/cvs_data_vids/8173e3d90da744fda7eb4ba75500ae40/end')
     pass

@@ -1,4 +1,8 @@
 {
+  "intro":{
+    "script": "cvs_intro_or_end.py  --type intro",
+    "enhance_with_blender": false
+  },
   "euro": {
     "script": "cyprus_eurostat.py"
   },
@@ -7,5 +11,9 @@
   },
   "airq": {
     "script": "cyprus_airquality.py"
+  },
+  "end":{
+    "script": "cvs_intro_or_end.py --type end",
+    "enhance_with_blender": false
   }
 }
