@@ -149,11 +149,12 @@ if __name__ == "__main__":
         print(f'>>>> enhance_images({OUTPUT_DIR_D})')
         enhance_images(OUTPUT_DIR_D, enhance_with_blender=enhance_with_blender)
 
-        print(f'>>>> create_texture_image({OUTPUT_DIR_D})')
-        create_texture_image(OUTPUT_DIR_D)
+        if enhance_with_blender:
+            print(f'>>>> create_texture_image({OUTPUT_DIR_D})')
+            create_texture_image(OUTPUT_DIR_D)
 
-        print(f'>>>> combine_frames_and_texture_images({OUTPUT_DIR_D})')
-        combine_frames_and_texture_images(OUTPUT_DIR_D)
+            print(f'>>>> combine_frames_and_texture_images({OUTPUT_DIR_D})')
+            combine_frames_and_texture_images(OUTPUT_DIR_D)
 
         print(f'>>>> create_wav_files({OUTPUT_DIR_D})')
         create_wav_files(OUTPUT_DIR_D)
