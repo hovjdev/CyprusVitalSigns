@@ -52,7 +52,7 @@ def text_to_speach(text, output_wav_file):
         combine_wav_files(wav_files, output_wav_file)
 
 
-def combine_wav_files(wav_files, output_wav_file, silence_duration_ms=300):
+def combine_wav_files(wav_files, output_wav_file, silence_duration_ms=2):
        
         combined_audio=None 
         silence=None
@@ -73,7 +73,7 @@ def combine_wav_files(wav_files, output_wav_file, silence_duration_ms=300):
                 combined_audio=combined_audio+silence
 
         if silence:
-            for i in range(5):
+            for i in range(4):
                 combined_audio=combined_audio+silence
 
         combined_audio.export(output_wav_file, format="wav")

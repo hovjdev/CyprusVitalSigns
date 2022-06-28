@@ -56,7 +56,7 @@ if __name__ == "__main__":
         tz = pytz.timezone('EET')
 
         text="Cyprus Vital Signs\n"
-        today=datetime.now(tz=tz).strftime("%Y-%m-%d")
+        today=datetime.now(tz=tz).strftime("%A %d, %B %Y")
         image = Image.open(output_image)
         imsize= image.size
         fit_text_in_shape(image=image, 

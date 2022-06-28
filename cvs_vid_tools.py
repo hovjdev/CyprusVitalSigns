@@ -1,7 +1,12 @@
 import os
+
+import moviepy.editor as mp
+
+
 from pathlib import Path
 from pydub import AudioSegment
-from PIL import Image
+
+
 
 
 from cvs_text_to_audio import combine_wav_files
@@ -77,9 +82,10 @@ def create_vid_file(dir_path):
     return None
     
 
-def concat_video_files(video_files, output_video):
+def concat_video_files(video_files, output_video, crossfade_duration=1.5):
 
     dir_path = os.path.dirname(output_video)
+    '''
     ffmpeg_input_mp4_file = os.path.join(dir_path, "ffmpeg_input_mp4_file.txt")
 
 
@@ -94,6 +100,23 @@ def concat_video_files(video_files, output_video):
 
     print(cmd)
     os.system(cmd)
+    ''' 
+
+    clips = []
+
+    for index, vid_file in enumerate(video_files):
+
+        print(f"concat: {vid_file}")
+        clip = mp.VideoFileClip(vid_file)
+        if index > 0:
+            clip=clip.crossfadein(crossfade_duration)
+            print(f"Adding crossfade to: {vid_file}")
+        clips.append(clip)
+
+
+    concat_clip =  mp.concatenate_videoclips(clips, padding=-1*crossfade_duration, method="compose")
+    concat_clip.write_videofile(output_video)
+
 
     if os.path.exists(output_video):
         return output_video
@@ -104,17 +127,17 @@ def concat_video_files(video_files, output_video):
 
 if __name__ == "__main__":
     
-    id = '85008b1f2f254034afc61b54059c1eaa'
+    id = 'd4d2b76b6e4d4bf8aa735afa4d365163'
     OUTPUT_DIR = f'output/cvs_data_vids/{id}'
     
     #create_vid_file(f'output/cvs_data_vids/{id}/end')
 
     video_files=[
-        os.path.join('intro/video_with_audio.mp4'),
-        os.path.join('euro/video_with_audio.mp4'),
-        os.path.join('wrbk/video_with_audio.mp4'),
-        os.path.join('airq/video_with_audio.mp4'),
-        os.path.join('end/video_with_audio.mp4'),
+        os.path.join(OUTPUT_DIR, 'intro/video_with_audio.mp4'),
+        os.path.join(OUTPUT_DIR, 'euro/video_with_audio.mp4'),
+        os.path.join(OUTPUT_DIR, 'wrbk/video_with_audio.mp4'),
+        os.path.join(OUTPUT_DIR, 'airq/video_with_audio.mp4'),
+        os.path.join(OUTPUT_DIR, 'end/video_with_audio.mp4'),
 
     ]
     output_video = os.path.join(OUTPUT_DIR, 'video.mp4')
