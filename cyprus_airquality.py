@@ -70,13 +70,6 @@ if __name__ == "__main__":
     ]
 
 
-    ratio = 720.0 / 1280.0 * 1.0
-    width = 1660.0
-
-    MYDPI = float(plt.gcf().get_dpi())
-    FIGSIZE = (width / MYDPI, width * ratio / MYDPI)
-
-
     create_dir(OUTPUT_DIR)
     delete_previous_files(OUTPUT_DIR)
 
@@ -90,8 +83,7 @@ if __name__ == "__main__":
         pollutant_label_en=p['label_en'].split("(")[0]
         pollutant_levels=p["levels"]
 
-        #figure = plt.figure(figsize=FIGSIZE, dpi=MYDPI)
-        m, figure, axes=get_cyprus_map(figsize=FIGSIZE, dpi=MYDPI)
+        m, figure, axes=get_cyprus_map()
 
         tz = timezone('EET')
         now =datetime.datetime.now(tz)
@@ -99,6 +91,8 @@ if __name__ == "__main__":
 
         air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
 
+        xs=[]
+        ys=[]
         for s in stations_list:
             lat=s['lat']
             lon=s['long']
@@ -106,6 +100,8 @@ if __name__ == "__main__":
             label_en=s['label_en']
             label_en = label_en.split(' ')[0]  
             x, y = m(lon, lat)
+
+
 
             url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
             print(url)
@@ -126,6 +122,9 @@ if __name__ == "__main__":
             if not pollution:
                 continue
 
+            xs.append(x)
+            ys.append(y)
+
             text = f"{label_en}"
 
             plt.plot(x, y, marker="o", color="grey")
@@ -135,7 +134,7 @@ if __name__ == "__main__":
                     y-.01,
                     text,
                     color='black',
-                    fontsize=20,
+                    fontsize=40,
                     horizontalalignment='center',
                     verticalalignment='top',
                     zorder=6,
@@ -157,17 +156,28 @@ if __name__ == "__main__":
 
             plt.text(
                     x,
-                    y+.01,
+                    y+.002,
                     pollution,
                     color=color,
-                    fontsize=35,
+                    fontsize=70,
                     horizontalalignment='center',
                     verticalalignment='bottom',
                     zorder=6,
                     weight="bold"
                 )
 
-            plt.title(f"Air Quality in Cyprus: {pollutant_label}", fontsize = 30, y=1.0, pad=-45)
+
+        m.scatter(
+            xs,
+            ys,
+            s=100,  # size
+            c='black',  # color
+            marker='o',  # symbol
+            alpha=0.5,  # transparency
+            zorder=2,  # plotting order
+        )
+
+        plt.title(f"Air Quality in Cyprus: {pollutant_label}", fontsize = 60, y=1.0, pad=-90)
 
 
         cmap = mpl.colors.ListedColormap(['green', 'green', 'orange', 'orange', 'red', 'red', 'purple', 'purple'])
@@ -178,8 +188,8 @@ if __name__ == "__main__":
                 pollutant_levels[1],
                 (pollutant_levels[1]+pollutant_levels[2])/2,
                 pollutant_levels[2],
-                (pollutant_levels[2]+pollutant_levels[2]*1.4)/2,
-                pollutant_levels[2]*1.3]
+                (pollutant_levels[2]+pollutant_levels[2]*1.2)/2,
+                pollutant_levels[2]*1.2]
         labels = [ 
                 "Good",
                 pollutant_levels[0] , 
@@ -203,15 +213,15 @@ if __name__ == "__main__":
 
 
         for i, t in enumerate(cb.ax.get_yticklabels()):
-            t.set_fontsize(20)
+            t.set_fontsize(40)
             t.set_rotation(90)
             if i%2 == 0:
                 t.set_rotation(90)
-                t.set_fontsize(15)
+                t.set_fontsize(30)
                 t.set_x(t._x-.7)
 
 
-        plt.text(0.06, 0.02,date_time, ha='center', va='center', transform=axes.transAxes)
+        plt.text(0.08, 0.02, date_time, ha='center', va='center', transform=axes.transAxes, fontsize=30)
 
 
         png_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png')

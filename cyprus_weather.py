@@ -140,13 +140,8 @@ def autoCrop(imageFile):
 
 def draw_map(forecasts, output_image_file, show_weather_icons=True, show_temperatures=False):
     
-    ratio = 720.0 / 1280.0 * 1.0
-    width = 1660.0
 
-    MYDPI = float(plt.gcf().get_dpi())
-    FIGSIZE = (width / MYDPI, width * ratio / MYDPI)
-
-    m, figure, axes=get_cyprus_map(figsize=FIGSIZE, dpi=MYDPI)
+    m, figure, axes=get_cyprus_map()
 
     xs=[]
     ys=[]
@@ -216,11 +211,11 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
                     color = 'magenta'
                 txt = plt.text(
                     x,
-                    y,
+                    y+.002,
                     tmp,
                     color=color,
                     weight='bold',
-                    fontsize=32,
+                    fontsize=64,
                     horizontalalignment='center',
                     verticalalignment='bottom',
                     zorder=6,
@@ -230,32 +225,30 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
 
         plt.text(
             x,
-            y,
+            y-.015,
             current_city,
             color='black',
-            fontsize=20,
+            fontsize=40,
             horizontalalignment='center',
             verticalalignment='top',
             zorder=6,
         )
 
         
-        m.scatter(
-            x,
-            y,
-            s=10,  # size
-            c='black',  # color
-            marker='o',  # symbol
-            alpha=0.5,  # transparency
-            zorder=2,  # plotting order
-        )
+    m.scatter(
+        xs,
+        ys,
+        s=100,  # size
+        c='black',  # color
+        marker='o',  # symbol
+        alpha=0.5,  # transparency
+        zorder=2,  # plotting order
+    )
 
-    plt.savefig(output_image_file, bbox_inches='tight', dpi='figure',
-                pad_inches=0)
+    plt.savefig(output_image_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
 
     plt.close('all')
 
-    autoCrop(output_image_file)
 
     if os.path.exists(output_image_file):
         return output_image_file

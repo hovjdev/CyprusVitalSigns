@@ -17,9 +17,16 @@ def prep_plot(font_scale = 2):
     plt.rcParams['font.family'] = 'Bauhaus'
 
 
-def get_cyprus_map(figsize, dpi):
+def get_cyprus_map():
+
+    ratio = 1080. / 1920.
+    width = 1920 * 2
+
+    MYDPI = float(plt.gcf().get_dpi())
+    FIGSIZE = (width / MYDPI, width * ratio / MYDPI)
+
     
-    figure, axes = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
+    figure, axes = plt.subplots(1, 1, figsize=FIGSIZE, dpi=MYDPI)
     fm.fontManager.addfont("input/fonts/bauhaus/BauhausRegular.ttf")
     plt.rcParams['font.family'] = 'Bauhaus'
 
