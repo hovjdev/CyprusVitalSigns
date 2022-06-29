@@ -53,9 +53,10 @@ if __name__ == "__main__":
 
 
     if DO_INTRO:
-        tz = pytz.timezone('EET')
 
         text="Cyprus Vital Signs\n"
+
+        tz = pytz.timezone('EET')
         today=datetime.now(tz=tz).strftime("%A %d, %B %Y")
         image = Image.open(output_image)
         imsize= image.size

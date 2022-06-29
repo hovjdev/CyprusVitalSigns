@@ -133,6 +133,15 @@ if __name__ == "__main__":
         print(f'>>>{d}')
         folder = d
         script = script_items[d]['script']
+
+        skip=False
+        if "skip" in script_items[d]:
+            skip = script_items[d]['skip']
+
+        if skip:
+            print(f'>>> Skipping {d}')
+            continue
+
         OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
         
         enhance_with_blender = True

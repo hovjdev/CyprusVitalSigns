@@ -61,7 +61,7 @@ def create_vid_file(dir_path):
 
     # create video
     output_video_file = os.path.join(current_dir, dir_path, "video.mp4")
-    cmd = f'ffmpeg  -f concat -safe 0  -i "{ffmpeg_input_png_file}" -vf fps=24 "{output_video_file}"'
+    cmd = f'ffmpeg  -f concat -safe 0  -i "{ffmpeg_input_png_file}" -vf fps=12 "{output_video_file}"'
     print(cmd)
     os.system(cmd)
 
@@ -72,7 +72,8 @@ def create_vid_file(dir_path):
 
     # add audio to video
     output_video_with_audio_file = os.path.join(current_dir, dir_path, "video_with_audio.mp4")
-    cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -vcodec libx264 -acodec libmp3lame  -strict -1 "{output_video_with_audio_file}"'
+    #cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -vcodec libx264 -acodec libmp3lame  -strict -1 "{output_video_with_audio_file}"'
+    cmd = f'ffmpeg -i "{output_video_file}" -i "{output_audio_file}" -map 0:v -map 1:a -c:v copy -shortest  "{output_video_with_audio_file}"'
     print(cmd)
     os.system(cmd)
 

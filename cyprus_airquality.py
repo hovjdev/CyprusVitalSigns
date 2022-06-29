@@ -20,6 +20,7 @@ from pytz import timezone
 
 
 from tools.file_utils import create_dir, delete_previous_files
+from tools.plot_tools import get_cyprus_map
 
 OUTPUT_DIR = 'output/cyprus_airquality'
 
@@ -90,28 +91,7 @@ if __name__ == "__main__":
         pollutant_levels=p["levels"]
 
         #figure = plt.figure(figsize=FIGSIZE, dpi=MYDPI)
-        figure, axes = plt.subplots(1, 1, figsize=FIGSIZE, dpi=MYDPI)
-        fm.fontManager.addfont("input/fonts/bauhaus/BauhausRegular.ttf")
-        plt.rcParams['font.family'] = 'Bauhaus'
-
-        m = Basemap(llcrnrlat=34.45, urcrnrlat=35.75,
-                    llcrnrlon=32.1, urcrnrlon=34.72,
-                    epsg=4230,
-                    projection='cyl',
-                    resolution='c',
-                    ax=axes)
-
-
-        m.drawcoastlines(color='#6D5F47', linewidth=.4)
-        m.drawcountries(color='#6D5F47', linewidth=.4)
-
-        m.drawmeridians(np.arange(-180, 180, 10), color='#bbbbbb')
-        m.drawparallels(np.arange(-90, 90, 10), color='#bbbbbb')
-        m.arcgisimage(
-            server='https://server.arcgisonline.com/arcgis',
-            service='World_Shaded_Relief', xpixels = 3500, dpi=500, verbose= True)
-        #m.bluemarble(scale=8)
-        #m.etopo(scale=10, alpha=0.5)
+        m, figure, axes=get_cyprus_map(figsize=FIGSIZE, dpi=MYDPI)
 
         tz = timezone('EET')
         now =datetime.datetime.now(tz)

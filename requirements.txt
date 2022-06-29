@@ -18,5 +18,6 @@ python-dotenv
 PyVimeo
 eurostat
 moviepy
+python-forecastio
 git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git
 

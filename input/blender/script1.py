@@ -7,8 +7,8 @@ import bpy
 from mathutils import Vector
 
 
-#bpy.context.scene.render.resolution_percentage = 50
-bpy.context.scene.render.resolution_percentage = 200
+bpy.context.scene.render.resolution_percentage = 50
+#bpy.context.scene.render.resolution_percentage = 200
 
 
 DATA_FILE = os.path.join(os.path.dirname(bpy.data.filepath), "files", "data.npy")
@@ -82,7 +82,7 @@ curve.scale[0] = width / (x_max-x_min)
 curve.scale[2] = height / (z_max-z_min)
 curve.location[0] = 0
 curve.location[1] = depth
-curve.location[2] = 0
+curve.location[2] = .1
 curve.rotation_euler[0] = rotation_0
 curve.rotation_euler[1] = rotation_1
 curve.rotation_euler[2] = rotation_2
@@ -98,7 +98,7 @@ curve.scale[0] = width / (x_max-x_min)
 curve.scale[2] = height / (z_max-z_min)
 curve.location[0] = 0
 curve.location[1] = depth
-curve.location[2] = 0
+curve.location[2] = .1
 curve.rotation_euler[0] = rotation_0
 curve.rotation_euler[1] = rotation_1
 curve.rotation_euler[2] = rotation_2
