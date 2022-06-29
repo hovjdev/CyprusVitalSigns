@@ -84,7 +84,7 @@ def narrate_map(forecasts, output_text_file, show_weather_icons=True, show_tempe
                 if len(dic_weather[weather]) > 1:   
                     cities = replace_last(cities, ', ', ' and ')
 
-                f.write(f"{weather} in {cities}\n")
+                f.write(f"{weather} in {cities}.\n")
         else:
             temps=[]
             for temp in dic_temp:
@@ -94,7 +94,7 @@ def narrate_map(forecasts, output_text_file, show_weather_icons=True, show_tempe
                 cities=', '.join(dic_temp[temp])
                 if len(dic_temp[temp]) > 1:   
                     cities = replace_last(cities, ', ', 'and ')   
-                f.write(f"{temp} in {cities}\n")
+                f.write(f"{temp} in {cities}.\n")
 
 
 
