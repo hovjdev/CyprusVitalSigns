@@ -7,7 +7,7 @@ import bpy
 from mathutils import Vector
 
 
-bpy.context.scene.render.resolution_percentage = 50
+bpy.context.scene.render.resolution_percentage = 25
 #bpy.context.scene.render.resolution_percentage = 200
 
 
