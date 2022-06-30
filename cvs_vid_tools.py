@@ -76,8 +76,6 @@ def create_vid_file(dir_path):
                 audio_file=str(audio_file)
                 wav = AudioSegment.from_wav(audio_file)
                 duration =  len(wav)/1000 
-                image_file=os.path.join(current_dir, str(image_files[-1]))
-
                 files.append(image_file)
                 durations.append(duration)
         print(f"files: {files}")
