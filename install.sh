@@ -6,8 +6,8 @@ sudo apt-get -y install python3-venv
 sudo apt-get -y install python-dev
 sudo apt-get -y install build-essential
 sudo snap install blender --channel=3.2/stable --classic
-mkdir code
-cd code
+mkdir -p /home/$USER/code
+cd /home/$USER/code
 git clone https://github.com/hovjdev/CyprusVitalSigns.git
 python3 -m venv env
 pip3 install --upgrade setuptools
