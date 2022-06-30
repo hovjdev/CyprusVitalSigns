@@ -1,16 +1,21 @@
-sudo apt install blender
-sudo apt install ffmpeg
+sudo apt-get -y update
+sudo apt-get -y upgrade 
+sudo apt-get -y install blender
+sudo apt-get -y install ffmpeg
+sudo apt-get -y install python3-venv
 mkdir code
 cd code
 git clone https://github.com/hovjdev/CyprusVitalSigns.git
 python3 -m venv env
+pip3 install --upgrade setuptools
+pip3 install --upgrade pip
 source env/bin/activate
 cd CyprusVitalSigns
 pip install -r requirements.txt
 
 
 
-# dont forget to create a .env file
+# dont forget to create a .env file, with your keys and tokens
 # VIMEO_TOKEN=...
 # VIMEO_ID=...
 # VIMEO_SECRETS=...
