@@ -528,7 +528,9 @@ if __name__ == "__main__":
         print(inds)
         print(f'type(inds)={type(inds)}')
 
+    print("Loading parrot...")
     parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5")
+    print("Parrot loaded...")
 
     for i in range(10):
         data=None
