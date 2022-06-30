@@ -30,7 +30,7 @@ ECONOMIES_1 = ['CYP', 'WLD']
 ECONOMIES_2 = ['CYP',  'WLD']
 SERIES = ['NY.GDP.PCAP.CD', 'SP.POP.TOTL']
 OUTPUT_DIR = 'output/cyprus_worldbank'
-DEBUG=False
+DEBUG=True
 
 
 MAX_IND_LENGTH = 60
