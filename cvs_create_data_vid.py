@@ -145,7 +145,6 @@ if __name__ == "__main__":
         OUTPUT_DIR_D= os.path.join(OUTPUT_DIR, folder)
         
         enhance_with_blender = True
-
         if "enhance_with_blender" in script_items[d]:
             enhance_with_blender=script_items[d]['enhance_with_blender']
             print(f'enhance_with_blender: {enhance_with_blender}')

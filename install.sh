@@ -1,8 +1,11 @@
 sudo apt-get -y update
 sudo apt-get -y upgrade 
+sudo apt-get -y install python3.6-dev
 sudo apt-get -y install blender
 sudo apt-get -y install ffmpeg
 sudo apt-get -y install python3-venv
+sudo apt-get -y install python-dev
+sudo apt-get -y install build-essential
 mkdir code
 cd code
 git clone https://github.com/hovjdev/CyprusVitalSigns.git
