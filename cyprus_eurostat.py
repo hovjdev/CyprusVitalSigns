@@ -21,7 +21,7 @@ from parrot import Parrot
 from paraphrase import paraphrase_text
 
 
-DEBUG=True
+DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
 
 
