@@ -1,7 +1,7 @@
 import bpy
 import random
 
-bpy.context.scene.render.resolution_percentage = 25
+bpy.context.scene.render.resolution_percentage = 100
 #bpy.context.scene.render.resolution_percentage = 200
 
 
