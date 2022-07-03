@@ -234,16 +234,32 @@ if __name__ == "__main__":
         tmp = sorted(tmp, key=lambda d: len(d['locations']), reverse=True)
 
 
+        def replace_last(string, find, replace):
+            reversed = string[::-1]
+            replaced = reversed.replace(find[::-1], replace[::-1], 1)
+            return replaced[::-1]
+
+
         text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
         with open(text_file, "w") as f:
+
+            first=random.choice(["Let's review ", "Let's take a look at ", "Let's review the data for "])
+            f.write(f"{first}the air quality in Cyprus.\n")
+
             for t in tmp:
                 if len(t['locations'])>0:
                     locations = t['locations']
                     locations = [f'"{l}"' for l in locations]
-                    locations = ', '.join(locations)
+                    locations_joined = ', '.join(locations)
+                    if len(locations) > 1:   
+                        locations_joined = replace_last(locations_joined, ', ', ' and ')
+                    
+
+
+
                     first=random.choice(["Today, ", "Now, ", "", ""])
                     levels=random.choice(["levels", "levels", "measurements", "concentrations"])
                     cities=random.choice(["the following cities: ", "these locations: ", "", ""])
                     quality = t['quality']
-                    f.write(f'{first}{pollutant_label_en} {levels} are {quality} in {cities}{locations}.\n')
+                    f.write(f'{first}{pollutant_label_en} {levels} are {quality} in {cities}{locations_joined}.\n')
 

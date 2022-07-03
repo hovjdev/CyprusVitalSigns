@@ -1,4 +1,4 @@
-
+import random
 import argparse
 import datetime
 import os
@@ -37,12 +37,13 @@ def narrate_map(forecasts, output_text_file, show_weather_icons=True, show_tempe
 
 
         tz = pytz.timezone('EET')
-        text="Cyprus Vital Signs\n"
         today=datetime.datetime.now(tz=tz).strftime("%A %d, %B %Y")
 
         if show_weather_icons:
-            f.write(f"And here is the weather forecast for Cyprus on {today}.\n")
+            first=random.choice(["Now,", "And here is,", "And now, let's take a look at"])
+            f.write(f"{first} the weather forecast for Cyprus on {today}.\n")
         else:
+            first=random.choice(["Now,", "And here is,", "And now, let's take a look at"])
             f.write(f"And here is the temperature forecast for Cyprus on {today}.\n")
 
         dic_weather = {}
@@ -98,43 +99,6 @@ def narrate_map(forecasts, output_text_file, show_weather_icons=True, show_tempe
 
 
 
-
-def autoCrop(imageFile):
-    # print(">>>autoCrop")
-    if not os.path.isfile(imageFile):
-        return
-
-    image = Image.open(imageFile)
-    image.load()
-
-    imageSize = image.size
-    imageMode = image.mode
-
-    p1 = image.getpixel((0, 0))
-    p2 = image.getpixel((imageSize[0] - 1, 0))
-    p3 = image.getpixel((0, imageSize[1] - 1))
-    p4 = image.getpixel((imageSize[0] - 1, imageSize[1] - 1))
-
-    '''
-    if not (p1 == p2 and p1 == p3 and p1 == p4):
-        image.close()
-        # print(">>>Not cropping")
-        print(p1, p2, p3, p4)
-        return
-    '''
-
-    bg = Image.new(imageMode, imageSize, p1)
-
-    diff = ImageChops.difference(image, bg)
-    diff = ImageChops.add(diff, diff, 2.0, -100)
-    bbox = diff.getbbox()
-    if bbox:
-        cropped = image.crop(bbox)
-        # print(">>>Save cropped file")
-        cropped.save(imageFile)
-        cropped.close()
-
-    image.close()
 
 
 
@@ -234,6 +198,19 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
             zorder=6,
         )
 
+    
+    tz = pytz.timezone('EET')
+    today=datetime.datetime.now(tz=tz).strftime("%A %d, %B %Y")
+    figure.text(
+        .85,
+        .17,
+        f"{today}",
+        color='black',
+        fontsize=20,
+        horizontalalignment='center',
+        verticalalignment='top',
+        zorder=6,
+    )
         
     m.scatter(
         xs,
@@ -244,6 +221,15 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
         alpha=0.5,  # transparency
         zorder=2,  # plotting order
     )
+
+
+
+    if show_weather_icons:
+        plt.title(f"Cyprus weather forecast", fontsize = 60, y=1.0, pad=-90)
+
+    else:
+         plt.title(f"Cyprus temperature forecast", fontsize = 60, y=1.0, pad=-90)
+
 
     plt.savefig(output_image_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
 
