@@ -1,5 +1,4 @@
 import random
-from termios import PARODD
 from parrot import Parrot
 
 

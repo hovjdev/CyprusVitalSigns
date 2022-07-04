@@ -62,7 +62,7 @@ if __name__ == "__main__":
         imsize= image.size
         fit_text_in_shape(image=image, 
                 x=int(imsize[0] * -0.1),
-                y=int(imsize[1] * 0.4),
+                y=int(imsize[1] * 0.45),
                 w=int(imsize[0] * 1.2),
                 h=int(imsize[1] * 0.23 ),
                 text=text,

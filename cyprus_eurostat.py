@@ -23,7 +23,7 @@ from paraphrase import paraphrase_text
 
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
-
+MAX_N=3
 
 def db_print(s, debug=DEBUG):
     if debug:
@@ -156,7 +156,7 @@ def prep_df(df):
                                        '11':'November',                                                                                                            
                                        '12':'December',})
 
-    print(df)
+    db_print(df)
     return df
 
 
@@ -360,15 +360,16 @@ if __name__ == "__main__":
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
     
-    if False:
+    if True and DEBUG:
         codes = get_codes(keyword = 'hotel')
         exit(1)
 
     code_selection=['avia_tf_cm',
                     'tour_occ_arm',
                     't2020_rd300',
-                    'tour_occ_mnor'
-    ]
+                    'tour_occ_mnor']
+
+    code_selection=random.sample(code_selection, MAX_N)
 
     metadata = {
         'avia_tf_cm': {

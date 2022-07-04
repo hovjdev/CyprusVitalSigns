@@ -23,6 +23,7 @@ from tools.file_utils import create_dir, delete_previous_files
 from tools.plot_tools import get_cyprus_map
 
 OUTPUT_DIR = 'output/cyprus_airquality'
+DEBUG=False
 
 
 if __name__ == "__main__":
@@ -104,10 +105,12 @@ if __name__ == "__main__":
 
 
             url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
-            print(url)
+            if DEBUG:
+                print(url)
             res = requests.get(url)
             res = res.json()
-            print(res)
+            if DEBUG:
+                print(res)
 
             pollution=''
             try:

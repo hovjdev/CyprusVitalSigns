@@ -34,8 +34,8 @@ DEBUG=False
 PARROT=False
 
 
+MAX_N = 3
 MAX_IND_LENGTH = 60
-MAX_IND = 4
 MIN_NB_DATA=15
 MAX_NB_OUTLIERS=3
 MIN_SLOPE=.1
@@ -271,7 +271,7 @@ def filter_inds_on_length(inds, max_ind, max_ind_length):
     return indsf
 
 def get_random_data(economies,
-                    max_ind=MAX_IND,
+                    max_ind=MAX_N,
                     max_ind_length=MAX_IND_LENGTH,
                     min_nb_data=MIN_NB_DATA,
                     min_slope=MIN_SLOPE,
@@ -415,6 +415,7 @@ def narrate_df(df, title, economies, output_txt_file):
 
     title_fix = str(title)
     title_fix = title_fix.replace("BoP", "Balance of Payments")
+    title_fix = title_fix.replace("PPP", "Purchasing power parity")
 
     def find_trend(df, c):
         trend = 'stayed more or less the same'

@@ -15,9 +15,6 @@ import matplotlib.patheffects as PathEffects
 from matplotlib.pyplot import imread
 
 
-from pytz import timezone
-
-
 from tools.file_utils import create_dir, delete_previous_files
 from tools.plot_tools import get_cyprus_map
 
@@ -257,12 +254,9 @@ def create_cyprus_weather(output_dir=OUTPUT_DIR):
         "Morfou":{"long":32.9776, "lat":35.2123},
         #"Aradippou":{"long":33.59, "lat":34.9528},
         #"Paralimnni":{"long":33.9823, "lat":35.0380},
-
         #"Zygi":{"long":33.3333, "lat":34.7333},
         #"Ayia":{"long":33.0567, "lat":35.0492 },
         #"Ormidia":{"long":33.7803, "lat":34.9925},
-
-
         "Rizokarpaso":{"long":34.408730, "lat":35.617683},
     }
 
@@ -273,7 +267,7 @@ def create_cyprus_weather(output_dir=OUTPUT_DIR):
         lat = cities[city]['lat']
         long = cities[city]['long']
 
-        tz = timezone('EET')
+        tz = pytz.timezone('EET')
         now =datetime.datetime.now(tz)
         time = datetime.datetime(now.year, now.month, now.day, 12)
         forecast = forecastio.load_forecast(WEATHER_API_KEY, lat=lat, lng=long, units='si', time=time)

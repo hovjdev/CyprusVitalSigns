@@ -27,9 +27,10 @@ def textfile_to_wav(text_file, output_wav_file, parrot=None):
 def text_to_speach(text, output_wav_file):
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        text = text.replace(". ", ".. ")
-        text = text.replace(", ", ",, ")
-        text_list= re.split(r', |\. |\n', text)
+        text = text.replace(". ", ".\n")
+        text = text.replace(", ", ",\n")
+        text = text.replace(" and ", " and\n")
+        text_list= re.split(r'\n', text)
 
         wav_files = []
         for i, t in enumerate(text_list):

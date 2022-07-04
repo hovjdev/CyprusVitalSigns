@@ -10,7 +10,7 @@ from cvs_text_to_audio import combine_wav_files
 
 
 USE_FFMPEG=False
-
+FPS=6
 
 def create_vid_file(dir_path):
 
@@ -65,7 +65,7 @@ def create_vid_file(dir_path):
 
         # create video
         output_video_file = os.path.join(current_dir, dir_path, "video.mp4")
-        cmd = f'ffmpeg  -f concat -safe 0  -i "{ffmpeg_input_png_file}" -vf fps=12 "{output_video_file}"'
+        cmd = f'ffmpeg  -f concat -safe 0  -i "{ffmpeg_input_png_file}" -vf fps=FPS "{output_video_file}"'
         print(cmd)
         os.system(cmd)
     else:
@@ -81,7 +81,7 @@ def create_vid_file(dir_path):
         print(f"files: {files}")
         print(f"durations: {durations}")
         clip = mp.ImageSequenceClip(sequence=files, durations=durations) 
-        clip.write_videofile(output_video_file, fps = 12)
+        clip.write_videofile(output_video_file, fps = FPS)
 
 
     output_audio_file = os.path.join(current_dir, dir_path, "audio.wav")
@@ -104,7 +104,7 @@ def create_vid_file(dir_path):
         audioclip = mp.AudioFileClip(output_audio_file)
         new_audioclip = mp.CompositeAudioClip([audioclip])
         videoclip.audio = new_audioclip
-        videoclip.write_videofile(output_video_with_audio_file, fps = 12)
+        videoclip.write_videofile(output_video_with_audio_file, fps = FPS)
 
 
     if os.path.exists(output_video_with_audio_file):
@@ -146,7 +146,7 @@ def concat_video_files(video_files, output_video, crossfade_duration=1.5):
 
 
     concat_clip =  mp.concatenate_videoclips(clips, padding=-1*crossfade_duration, method="compose")
-    concat_clip.write_videofile(output_video, fps = 12)
+    concat_clip.write_videofile(output_video, fps = FPS)
 
 
     if os.path.exists(output_video):

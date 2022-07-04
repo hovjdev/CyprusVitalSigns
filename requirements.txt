@@ -19,5 +19,6 @@ PyVimeo
 eurostat
 moviepy
 python-forecastio
+flickrapi
 git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git
 

@@ -12,6 +12,10 @@
     "script": "cyprus_worldbank.py",
     "skip": false
   },
+  "flck": {
+    "script": "cyprus_flickr.py",
+    "skip": false
+  },
   "airq": {
     "script": "cyprus_airquality.py",
     "skip": false
