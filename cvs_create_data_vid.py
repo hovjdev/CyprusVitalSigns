@@ -73,7 +73,6 @@ def enhance_images(dir_path, enhance_with_blender=True):
         except:
             pass
 
-
         output_image = os.path.join(dir_path, f"frame_{i}_####.png")
         if enhance_with_blender:
             

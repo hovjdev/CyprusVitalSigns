@@ -416,6 +416,8 @@ def narrate_df(df, title, economies, output_txt_file):
     title_fix = str(title)
     title_fix = title_fix.replace("BoP", "Balance of Payments")
     title_fix = title_fix.replace("PPP", "Purchasing power parity")
+    title_fix = title_fix.replace("sq. km", "square kilometers")
+
 
     def find_trend(df, c):
         trend = 'stayed more or less the same'
