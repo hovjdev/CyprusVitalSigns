@@ -14,8 +14,9 @@ from cvs_vid_tools import create_vid_file, concat_video_files
 from upload_to_vimeo import upload_mp4_to_vimeo
 
 
-INPUT_DIR = 'input/cvs_data_vids'
-OUTPUT_DIR = 'output/cvs_data_vids'
+DIRNAME = os.path.dirname(__file__)
+INPUT_DIR = os.path.join(DIRNAME, 'input', 'cvs_data_vids')
+OUTPUT_DIR = os.path.join(DIRNAME, 'output', 'cvs_data_vids')
 
 
 

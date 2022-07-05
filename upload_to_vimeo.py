@@ -2,10 +2,16 @@ import json
 import os
 import vimeo
 
-from local_settings import VIMEO_TOKEN, VIMEO_ID, VIMEO_SECRETS
+from local_settings import VIMEO_TOKEN, VIMEO_ID, VIMEO_SECRETS, UPLOAD_TO_VIMEO
 
 
-def upload_mp4_to_vimeo(video_file_path, data):
+def upload_mp4_to_vimeo(video_file_path, data, upload_to_vimeo=UPLOAD_TO_VIMEO):
+
+    if upload_to_vimeo==False:
+        print(f"UPLOAD_TO_VIMEO: {UPLOAD_TO_VIMEO}")
+        print(f"UPLOAD_TO_VIMEO is set in local_settings.py")
+        return
+
     # Instantiate the library with your client id, secret and access token
     # (pulled from dev site)
     client = vimeo.VimeoClient(

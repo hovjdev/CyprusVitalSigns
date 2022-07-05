@@ -10,7 +10,8 @@ from tools.file_utils import create_dir, delete_previous_files
 from tools.misc import create_texture_image, fit_text_in_shape
 
 
-OUTPUT_DIR = 'output/cvs_intro'
+DIRNAME = os.path.dirname(__file__)
+OUTPUT_DIR = os.path.join(DIRNAME, 'output', 'cvs_intro')
 DO_INTRO=True
 
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     if args.type:
         if args.type=="end":
             DO_INTRO=False
-            OUTPUT_DIR = 'output/cvs_end'
+            OUTPUT_DIR = os.path.join(DIRNAME, 'output', 'cvs_intro')
 
     if args.output:
         OUTPUT_DIR=args.output

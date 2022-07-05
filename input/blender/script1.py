@@ -1,14 +1,23 @@
 import os
+import sys
+import bpy
 from bpy import context, data, ops
 from math import cos, pi, sin, tan
 from random import TWOPI, randint, uniform
 import numpy as np
-import bpy
+
 from mathutils import Vector
 
 
-bpy.context.scene.render.resolution_percentage = 200
-#bpy.context.scene.render.resolution_percentage = 25
+DIRNAME = os.path.dirname(os.path.abspath(__file__))
+PATH_LOCAL_SETTINGS_SETTINGS=os.path.join(DIRNAME, '..', '..')
+#raise Exception(PATH_LOCAL_SETTINGS_SETTINGS)
+sys.path.append(PATH_LOCAL_SETTINGS_SETTINGS)
+from local_settings import BLENDER_RESOLUTION_PCT
+
+print(f"BLENDER_RESOLUTION_PCT: {BLENDER_RESOLUTION_PCT}")
+bpy.context.scene.render.resolution_percentage = 25
+bpy.context.scene.render.resolution_percentage = BLENDER_RESOLUTION_PCT
 
 
 DATA_FILE = os.path.join(os.path.dirname(bpy.data.filepath), "files", "data.npy")

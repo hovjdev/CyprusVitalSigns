@@ -1,8 +1,18 @@
-import bpy
+import os
+import sys
 import random
+import bpy
 
-bpy.context.scene.render.resolution_percentage = 200
-#bpy.context.scene.render.resolution_percentage = 25
+
+DIRNAME = os.path.dirname(os.path.abspath(__file__))
+PATH_LOCAL_SETTINGS_SETTINGS=os.path.join(DIRNAME, '..', '..')
+#raise Exception(PATH_LOCAL_SETTINGS_SETTINGS)
+sys.path.append(PATH_LOCAL_SETTINGS_SETTINGS)
+from local_settings import BLENDER_RESOLUTION_PCT
+
+print(f"BLENDER_RESOLUTION_PCT: {BLENDER_RESOLUTION_PCT}")
+bpy.context.scene.render.resolution_percentage = 25
+bpy.context.scene.render.resolution_percentage = BLENDER_RESOLUTION_PCT
 
 
 

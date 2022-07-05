@@ -1,13 +1,13 @@
 import os
 import argparse
 
-
+DIRNAME = os.path.dirname(__file__)
 BLENDER="blender"
 IMAGE_PATH=""
-OUTPUT_DIR="output/blender/textures"
+OUTPUT_DIR=os.path.join(DIRNAME, "output", "blender", "textures")
 INPUT_IMAGE=""
-INPUT_BLENDER_FILE="input/blender/textures.blend"
-INPUT_BLENDER_SCRIPT="input/blender/texture.py"
+INPUT_BLENDER_FILE=os.path.join(DIRNAME, "input", "blender", "textures.blend")
+INPUT_BLENDER_SCRIPT=os.path.join(DIRNAME, "input", "blender", "texture.py")
 OUTPUT_IMAGE="frame_####.png"
 
 
@@ -42,4 +42,5 @@ if __name__ == "__main__":
     else:
         cmd = f"{BLENDER} -b {INPUT_BLENDER_FILE} -o {OUTPUT_IMAGE} -a"
 
+    print(cmd)
     os.system(cmd)
