@@ -75,7 +75,7 @@ if __name__ == "__main__":
     delete_previous_files(OUTPUT_DIR)
 
     date_time = None
-    for p in pollutants_list:
+    for counter, p in enumerate(pollutants_list):
 
         pollutant_label= p['label']
         pollutant_label=unidecode(pollutant_label)
@@ -90,7 +90,8 @@ if __name__ == "__main__":
         now =datetime.datetime.now(tz)
         ytd = now - datetime.timedelta(days=1)
 
-        air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
+        #air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
+        air_quality = {}
 
         xs=[]
         ys=[]
@@ -146,15 +147,23 @@ if __name__ == "__main__":
             fp=float(pollution)
             if fp>= 0 and fp <pollutant_levels[0]:
                 color="green"
+                if 'good' not in air_quality:
+                    air_quality['good']=[]
                 air_quality['good'].append(label_en)
             if fp>= pollutant_levels[0] and fp < pollutant_levels[1]:
                 color="orange"
+                if 'moderate' not in air_quality:
+                    air_quality['moderate']=[]
                 air_quality['moderate'].append(label_en)
             if fp>= pollutant_levels[1] and fp < pollutant_levels[2]:
                 color="red"
+                if 'unhealthy' not in air_quality:
+                    air_quality['unhealthy']=[]
                 air_quality['unhealthy'].append(label_en)
             if fp>= pollutant_levels[2]:
                 color="purple"
+                if 'toxic' not in air_quality:
+                    air_quality['toxic']=[]
                 air_quality['toxic'].append(label_en)
 
             plt.text(
@@ -245,9 +254,12 @@ if __name__ == "__main__":
 
         text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
         with open(text_file, "w") as f:
-
-            first=random.choice(["Let's review ", "Let's take a look at ", "Let's review the data for "])
-            f.write(f"{first}the air quality in Cyprus.\n")
+            if counter == 0:
+                first=random.choice([
+                                "Let's review ", 
+                                "Let's take a look at ", 
+                                "Let's review the data for "])
+                f.write(f"{first}the air quality in Cyprus.\n")
 
             for t in tmp:
                 if len(t['locations'])>0:
@@ -257,12 +269,17 @@ if __name__ == "__main__":
                     if len(locations) > 1:   
                         locations_joined = replace_last(locations_joined, ', ', ' and ')
                     
-
-
-
                     first=random.choice(["Today, ", "Now, ", "", ""])
                     levels=random.choice(["levels", "levels", "measurements", "concentrations"])
-                    cities=random.choice(["the following cities: ", "these locations: ", "", ""])
+                    cities=random.choice(["in the following cities: ", "in these locations: ", "in", "in"])
                     quality = t['quality']
-                    f.write(f'{first}{pollutant_label_en} {levels} are {quality} in {cities}{locations_joined}.\n')
+                    last=[f"{cities} {locations_joined}"]
+                    if len(air_quality) == 1:
+                        last=[f"in all measured locations", 
+                                "throughout Cyprus", 
+                                "all places", 
+                                "across the island", 
+                                "across Cyprus"]
+                    last=random.choice(last)
+                    f.write(f'{first}{pollutant_label_en} {levels} are {quality} {last}.\n')
 
