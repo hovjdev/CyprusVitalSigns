@@ -154,7 +154,7 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     from_date = from_date.strftime("%A %d, %B %Y")
 
     figure.text(
-        .8,
+        .78,
         .17,
         f"From {from_date}  to  {today}",
         color='black',

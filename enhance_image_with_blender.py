@@ -1,13 +1,14 @@
 import os
 import argparse
 
+DIRNAME = os.path.dirname(__file__)
 
 BLENDER="blender"
 IMAGE_PATH=""
-OUTPUT_DIR="output/blender"
+OUTPUT_DIR=os.path.join(DIRNAME, "output", "blender")
 INPUT_IMAGE=""
-INPUT_BLENDER_FILE="input/blender/p1.blend"
-INPUT_BLENDER_SCRIPT="input/blender/script1.py"
+INPUT_BLENDER_FILE=os.path.join(DIRNAME, "input", "blender", "p1.blend")
+INPUT_BLENDER_SCRIPT=os.path.join(DIRNAME, "input", "blender", "script1.py")
 OUTPUT_IMAGE="frame_####.png"
 
 

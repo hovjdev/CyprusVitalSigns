@@ -4,7 +4,7 @@ import random
 import bpy
 
 
-DIRNAME = os.path.dirname(os.path.abspath(__file__))
+DIRNAME = os.path.dirname(bpy.data.filepath)
 PATH_LOCAL_SETTINGS_SETTINGS=os.path.join(DIRNAME, '..', '..')
 #raise Exception(PATH_LOCAL_SETTINGS_SETTINGS)
 sys.path.append(PATH_LOCAL_SETTINGS_SETTINGS)

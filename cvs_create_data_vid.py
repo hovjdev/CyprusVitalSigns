@@ -1,11 +1,16 @@
-from distutils import text_file
 import os
 import json
 import uuid
+import random
 import shutil
+
 from pathlib import Path
 from PIL import Image
+from jinja2 import Environment, FileSystemLoader
 
+
+import pytz
+import datetime
 
 from tools.misc import create_texture_image
 from tools.file_utils import create_dir, delete_previous_files
@@ -54,10 +59,34 @@ def enhance_images(dir_path, enhance_with_blender=True):
 
     images.append(images[0])
 
-    files_path = os.path.join('input', 'blender', 'files')
+    #files
+    files_path = os.path.join(INPUT_DIR, '..', 'blender', 'files')
     delete_previous_files(files_path)
     create_dir(files_path)
 
+    #blender file
+    #print(str(Path(os.path.join(INPUT_DIR, '..', 'blender'))))
+    blend_files = list(Path(os.path.join(INPUT_DIR, '..', 'blender')).glob("p*.blend"))
+
+    blend_files.sort()
+    assert len(blend_files) > 0
+    blend_file = blend_files[-1]
+
+
+    #script file
+    tz = pytz.timezone('EET')
+    random.seed(datetime.datetime.now(tz))
+    seed = random.randint(1001, 2001)
+    jj_file_loader = FileSystemLoader(searchpath=os.path.join(INPUT_DIR, '..', 'blender'))
+    jj_env = Environment(loader=jj_file_loader)
+    jj_template = jj_env.get_template('script.py.template.txt')
+    jj_output = jj_template.render(seed=seed)
+    blend_script_file = os.path.join(INPUT_DIR, '..', 'blender', 'script1.py' )
+    with open(blend_script_file, 'w') as f:
+        f.write(jj_output)
+
+
+    # enhance images
     for i in range(len(images)-1):
 
         try:
@@ -74,9 +103,8 @@ def enhance_images(dir_path, enhance_with_blender=True):
             pass
 
         output_image = os.path.join(dir_path, f"frame_{i}_####.png")
-        if enhance_with_blender:
-            
-            cmd = f'python  enhance_image_with_blender.py -o {output_image}'
+        if enhance_with_blender:      
+            cmd = f'python  enhance_image_with_blender.py -o {output_image} -b {blend_file} -s {blend_script_file}'
             print(cmd)
             os.system(cmd)
         else:
@@ -130,6 +158,12 @@ if __name__ == "__main__":
     script_items = get_script_items()
 
     video_files = []
+    report_dict = {}
+
+    # start_time
+    tz = pytz.timezone('EET')
+    start_date =datetime.datetime.now(tz)
+    report_dict = { 'start_time': str(start_date) }
 
     for d in script_items:
         print(f'>>>{d}')
@@ -191,4 +225,11 @@ if __name__ == "__main__":
         upload_mp4_to_vimeo(output_video, data)
 
 
-   
+    # output report file
+    end_date =datetime.datetime.now(tz)
+    report_dict['end_time']= str(end_date) 
+    report_dict['run_time']= str(end_date-start_date) 
+
+    report_file= os.path.join(OUTPUT_DIR, "report_file.json")
+    with open(report_file, 'w') as fp:
+        json.dump(report_dict, fp)

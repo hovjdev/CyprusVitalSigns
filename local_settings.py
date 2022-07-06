@@ -1,10 +1,14 @@
 import os
+import sys
+
 
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except:
-    with open(".env", "r") as f:
+    env_path = os.path.dirname(os.path.abspath(__file__))
+    env_path = os.path.join(env_path, '.env')
+    with open(env_path, "r") as f:
         for line in f:
             if line.startswith('#'):
                 continue
