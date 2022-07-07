@@ -1,4 +1,5 @@
 import os
+import random
 import ast
 import argparse
 import pytz
@@ -175,11 +176,24 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     concetrations = sorted(concetrations, key=lambda d: d['concentration'], reverse=True)
     locations = f"{concetrations[0]['name']}, {concetrations[1]['name']} and {concetrations[2]['name']}"
 
-    with open(output_text_file, "w") as f:
-        f.write("And now, let's take a look at places where tourists have been concentrating in the last 6 months.\n")
-        f.write(f"The map of geotagged photo locations shows that tourists have been concentrating the most in {locations}.\n")
+    first = random.choice([
+        "concentrating",
+        "gathering",
+    ])
 
-    
+    second = random.choice([
+        "shows",
+        "indicates",
+    ])
+
+    third = random.choice([
+        "concentrating",
+        "gathering",
+    ])    
+
+    with open(output_text_file, "w") as f:
+        f.write(f"And now, let's take a look at places where tourists have been {first} in the last 6 months.\n")
+        f.write(f"The map of geotagged photo locations {second} that tourists have been {third} the most in {locations}.\n")
 
 
     if os.path.exists(output_image_file):

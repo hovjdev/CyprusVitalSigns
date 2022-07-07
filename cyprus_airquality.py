@@ -236,7 +236,7 @@ if __name__ == "__main__":
         plt.text(0.08, 0.02, date_time, ha='center', va='center', transform=axes.transAxes, fontsize=30)
 
 
-        png_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.png')
+        png_file = os.path.join(OUTPUT_DIR, f'{counter}_airquality_{pollutant_code}.png')
         plt.savefig(png_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
 
 
@@ -252,7 +252,7 @@ if __name__ == "__main__":
             return replaced[::-1]
 
 
-        text_file = os.path.join(OUTPUT_DIR, f'airquality_{pollutant_code}.txt')
+        text_file = os.path.join(OUTPUT_DIR, f'{counter}_airquality_{pollutant_code}.txt')
         with open(text_file, "w") as f:
             if counter == 0:
                 first=random.choice([
@@ -265,13 +265,18 @@ if __name__ == "__main__":
                 if len(t['locations'])>0:
                     locations = t['locations']
                     locations = [f'"{l}"' for l in locations]
+                    only_one_location=False
+                    if len(locations)==1:
+                        only_one_location=True
                     locations_joined = ', '.join(locations)
                     if len(locations) > 1:   
                         locations_joined = replace_last(locations_joined, ', ', ' and ')
                     
-                    first=random.choice(["Today, ", "Now, ", "", ""])
+                    first=random.choice(["Today, ", "Now, ", "", "", "", ""])
                     levels=random.choice(["levels", "levels", "measurements", "concentrations"])
                     cities=random.choice(["in the following cities: ", "in these locations: ", "in", "in"])
+                    if only_one_location:
+                        cities="in"
                     quality = t['quality']
                     last=[f"{cities} {locations_joined}"]
                     if len(air_quality) == 1:

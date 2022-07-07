@@ -23,7 +23,7 @@ from paraphrase import paraphrase_text
 
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
-MAX_N=2
+MAX_N=3
 
 def db_print(s, debug=DEBUG):
     if debug:
@@ -44,10 +44,51 @@ def get_codes(keyword = 'tourist'):
 
 def get_data(code, filters):
 
+    db_print(f">>>Getting data for code: {code}")
+    df = eurostat.get_data_df(code)
+    dim_cy=None
+    for col in df.columns:
+        col_values = df[col].values.tolist()
+        if 'CY' in col_values:
+            dim_cy=col
+            break
+    if not dim_cy:
+        db_print("CY not found")
+        return None
+    
+    toc_df = eurostat.get_toc_df()
+    toc_df = toc_df[toc_df['code']==code] 
+
+    db_print(code)
+    db_print(toc_df)    
+    title=toc_df['title'].tolist()
+    assert len(title)==1
+    title=title[0]
+    db_print(f'title: {title}')
+    db_print(dim_cy)
+    db_print(df)    
+
+    db_print(df.columns)
+    for filter in filters:
+        for f in filters[filter]:
+            df=df[df[filter]==f]
+
+
+
+    db_print(df)
+    db_print(df.columns.to_list())
+
+    return df, title
+        
+
+
+
+def get_sdmx_data(code, filters):
+
     avail_sdmx_df = eurostat.get_avail_sdmx_df()
 
 
-    db_print(f">>>Getting data for code: {code}")
+    db_print(f">>>Getting SDMX data for code: {code}")
     dims = eurostat.get_sdmx_dims(code)
     has_cy = False
     dim_cy=None
@@ -275,62 +316,71 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
 
     with open(output_txt_file, "w") as f:
         first=random.choice([
-                    "We shall now examine", 
+                    "We shall now examine",
+                    "And now let's review",
+                    "Let's examine",
                     "Let's take a look at",
-                    "Let's review"])
+                    "Let's review",])
         title_split = title.split('(')[0]
         third=random.choice([
                     "data", 
                     "time series",
-                    "chart"])
+                    "chart",])
 
         fourth=random.choice([
                     "with the highest", 
                     "with the biggest",
-                    "with most"])
+                    "with most",])
 
         fifth=random.choice([
                     "with the lowest", 
                     "with the smallest",
-                    "with least"])
+                    "with least",])
 
         max_val= random.choice([
             f"with {str(round(max))} {unit}",
-            ""
+            f"with {str(round(max))} {unit}",            
+            "",
         ])
 
         min_val= random.choice([
             f"with {str(round(min))} {unit}",
-            ""
+            f"with {str(round(min))} {unit}",            
+            "",
         ])
 
         sixth=random.choice([
+            "Overall,", 
+            "On average,", 
             "Overall,",
             "On average,",
-            "Overall,",
-            "On average,",
-            "In recent years,"
-            "On the whole,"
+            "In recent years,",
+            "On the whole,",
+            "Over this period,",
         ])
-
-        seventh = ""
+        
+        seventh = " "
         if slope_pct > 0:
             seventh=random.choice([
-                "increased by",
-                "rose by"
+                " increased by ",
+                " rose by ",
             ])
         else:
             seventh=random.choice([
-                "decreased by",
-                "fell by"
+                " decreased by ",
+                " fell by ",
             ])
 
+
+        eight=random.choice([
+            "percent each year.", 
+        ])
 
         text = ''
         text += f'{first} the {third} of the {title_split}.\n'
         text += f'{str(max_year)} {max_val} was the  year {fourth} {title_short}.\n'
         text += f'{str(min_year)} {min_val} was the  year {fifth} {title_short}.\n'
-        text += f'{sixth} the {title_split} {seventh} {round(slope_pct)} percent each year.\n'
+        text += f'{sixth} the {title_split}{seventh}{round(slope_pct)} {eight}\n'
 
         if parrot: 
             text = paraphrase_text(text, parrot)
@@ -360,16 +410,26 @@ if __name__ == "__main__":
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
     
-    if True and DEBUG:
-        codes = get_codes(keyword = 'hotel')
+    if False and DEBUG:
+        codes = get_codes(keyword = 'tourism')
         exit(1)
 
     code_selection=['avia_tf_cm',
                     'tour_occ_arm',
                     't2020_rd300',
-                    'tour_occ_mnor']
+                    'tour_occ_mnor',
+                    'env_wat_res',
+                    'cli_act_noec',
+                    'tin00196',
+                    'tin00195',
+                    'tin00191']
+    
+    #code_selection=['tin00195']
 
+    # ramdom selection of indicators
+    MAX_N=min(MAX_N, len(code_selection))
     code_selection=random.sample(code_selection, MAX_N)
+    print(len(code_selection))
 
     metadata = {
         'avia_tf_cm': {
@@ -389,9 +449,34 @@ if __name__ == "__main__":
                 'unit': "tonnes"},     
         'tour_occ_mnor' : {
                 'filters': {'GEO': ['CY'], 'ACCOMUNIT': ['BEDRM']}, 
-                'title':"Net occupancy rate of bedrooms in hotels and similar accommodations",
+                'title':"Net occupancy rate of bedrooms in hotels accommodations",
                 'title_short':"Net occupancy rate",
-                'unit': ""},                
+                'unit': ""},
+        'env_wat_res' : {
+                'filters': {'geo\\time': ['CY'], 'wat_proc':['RFW_RES'], 'unit':['M3_HAB']}, 
+                'title':"Renewable freshwater resources (Cubic metres per inhabitant)",
+                'title_short':"Freshwater resources",
+                'unit': "Cubic metres per inhabitant"},
+        'cli_act_noec' : {
+                'filters': {'geo\\time': ['CY'],  'unit':['PC']}, 
+                'title':"Share of zero emission vehicles in newly registered passenger cars (%)",
+                'title_short':"Share of zero emission vehicle",
+                'unit': "Percent"},
+        'tin00196' : {
+                'filters': {'geo\\time': ['CY'],  'unit':['EUR']}, 
+                'title':"Average tourist expenditure per night (Euros)",
+                'title_short':"Average expenditure",
+                'unit': "Euros"},
+        'tin00191' : {
+                'filters': {'geo\\time': ['CY'],  'purpose':['PERS_HOL']}, 
+                'title':"Number of nights spent on holidays, leisure and recreation",
+                'title_short':"Number of nights spent",
+                'unit': ""},
+        'tin00195' : {
+                'filters': {'geo\\time': ['CY'],  'purpose':['TOTAL'], 'duration':['N_GE1']}, 
+                'title':"Average expenditure per trip on holidays, leisure and recreation (Euros)",
+                'title_short':"Average expenditure",
+                'unit': "Euros"}   
     }
 
 
@@ -403,8 +488,25 @@ if __name__ == "__main__":
 
     for index, code in enumerate(code_selection):
 
+        df = None
+        title = None
 
-        df, title = get_data(code, metadata[code]['filters'])
+        if df is None or title is None:
+            try:
+                df, title = get_sdmx_data(code, metadata[code]['filters'])
+            except Exception as e:
+                print(str(e))
+
+        if df is None or title is None:
+            #try:
+                df, title = get_data(code, metadata[code]['filters'])
+            #except Exception as e:
+            #    print(str(e))      
+
+
+        if df is None or title is None:
+            exit(1)      
+
         df = prep_df(df)
 
         plot_df(df, title=metadata[code]['title'],  index=index, output_dir=OUTPUT_DIR)
