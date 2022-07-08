@@ -181,7 +181,7 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
                     verticalalignment='bottom',
                     zorder=6,
                 )
-                txt.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='w')])
+                txt.set_path_effects([PathEffects.withStroke(linewidth=2, foreground='b')])
 
 
         plt.text(
