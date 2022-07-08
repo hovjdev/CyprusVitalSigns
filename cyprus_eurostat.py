@@ -221,6 +221,10 @@ def plot_df(df, title,  index, output_dir):
     else:
         ax = sns.barplot( x='Year', y='', data=df, color='orange')      
 
+
+
+    plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
+    plt.rcParams['axes.titlepad'] = 30
     plt.title(title)
 
 

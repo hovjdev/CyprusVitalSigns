@@ -1,10 +1,9 @@
 import argparse
+import requests
 import os
 import re
-import copy
 import random
-import shutil
-from re import I
+from lxml import html
 import wbgapi as wb
 import pandas as pd
 import seaborn as sns
@@ -33,9 +32,17 @@ OUTPUT_DIR = 'output/cyprus_worldbank'
 DEBUG=False
 PARROT=False
 
+HAND_SELECTED_INDICATORS = [
+        {'ind':'ST.INT.ARVL', 'CYP_ONLY':True},
+        {'ind':'ST.INT.XPND.CD', 'CYP_ONLY':True},
+        {'ind':'EG.USE.PCAP.KG.OE', 'CYP_ONLY':False},
+        {'ind':'NY.GDP.MKTP.CD', 'CYP_ONLY':True},
+        {'ind':'EN.ATM.CO2E.PC', 'CYP_ONLY':False},
+    ]
 
-MAX_N = 2
-MAX_IND_LENGTH = 60
+
+MAX_N = 3
+MAX_IND_LENGTH = 63
 MIN_NB_DATA=15
 MAX_NB_OUTLIERS=3
 MIN_SLOPE=.1
@@ -290,7 +297,7 @@ def get_random_data(economies,
 
     print('0 >>> inds:', len(inds))
 
-    inds=filter_inds_on_length(inds, max_ind=30*max_ind, max_ind_length=max_ind_length)
+    inds=filter_inds_on_length(inds, max_ind=10*max_ind, max_ind_length=max_ind_length)
     print('1 >>> inds:', len(inds))
 
     df = wb.data.DataFrame(inds, economies)
@@ -304,11 +311,34 @@ def get_random_data(economies,
     inds=filter_inds_nb_outliers(df, inds, min_nb_data=min_nb_data, max_nb_outliers=max_nb_outliers)
     print('4 >>> inds:', len(inds))
 
-    inds=filter_inds_on_length(inds, max_ind=max_ind, max_ind_length=max_ind_length)
+    inds=filter_inds_on_length(inds, max_ind=2*max_ind, max_ind_length=max_ind_length)
     print('5 >>> inds:', len(inds))
+
+    # Add hand selected indicators:
+    hand_selected = HAND_SELECTED_INDICATORS 
+
+    # inds_dict
+    if True:
+        inds_dicts = hand_selected
+        for ind in inds:
+            inds_dicts.append({'ind':ind, 'CYP_ONLY':False})
+    # DEBUG:
+    if False:
+        inds_dicts=hand_selected
+
+
+    # random selection of indicators
+    max_ind=min(max_ind, len(inds_dicts))
+    inds_dicts = random.sample(inds_dicts, k=max_ind)
+    inds=[]
+    for ind_dict in inds_dicts:
+        print(ind_dict)
+        print(type(ind_dict))
+        inds.append(ind_dict['ind'])
+
     df = wb.data.DataFrame(inds, economies)
 
-    data = {'df':df, 'inds': inds, 'topic':topic}
+    data = {'df':df, 'inds_dicts': inds_dicts, 'topic':topic}
     return data
 
 
@@ -330,8 +360,8 @@ def pref_df(df, economies):
         else:
             countries_nocyp.append(name)
 
-    print(f'>>> countries_nocyp: {countries_nocyp}')
-    print(f'>>> countries_cyp: {countries_cyp}')
+    #print(f'>>> countries_nocyp: {countries_nocyp}')
+    #print(f'>>> countries_cyp: {countries_cyp}')
 
     return df, countries_nocyp, countries_cyp
 
@@ -346,13 +376,20 @@ def plot_df(df, title, economies, index, output_dir):
     prep_plot(font_scale=font_scale)
     plt.rcParams["figure.figsize"] = [16, 9]
 
-    g1=sns.lineplot(data=df[countries_nocyp], legend=True,  sizes=(10, 600),linewidth=linewidth, dashes=False)
-    box = g1.get_position()
-    g1.set_position([box.x0, box.y0, box.width * 0.9, box.height])
+
+    #print(f"countries_nocyp: {countries_nocyp}")
+    #print(f"df[countries_nocyp]: {df[countries_nocyp]}")
+
+    box=None
+    if len(countries_nocyp) > 0:
+        g1=sns.lineplot(data=df[countries_nocyp], legend=True,  sizes=(10, 600),linewidth=linewidth, dashes=False)
+        box = g1.get_position()
+        g1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
     g2=sns.lineplot(data=df[countries_cyp],  legend=False,   sizes=(10, 600),  palette=['orange'], linewidth=linewidth, dashes=False)
-    box = g2.get_position()
-    g2.set_position([box.x0, box.y0, box.width * 0.9, box.height])
+    if not box:
+        box = g2.get_position()
+        g2.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
     handles, _ = g2.get_legend_handles_labels()
     line = mlines.Line2D([], [], color='orange', label='Cyprus', linewidth=linewidth)
@@ -366,7 +403,8 @@ def plot_df(df, title, economies, index, output_dir):
 
     ax=g2
 
-    #title = title.replace(', ', ',\n')
+    plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
+    plt.rcParams['axes.titlepad'] = 30
     ax.set_title(title)
 
     nbticks=6
@@ -408,7 +446,6 @@ def narrate_df(df, title, economies, output_txt_file):
     df_nonan = df[~np.isnan(df).any(axis=1)]
     df = df.astype(float)
     df_nonan = df_nonan.astype(float)
-
 
     topic =  re.sub("\(.*?\)","",title)
     topic = topic.split(',')[0]
@@ -476,30 +513,64 @@ def create_media(data, economies, output_dir=OUTPUT_DIR, parrot=None):
         f.write(topic_description)
         f.write('\n\n')'''
 
-    topic_description = topic_description.replace(". ", ".. ")    
-    topic_description= re.split(r'\. |\n', topic_description)
+    topic_description = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', topic_description) # split in sentences
 
-    for index,  ind in enumerate(data['inds']):
+    for index,  inds_dict in enumerate(data['inds_dicts']):
         
+        ind = inds_dict['ind']
+        cyp_only = inds_dict['CYP_ONLY']
+
         title=get_title(ind)
-        df=wb.data.DataFrame(ind, economies)
-        plot_df(df,title, economies, index, output_dir)
+        economies_used = economies
+        if cyp_only:
+            economies_used=['CYP']
+
+        df=wb.data.DataFrame(ind, economies_used)  
+        plot_df(df,title, economies_used, index, output_dir)
 
         output_txt_file=os.path.join(output_dir, f'data_text_{index}.txt')
 
-        # narrate topic
-        with open(output_txt_file, "w") as f:
-            if index < len(topic_description):
-
-                text = topic_description[index]
-                if parrot:
-                    text=paraphrase_text(text=text, parrot=parrot)
+        # narrate topic only for first ind
+        if index == 0 and False:
+            with open(output_txt_file, "w") as f:
+                text=''
+                for tdesc in topic_description:
+                    if parrot:
+                        tdesc=paraphrase_text(text=tdesc, parrot=parrot)
+                    text += tdesc + '\n'
+                    if len(text) > 300:
+                        break
                 f.write(text + '\n')
 
-        # narrate data
-        narrate_df(df,title, economies, output_txt_file)
+        # indicator defenition
+        long_def = get_ind_long_def(ind)
+        if long_def:
+            long_def = re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', long_def)
+            long_def_text=''
+            for ldf in long_def:
+                long_def_text+= ldf + '\n'
+                if len(long_def_text) > 250:
+                    break
+            with open(output_txt_file, "a") as f:
+                f.write(long_def_text + '\n')
+        
+        # narrate df
+        narrate_df(df,title, economies_used, output_txt_file)
 
     return
+
+
+def get_ind_long_def(ind):
+    try:
+        url = f'https://databank.worldbank.org/metadataglossary/world-development-indicators/series/{ind}'
+        page = requests.get(url)
+        tree = html.fromstring(page.content)
+        long_def = tree.xpath('//*[@id="DivSingleMeta"]/table/tbody/tr[3]/td[2]/text()')
+        assert len(long_def) == 1
+        return long_def[0]
+    except Exception as e:
+        print(str(e))
+    return None
 
 if __name__ == "__main__":
 

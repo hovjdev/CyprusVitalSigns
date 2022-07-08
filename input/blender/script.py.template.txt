@@ -83,7 +83,7 @@ def create_neon_curve(X):
             material_name="Material_neon_inside",
             x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
 
-    width=22
+    width=20
     height=9
     depth=9
 

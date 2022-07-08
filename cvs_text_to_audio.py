@@ -27,10 +27,20 @@ def textfile_to_wav(text_file, output_wav_file, parrot=None):
 def text_to_speach(text, output_wav_file):
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        text = text.replace(". ", ".\n")
-        text = text.replace(", ", ",\n")
-        text = text.replace(" and ", " and\n")
-        text_list= re.split(r'\n', text)
+
+        text =  re.split(r'(?<=[^A-Z].[.?]) +(?=[A-Z])', text)
+        text_list = []
+
+        for t in text:
+            if len(t) > 100:
+                #t = t.replace(" and ", "and\n")
+                #t = t.replace(" or ", "or\n")
+                t = t.replace(", ", ",\n")
+                t = re.split(r'\n', t)
+                text_list.extend(t)
+            else:
+                text_list.append(t)
+
 
         wav_files = []
         for i, t in enumerate(text_list):

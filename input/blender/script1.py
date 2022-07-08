@@ -83,7 +83,7 @@ def create_neon_curve(X):
             material_name="Material_neon_inside",
             x_min=x_min, x_max=x_max, z_min=z_min, z_max=z_max)
 
-    width=22
+    width=20
     height=9
     depth=9
 
@@ -159,7 +159,7 @@ set_position('fig_1.001', 0, 20)
 if X is not None:
     create_neon_curve(X) 
 else:
-    random.seed(1156)
+    random.seed(1517)
     C = random.choice([1,2,3,4,5,6,7])
         
     if C==1:
