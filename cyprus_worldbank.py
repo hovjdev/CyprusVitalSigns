@@ -38,6 +38,7 @@ HAND_SELECTED_INDICATORS = [
         {'ind':'EG.USE.PCAP.KG.OE', 'CYP_ONLY':False},
         {'ind':'NY.GDP.MKTP.CD', 'CYP_ONLY':True},
         {'ind':'EN.ATM.CO2E.PC', 'CYP_ONLY':False},
+        {'ind':'EG.USE.COMM.FO.ZS', 'CYP_ONLY':False},
     ]
 
 
@@ -321,10 +322,16 @@ def get_random_data(economies,
     if True:
         inds_dicts = hand_selected
         for ind in inds:
-            inds_dicts.append({'ind':ind, 'CYP_ONLY':False})
+            found=False
+            for hs in inds_dicts:
+                if hs['ind']==ind:
+                    found=True
+                    break
+            if not found:
+                inds_dicts.append({'ind':ind, 'CYP_ONLY':False})
     # DEBUG:
     if False:
-        inds_dicts=hand_selected
+        inds_dicts=[{'ind':'EG.USE.COMM.FO.ZS', 'CYP_ONLY':False}]
 
 
     # random selection of indicators
