@@ -30,14 +30,17 @@ def fit_text_in_shape(
     text_color=(255, 255, 255),
     font_file="input/fonts/bauhaus/BauhausRegular.ttf"):
 
+
+    print(f"fit_text_in_shape: {text}")
+
     width = w
     height = h
     font_ttf = font_file
     textarea_size = (int(width * .9), int(height * .8))
 
     pad = (int(width * .05), int(height * .1))
-    char_step = 3
-    font_step = 1
+    char_step = 1
+    font_step = .5
 
     line_max_chars = 200
     line_min_chars = 5
@@ -78,6 +81,8 @@ def fit_text_in_shape(
 
             # Fit vertically ?
             fit_vertically = True
+            if len(lines) < 1:
+                continue
             text_size = draw.textsize(lines[0], font=font)
             if text_size[1] * len(lines) > textarea_size[1]:
                 fit_vertically = False

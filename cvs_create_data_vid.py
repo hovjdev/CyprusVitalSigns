@@ -47,6 +47,10 @@ def enhance_images(dir_path, enhance_with_blender=True):
     images = list(Path(dir_path).glob("*.png"))
     data_files = list(Path(dir_path).glob("*.npy"))
 
+    print(f"Found images: {images}")
+    print(f"Found data_files: {data_files}")
+
+
     images.sort()
     data_files.sort()
 
@@ -87,9 +91,13 @@ def enhance_images(dir_path, enhance_with_blender=True):
 
 
     # enhance images
+    
     for i in range(len(images)-1):
 
         try:
+            print(f"Copying: {images[i]}")
+            print(f"Copying: {images[i+1]}")
+
             shutil.copyfile(images[i], os.path.join(files_path, "image1.png"))
             shutil.copyfile(images[i+1], os.path.join(files_path, "image2.png"))
             if has_data:

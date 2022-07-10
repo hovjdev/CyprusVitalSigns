@@ -2,31 +2,35 @@
   "intro":{
     "script": "cvs_intro_or_end.py  --type intro",
     "enhance_with_blender": false,
-    "skip": false
+    "skip": true
   },
   "euro": {
     "script": "cyprus_eurostat.py",
-    "skip": false
+    "skip": true
   },
   "wrbk": {
     "script": "cyprus_worldbank.py",
-    "skip": false
+    "skip": true
   },
   "flck": {
     "script": "cyprus_flickr.py",
-    "skip": false
+    "skip": true
   },
   "airq": {
     "script": "cyprus_airquality.py",
-    "skip": false
+    "skip": true
   },
   "weath": {
     "script": "cyprus_weather.py",
+    "skip": true
+  },
+  "quote": {
+    "script": "cyprus_quotes.py",
     "skip": false
   },
   "end":{
     "script": "cvs_intro_or_end.py --type end",
     "enhance_with_blender": false,
-    "skip": false
+    "skip": true
   }
 }

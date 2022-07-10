@@ -36,6 +36,7 @@ def text_to_speach(text, output_wav_file):
                 #t = t.replace(" and ", "and\n")
                 #t = t.replace(" or ", "or\n")
                 t = t.replace(", ", ",\n")
+                t = t.replace("; ", ",\n")
                 t = re.split(r'\n', t)
                 text_list.extend(t)
             else:
