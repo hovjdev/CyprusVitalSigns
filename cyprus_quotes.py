@@ -85,8 +85,8 @@ if __name__ == "__main__":
     w=1-2*x1
 
     y1=.05
-    y2=y1+.7
-    y3=y2+0.17
+    y2=y1+.72
+    y3=y2+0.15
     y4=y3+0.
     y5=y4+.08
 
@@ -117,7 +117,7 @@ if __name__ == "__main__":
             y=int(imsize[1] * y2),
             w=int(imsize[0] * w),
             h=int(imsize[1] * h2),
-            text="- " + author + " -",
+            text="-" + author + "-",
             font_file="input/fonts/bauhaus/BauhausRegular.ttf")
     if False:
         fit_text_in_shape(image=image, 

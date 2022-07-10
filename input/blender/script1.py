@@ -159,7 +159,7 @@ set_position('fig_1.001', 0, 20)
 if X is not None:
     create_neon_curve(X) 
 else:
-    random.seed(1194)
+    random.seed(1599)
     C = random.choice([1,2,3,4,5,6,7])
         
     if C==1:
