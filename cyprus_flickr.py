@@ -174,7 +174,7 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
 
     output_text_file = os.path.join(output_dir, "flickr_photo_map.txt")
     concetrations = sorted(concetrations, key=lambda d: d['concentration'], reverse=True)
-    locations = f"{concetrations[0]['name']}, {concetrations[1]['name']} and {concetrations[2]['name']}"
+    locations = f"{concetrations[0]['name']}, {concetrations[1]['name']}, {concetrations[2]['name']} and {concetrations[3]['name']}"
 
     first = random.choice([
         "concentrating",
