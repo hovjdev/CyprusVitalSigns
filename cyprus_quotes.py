@@ -70,12 +70,15 @@ if __name__ == "__main__":
     while quote_text == "" and count < 1000:
         count +=1
         quote = random.choice(data['quotes'])
+
+        owner=quote['owner']
         quote_text=quote['quote']
         topic=quote['topic']
         author=quote['author']
         about=quote['about']
         citation=quote['citation']
         link=quote['link']
+        publication=quote['publication']
 
 
     image = Image.open(output_image)
@@ -117,7 +120,7 @@ if __name__ == "__main__":
             y=int(imsize[1] * y2),
             w=int(imsize[0] * w),
             h=int(imsize[1] * h2),
-            text="-" + author + "-",
+            text="- " + author + " -",
             font_file="input/fonts/bauhaus/BauhausRegular.ttf")
     if False:
         fit_text_in_shape(image=image, 
@@ -148,21 +151,34 @@ if __name__ == "__main__":
     about = re.sub(r"\(.*?\)", "", about)
 
 
-    text = random.choice(["And now let's end "]) 
-    text += random.choice(["with a quote ", "with a citation "])
-    text += random.choice(["on the topic of ", "on the subject of "])
-    text += topic + ". "
-    text += random.choice(['By '])
-    text += random.choice(["distinguished ", "esteemed ", "renowned ", "illustrious ", "acclaimed "])
-    text += author + ". \n"
-    text += about + "\n"
-    text += author + " "
-    text += random.choice(['said:\n', 'is quoted to say:\n'])
-    text += quote_text
+    if owner == "person":
+        text = random.choice(["And now let's end "]) 
+        text += random.choice(["with a quote ", "with a citation "])
+        text += random.choice(["on the topic of ", "on the subject of "])
+        text += topic + ". "
+        text += random.choice(['By '])
+        text += random.choice(["distinguished ", "esteemed ", "renowned ", "illustrious ", "acclaimed "])
+        text += author + ". \n"
+        text += about + "\n"
+        text += author + " "
+        text += random.choice(['said:\n', 'is quoted to say:\n'])
+        text += quote_text
 
-    text = text.replace(" Dr.", " Doctor ")
-    text = text.replace(" Prof.", " Professor ")
-    
+        text = text.replace(" Dr.", " Doctor ")
+        text = text.replace(" Prof.", " Professor ")
+    else:
+        text = random.choice(["And now let's end "]) 
+        text += random.choice(["with a quote ", "with a citation "])
+        text += random.choice(["on the topic of ", "on the subject of "])
+        text += topic + ". "
+        text += random.choice(['By the '])
+        text += author + ". \n"
+        text += about + "\n"
+        text += 'The ' + author + " "
+        text += random.choice(['said in \n', 'is quoted to say in \n'])
+        text += publication + ":\n"       
+        text += quote_text
+       
 
 
     textfile = output_image[:-4]+".txt"

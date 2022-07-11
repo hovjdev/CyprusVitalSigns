@@ -40,7 +40,7 @@ def fit_text_in_shape(
 
     pad = (int(width * .05), int(height * .1))
     char_step = 1
-    font_step = .5
+    font_step = 1
 
     line_max_chars = 200
     line_min_chars = 5
