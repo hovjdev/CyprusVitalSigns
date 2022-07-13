@@ -15,8 +15,7 @@ from tools.misc import create_texture_image, fit_text_in_shape
 DIRNAME = os.path.dirname(__file__)
 INPUT_DIR = os.path.join(DIRNAME, 'input', 'cyprus_quotes')
 OUTPUT_DIR = os.path.join(DIRNAME, 'output', 'cyprus_quotes')
-DO_INTRO=True
-
+DEBUG=False
 
 if __name__ == "__main__":
 
@@ -67,6 +66,8 @@ if __name__ == "__main__":
 
     count=0
     quote_text=""
+
+
     while quote_text == "" and count < 1000:
         count +=1
         quote = random.choice(data['quotes'])
@@ -80,6 +81,18 @@ if __name__ == "__main__":
         link=quote['link']
         publication=quote['publication']
 
+    if DEBUG:
+        for quote in data['quotes']:
+            if quote['quote']=="": 
+                break
+            owner=quote['owner']
+            quote_text=quote['quote']
+            topic=quote['topic']
+            author=quote['author']
+            about=quote['about']
+            citation=quote['citation']
+            link=quote['link']
+            publication=quote['publication']
 
     image = Image.open(output_image)
     imsize= image.size

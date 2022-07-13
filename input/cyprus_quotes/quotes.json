@@ -44,16 +44,6 @@
         {
             "owner": "person",
             "topic": "climate change",
-            "quote": "The trains carrying coal to power plants are death trains. Coal-fired power plants are factories of death.",
-            "author": "Dr. James Hansen",
-            "about": "Doctor James Edward Hansen is an American adjunct professor directing the Program on Climate Science, Awareness and Solutions of the Earth Institute at Columbia University. He is best known for his research in climatology, his 1988 Congressional testimony on climate change that helped raise broad awareness of global warming, and his advocacy of action to avoid dangerous climate change.",
-            "citation": "Hansen James. (2009). \"Coal-fired power stations are death factories. Close them\". https://www.theguardian.com/commentisfree/2009/feb/15/james-hansen-power-plants-coal.",
-            "link": "https://www.theguardian.com/commentisfree/2009/feb/15/james-hansen-power-plants-coal",
-            "publication": ""
-        },
-        {
-            "owner": "person",
-            "topic": "climate change",
             "quote": "We are on a fast track to climate disaster: Major cities under water. Unprecedented heatwaves. Terrifying storms. Widespread water shortages. The extinction of a million species of plants and animals. This is not fiction or exaggeration. It is what science tells us will result from our current energy policies. We are on a pathway to global warming of more than double the 1.5-degree limit agreed in Paris. Some government and business leaders are saying one thing - but doing another. Simply put, they are lying. And the results will be catastrophic. This is a climate emergency.",
             "author": "UN Secretary António Guterres",
             "about": "António Guterres, the ninth Secretary-General of the United Nations, took office on 1st January 2017.",
@@ -67,7 +57,7 @@
             "quote": "Across cultures, humans inherently value nature. The magic of seeing fireflies flickering long into the night is immense. We draw energy and nutrients from nature. We find sources of food, medicine, livelihoods and innovation in nature. Our well-being fundamentally depends on nature.",
             "author": "IPBES",
             "about":"The IPBES is an independent intergovernmental body comprising 139 member Governments and many non-governmental observer organisations. Established by Governments in 2012, it provides policymakers with objective scientific assessments about the state of knowledge regarding the planet’s biodiversity, ecosystems and the contributions they make to people, as well as the tools and methods to protect and sustainably use these vital natural assets.",
-            "citation":"IPBES. (2019). Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Media Release. https://ipbes.net/news/Media-Release-Global-Assessment#:~:text=IPBES%20Partner%20Comments&text=%E2%80%9CAcross%20cultures%2C%20humans%20inherently%20value,livelihoods%20and%20innovation%20in%20nature.",
+            "citation":"IPBES. (2019). Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES); Media Release. https://ipbes.net/news/Media-Release-Global-Assessment#:~:text=IPBES%20Partner%20Comments&text=%E2%80%9CAcross%20cultures%2C%20humans%20inherently%20value,livelihoods%20and%20innovation%20in%20nature.",
             "link":"https://ipbes.net/news/Media-Release-Global-Assessment#:~:text=IPBES%20Partner%20Comments&text=%E2%80%9CAcross%20cultures%2C%20humans%20inherently%20value,livelihoods%20and%20innovation%20in%20nature.",
             "publication": "a 2019 media release"
         },
@@ -77,7 +67,7 @@
             "quote": "Three-quarters of the land-based environment and about 66% of the marine environment have been significantly altered by human actions. On average these trends have been less severe or avoided in areas held or managed by Indigenous Peoples and Local Communities.",
             "author": "IPBES",
             "about":"The IPBES is an independent intergovernmental body comprising 139 member Governments and many non-governmental observer organisations. Established by Governments in 2012, it provides policymakers with objective scientific assessments about the state of knowledge regarding the planet’s biodiversity, ecosystems and the contributions they make to people, as well as the tools and methods to protect and sustainably use these vital natural assets.",
-            "citation":"IPBES. (2019). Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES) Media Release. https://ipbes.net/news/Media-Release-Global-Assessment#1-Scale.",
+            "citation":"IPBES. (2019). Intergovernmental Science-Policy Platform on Biodiversity and Ecosystem Services (IPBES); Media Release. https://ipbes.net/news/Media-Release-Global-Assessment#1-Scale.",
             "link":"https://ipbes.net/news/Media-Release-Global-Assessment#1-Scale",
             "publication": "a 2019 media release"
         },
@@ -85,10 +75,30 @@
             "owner": "person",
             "topic": "climate change",
             "quote": "The scientific evidence is unequivocal: climate change is a threat to human wellbeing and the health of the planet. Any further delay in concerted global action will miss a brief and rapidly closing window to secure a liveable future.",
-            "author": "Hans-Otto Portner",
-            "about":"Professor Doctor Hans-Otto Portner is a physiologist and marine biologist performing research at the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research (AWI) in Bremerhaven, where he heads the Integrative Ecophysiology Section.",
+            "author": "Prof. Hans-Otto Portner",
+            "about":"Professor Hans-Otto Portner is a physiologist and marine biologist performing research at the Alfred Wegener Institute Helmholtz Centre for Polar and Marine Research (AWI) in Bremerhaven, where he heads the Integrative Ecophysiology Section.",
             "citation":"IPCC (2022). Climate Change 2022: Impacts, Adaptation and Vulnerability; Summary for Policymakers. https://www.ipcc.ch/report/ar6/wg2/.",
             "link":"https://www.ipcc.ch/report/ar6/wg2/",
+            "publication": ""
+        },
+        {
+            "owner": "person",
+            "topic": "biodiversity",
+            "quote": "Indigenous peoples defend Earth's biodiversity; but they're in danger. Comprising less than 5% of the world's population, indigenous people protect 80% of global biodiversity.",
+            "author": "Dr. Gleb Raygorodetsky",
+            "about":"Doctor Gleb Raygorodetsky is an Adjunct Research Fellow with the Traditional Knowledge Initiative of the UNU Institute of Advanced Studies and a Research Affiliate with the POLIS Project on Ecological Governance at the Centre for Global Studies, University of Victoria. Born and raised in a coastal village in Kamchatka, Russia, Gleb is a conservation biologist with expertise in resource co-management and traditional knowledge systems.",
+            "citation":"Raygorodetsky, Gleb. (2018). Indigenous peoples defend Earth's biodiversity; but they're in danger; National Geographic. https://www.nationalgeographic.com/environment/article/can-indigenous-land-stewardship-protect-biodiversity-.",
+            "link":"https://www.nationalgeographic.com/environment/article/can-indigenous-land-stewardship-protect-biodiversity-",
+            "publication": ""
+        },
+        {
+            "owner": "person",
+            "topic": "climate change",
+            "quote": "If we cannot stop the building of more coal-fired power plants, those coal trains will be death trains-no less gruesome than if they were boxcars headed to crematoria, loaded with uncountable irreplaceable species.",
+            "author": "Dr. James Hansen",
+            "about": "Doctor James Edward Hansen is an American adjunct professor directing the Program on Climate Science, Awareness and Solutions of the Earth Institute at Columbia University. He is best known for his research in climatology, his 1988 Congressional testimony on climate change that helped raise broad awareness of global warming, and his advocacy of action to avoid dangerous climate change.",
+            "citation": "Hansen James. (2009). State of Iowa; Before the Iowa utilities board. http://www.columbia.edu/~jeh1/2007/IowaCoal_20071105.pdf.",
+            "link": "http://www.columbia.edu/~jeh1/2007/IowaCoal_20071105.pdf",
             "publication": ""
         },
         {
