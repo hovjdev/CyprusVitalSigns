@@ -241,3 +241,10 @@ if __name__ == "__main__":
     report_file= os.path.join(OUTPUT_DIR, "report_file.json")
     with open(report_file, 'w') as fp:
         json.dump(report_dict, fp)
+
+    # cleanup folders older than 7 days
+    nb_days = 7
+    print(f"cleanup folders older than {nb_days} days")
+    cmd = f'python cvs_cleanup_output.py -d {nb_days}'
+    print(cmd)
+    os.system(cmd)
