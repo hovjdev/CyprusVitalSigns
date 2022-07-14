@@ -91,7 +91,6 @@ def enhance_images(dir_path, enhance_with_blender=True):
 
 
     # enhance images
-    
     for i in range(len(images)-1):
 
         try:
