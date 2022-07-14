@@ -84,7 +84,7 @@ if __name__ == "__main__":
         pollutant_label_en=p['label_en'].split("(")[0]
         pollutant_levels=p["levels"]
 
-        m, figure, axes=get_cyprus_map()
+        m, figure, axes =get_cyprus_map()
 
         tz = timezone('EET')
         now =datetime.datetime.now(tz)
@@ -233,7 +233,11 @@ if __name__ == "__main__":
                 t.set_x(t._x-.7)
 
 
-        plt.text(0.08, 0.02, date_time, ha='center', va='center', transform=axes.transAxes, fontsize=30)
+        # data source
+        plt.text(0.01, 0.02, date_time, ha='left', va='center', transform=axes.transAxes, fontsize=30)
+        
+        # data source
+        plt.text(.99, .02, 'data: https://www.airquality.dli.mlsi.gov.cy/', ha='right', va='center', transform=axes.transAxes, fontsize=30)
 
 
         png_file = os.path.join(OUTPUT_DIR, f'{counter}_airquality_{pollutant_code}.png')

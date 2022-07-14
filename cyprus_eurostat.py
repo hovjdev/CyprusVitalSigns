@@ -243,6 +243,10 @@ def plot_df(df, title,  index, output_dir):
             if i % nbt != 0:
                 tick.set_visible(False)
 
+
+    # data source
+    plt.text(0., -.12, 'data: https://ec.europa.eu/', ha='left', va='center', transform=ax.transAxes, fontsize=15)
+
     # save plot
     output_png=os.path.join(output_dir, f'data_plot_{index}.png')
     plt.savefig(output_png, format='png', dpi=600)

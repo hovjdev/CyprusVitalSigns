@@ -196,18 +196,10 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
         )
 
     
+    #Date
     tz = pytz.timezone('EET')
     today=datetime.datetime.now(tz=tz).strftime("%A %d, %B %Y")
-    figure.text(
-        .85,
-        .17,
-        f"{today}",
-        color='black',
-        fontsize=20,
-        horizontalalignment='center',
-        verticalalignment='top',
-        zorder=6,
-    )
+    plt.text(0.01, 0.02, today, ha='left', va='center', transform=axes.transAxes, fontsize=30)
         
     m.scatter(
         xs,
@@ -227,6 +219,9 @@ def draw_map(forecasts, output_image_file, show_weather_icons=True, show_tempera
     else:
          plt.title(f"Cyprus temperature forecast", fontsize = 60, y=1.0, pad=-90)
 
+
+    # data source
+    plt.text(.99, .02, 'data: https://darksky.net/', ha='right', va='center', transform=axes.transAxes, fontsize=30)
 
     plt.savefig(output_image_file, bbox_inches='tight', dpi='figure',pad_inches=-.05)
 

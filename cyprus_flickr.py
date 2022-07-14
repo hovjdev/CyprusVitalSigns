@@ -154,16 +154,12 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     from_date = now  - datetime.timedelta(days=nb_days)
     from_date = from_date.strftime("%A %d, %B %Y")
 
-    figure.text(
-        .78,
-        .17,
-        f"From {from_date}  to  {today}",
-        color='black',
-        fontsize=20,
-        horizontalalignment='center',
-        verticalalignment='top',
-        zorder=6,
-    )
+
+    # date
+    plt.text( .01, .02, f"From {from_date}, to {today}", ha='left', va='center', transform=axes.transAxes, fontsize=30)
+
+    # data source
+    plt.text(.99, .02, 'data: https://flickr.com/', ha='right', va='center', transform=axes.transAxes, fontsize=30)
 
     output_image_file = os.path.join(output_dir, "flickr_photo_map.png")
     plt.title(f"Cyprus tourism concentration", fontsize = 60, y=1.0, pad=-90)
