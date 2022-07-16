@@ -1,4 +1,5 @@
 import os
+import math
 import random
 import ast
 import argparse
@@ -13,6 +14,8 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 from scipy.stats.kde import gaussian_kde
+from sklearn.neighbors import KernelDensity
+
 
 
 from tqdm import tqdm
@@ -24,75 +27,115 @@ from local_settings import FLICKR_KEY, FLICKR_SECRET
 
 OUTPUT_DIR = 'output/cyprus_flickr'
 BBOX = "32.1,34.45,34.72,35.75"
-NB_DAYS=365
+NB_DAYS=365 #365
+USE_KDE_METHOD=True
+NB_FLICKR_FETCHES=3
+KERNEL_DENSITY_BANDWIDTH=1
+DEBUG=False
 
 def create_flickr_map(output_dir=OUTPUT_DIR,
                       api_key = FLICKR_KEY,
                       secret_api_key = FLICKR_SECRET,
                       min_taken_date=None,
                       tags="",
-                      bbox=BBOX):
+                      bbox=BBOX,
+                      accuracy=12):
 
     flickr = flickrapi.FlickrAPI(api_key, secret_api_key)
 
 
-    def get_data(page=1, tags=tags, min_taken_date=min_taken_date,bbox=bbox):
+    def get_data(page=1, tags=tags, min_taken_date=min_taken_date,bbox=bbox, accuracy=accuracy):
         byte_str = flickr.photos.search(
                 tags=tags, 
                 format="json", extras=["geo"], 
                 has_geo=True,
                 page=page, 
                 min_taken_date=min_taken_date,
-                bbox=bbox)
+                bbox=bbox,
+                accuracy=accuracy)
         dict_str = byte_str.decode("UTF-8")
         data = ast.literal_eval(dict_str)
         return data
 
-    data = get_data()
-    pages = data['photos']['pages']
+
 
     lats = []
     longs = []
+    for _ in tqdm(range(NB_FLICKR_FETCHES)): # to get more consistent data iterate NB_FLICKR_FETCHES times
+        try:
+            data = get_data()
+            pages = data['photos']['pages']
+            for page in tqdm(range(1,pages+1)):
+                data = get_data(page=page)
+                photos = data['photos']['photo']
+                for photo in photos:
+                    lat = photo['latitude']
+                    long = photo['longitude']
 
-    for page in tqdm(range(1,pages+1)):
-        data = get_data(page=page)
-        photos = data['photos']['photo']
-        for photo in photos:
-            lat = photo['latitude']
-            long = photo['longitude']
+                    #print(lat, long)
 
-            #print(lat, long)
-
-            lats.append(float(lat))
-            longs.append(float(long))
+                    lats.append(float(lat))
+                    longs.append(float(long))
+        except Exception as e:
+            print(str(e))
+            continue
 
     assert len(lats) == len(longs)
     print(f"found {len(lats)} localized photos")
 
     m, figure, axes=get_cyprus_map()
 
-    xs=[]
-    ys=[]
+    xxs=[]
+    yys=[]
+    zzs=[]
+    sizes=[]
+    xmin=1e9
+    ymin=1e9
+    xmax=-1e9
+    ymax=-1e9
     for lat, long in zip(lats, longs):
         x, y = m(long, lat)
-        xs.append(x)
-        ys.append(y)
+        if x>xmax: xmax=x
+        if y>ymax: ymax=y
+        if x<xmin: xmin=x
+        if y<ymin: ymin=y        
 
-    k = gaussian_kde(np.vstack([xs, ys]))
-    zs= k(np.vstack([xs, ys]))
+        x += random.randint(-100, 100)/20000 # jitter
+        y += random.randint(-100, 100)/20000 # jitter
 
-    m.scatter(
-        xs,
-        ys,
-        s=1000,  # size
-        c=zs,  # color
-        cmap="autumn_r",
-        marker='o',  # symbol
-        alpha=0.3,  # transparency
-        zorder=2,  # plotting order
+        xxs.append(x)
+        yys.append(y)
+
+    noise_n=1000
+    if USE_KDE_METHOD:
+        tmp_xxs = np.random.uniform(low=xmin, high=xmax, size=(noise_n,)).tolist() # noise
+        tmp_yys = np.random.uniform(low=ymin, high=ymax, size=(noise_n,)).tolist() # noise
+        tmp_xxs.extend(xxs)
+        tmp_yys.extend(yys)
+        k = gaussian_kde(np.vstack([tmp_xxs, tmp_yys]), bw_method='silverman')
+        if DEBUG:
+            xxs=tmp_xxs
+            yys=tmp_yys
+        density=k(np.vstack([xxs, yys])).flatten()
+        zzs.extend(density.tolist())
+    else:
+        tmp_xxs = np.random.uniform(low=xmin, high=xmax, size=(noise_n,)).tolist() # noise
+        tmp_yys = np.random.uniform(low=ymin, high=ymax, size=(noise_n,)).tolist() # noise
+        tmp_xxs.extend(xxs)
+        tmp_yys.extend(yys)
+        kde = KernelDensity(
+            bandwidth=KERNEL_DENSITY_BANDWIDTH, metric="haversine", kernel="gaussian", algorithm="ball_tree"
         )
+        tmpx=np.vstack([tmp_xxs, tmp_yys]).T
+        #print(f"tmpx.shape: {tmpx.shape}")
+        kde.fit(tmpx)
+        if DEBUG:
+            xxs=tmp_xxs
+            yys=tmp_yys        
+        tmpx=np.vstack([xxs, yys]).T            
+        zzs.extend(kde.score_samples(tmpx).tolist())
 
-
+    sizes=[500]*len(xxs)
 
     cities = {
         "Nicosia":{"long":33.382275, "lat":35.185566},
@@ -115,7 +158,12 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
 
     xs=[]
     ys=[]
-    concetrations=[]
+
+    clouds_x=[]
+    clouds_y=[]
+    clouds_concentration=[] 
+    concentrations=[]
+
     for current_city in cities:
         long = cities[current_city]['long']
         lat = cities[current_city]['lat']
@@ -132,12 +180,66 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
         )
         xs.append(x)
         ys.append(y)
-        concentration = k([x,y])
-        concetrations.append({'concentration':concentration, 'name':current_city})
+
+        dist_facor=100
+        concentration=[]
+        a=[]        
+        nb_cloud_points=100
+        if USE_KDE_METHOD:
+            for _ in range(nb_cloud_points):
+                r=random.randint(0,dist_facor)/1000
+                ang=random.randint(0,1000)/30
+                a_=[x+r*math.cos(ang), y+r*math.sin(ang)]
+                a.append(a_)
+                tmp=k(a_)
+                concentration.append(tmp)
+            a=np.array(a)      
+            concentration = np.array(concentration).flatten()
+            concentrations.append({'concentration':concentration.mean(), 'name':current_city})                 
+        else:
+            for _ in range(nb_cloud_points):
+                r=random.randint(0,dist_facor)/1000
+                ang=random.randint(0,1000)/30
+                a.append([x+r*math.cos(ang), y+r*math.sin(ang)])
+            a=np.array(a)
+            concentration=kde.score_samples(a)
+            #print(f"concentration.shape: {concentration.shape}")
+            concentrations.append({'concentration':concentration.mean(), 'name':current_city})
+
+        if DEBUG:
+            clouds_x.extend(a[:,0].tolist())
+            clouds_y.extend(a[:,1].tolist())
+            clouds_concentration.extend(concentration.tolist())
+
+  
+
+    if DEBUG:
+        xxs.extend(clouds_x)
+        yys.extend(clouds_y)
+        zzs.extend(clouds_concentration)
+        sizes.extend([100]*len(clouds_x))
+  
+
+    zzs = np.array(zzs)
+    low=np.percentile(zzs, 5)
+    high=np.percentile(zzs, 50)
+    zzs[zzs<low]=low
+    zzs[zzs>high]=high
+    zzs=zzs.tolist()
 
 
+    m.scatter( #data
+        xxs,
+        yys,
+        s=sizes,  # size
+        c=zzs,  # color
+        cmap="RdYlBu_r",
+        marker='o',  # symbol
+        alpha=0.4,  # transparency
+        zorder=2,  # plotting order
+        )
 
-    m.scatter(
+    m.scatter( # cities
         xs,
         ys,
         s=100,  # size
@@ -169,8 +271,10 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
 
 
     output_text_file = os.path.join(output_dir, "flickr_photo_map.txt")
-    concetrations = sorted(concetrations, key=lambda d: d['concentration'], reverse=True)
-    locations = f"{concetrations[0]['name']}, {concetrations[1]['name']}, {concetrations[2]['name']} and {concetrations[3]['name']}"
+    concentrations = sorted(concentrations, key=lambda d: d['concentration'], reverse=True)
+    print(f"concentrations: {concentrations}")
+
+    locations = f"{concentrations[0]['name']}, {concentrations[1]['name']}, {concentrations[2]['name']} and {concentrations[3]['name']}"
 
     first = random.choice([
         "concentrating",
@@ -188,7 +292,7 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     ])    
 
     with open(output_text_file, "w") as f:
-        f.write(f"And now, let's take a look at places where tourists have been {first} in the last 12 months.\n")
+        f.write(f"And now, let's take a look at places where tourists have been {first} in the last {round(NB_DAYS/30.5)} months.\n")
         f.write(f"The map of geotagged photo locations {second} that tourists have been {third} the most in {locations}.\n")
 
 

@@ -165,8 +165,8 @@ if __name__ == "__main__":
 
 
     if owner == "person":
-        text = random.choice(["And now let's end "]) 
-        text += random.choice(["with a quote ", "with a citation "])
+        text = random.choice(["And finally let's end ", "In conclusion let's end"]) 
+        text += random.choice(["with a quote ", "with a citation ", "with a thought"])
         text += random.choice(["on the topic of ", "on the subject of "])
         text += topic + ". "
         text += random.choice(['By '])

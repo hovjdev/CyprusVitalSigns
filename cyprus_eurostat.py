@@ -136,6 +136,15 @@ def get_sdmx_data(code, filters):
     return df, title
         
 
+def has_monthly_data(df):
+    indices = list(df.index.values)
+    has_months=False
+    pattern = re.compile("^(\d\d\d\d-\d\d)$")
+    for index in indices:
+        if  pattern.match(str(index)):
+            has_months=True
+    return has_months
+
 
 def prep_df(df):
 
@@ -161,12 +170,7 @@ def prep_df(df):
     print(f"drop_indices: {drop_indices}")
     df = df.drop(index=drop_indices)
     
-    indices = list(df.index.values)
-    has_months=False
-    pattern = re.compile("^(\d\d\d\d-\d\d)$")
-    for index in indices:
-        if  pattern.match(str(index)):
-            has_months=True
+    has_months=has_monthly_data(df)
 
     if has_months:
         df.index = pd.MultiIndex.from_tuples([((idx[:4],idx[-2:])) for idx in df.index], names=["Year", "Month"])
@@ -270,6 +274,7 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
     output_txt_file=os.path.join(output_dir, f'data_plot_{index}.txt')
 
     has_year = 'Year' in df.columns.to_list()
+    has_months=has_monthly_data(df)
 
     assert has_year
     df = df.groupby(['Year']).mean()
@@ -323,27 +328,41 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
     
 
     with open(output_txt_file, "w") as f:
-        first=random.choice([
-                    "We shall now examine",
-                    "And now let's review",
-                    "Let's examine",
-                    "Let's take a look at",
-                    "Let's review",])
+        first=""
+        if index == 0:
+            first=random.choice([
+                        "First let's start by examining",
+                        "Let's begin by reviewing",
+                        "Let's get started by examining",
+                        "Let's get started by taking a look at",
+                        "Let's begin reviewing",])
+        else:
+            first=random.choice([
+                        "We shall now examine",
+                        "And now let's review",
+                        "Next, let's examine",
+                        "Let's examine",
+                        "Let's take a look at",
+                        "Let's review",])
         title_split = title.split('(')[0]
         third=random.choice([
                     "data", 
                     "time series",
                     "chart",])
 
+        mm=""
+        if has_months:
+            mm="monthly"
+
         fourth=random.choice([
-                    "with the highest", 
-                    "with the biggest",
-                    "with most",])
+                    f"with the highest {mm}", 
+                    f"with the biggest {mm}",
+                    f"with most {mm}",])
 
         fifth=random.choice([
-                    "with the lowest", 
-                    "with the smallest",
-                    "with least",])
+                    f"with the lowest {mm}", 
+                    f"with the smallest {mm}",
+                    f"with least {mm}",])
 
         max_val= random.choice([
             f"with {str(round(max))} {unit}",
@@ -384,10 +403,16 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
             "percent each year.", 
         ])
 
+        location=""
+        if index==0:
+            location=random.choice([" for Cyprus",
+                                " for Cyprus",
+                                " for the island of Cyprus"])
+
         text = ''
-        text += f'{first} the {third} of the {title_split}.\n'
-        text += f'{str(max_year)} {max_val} was the  year {fourth} {title_short}.\n'
-        text += f'{str(min_year)} {min_val} was the  year {fifth} {title_short}.\n'
+        text += f'{first} the {third} of the {title_split}{location}.\n'
+        text += f'{str(max_year)} {max_val} was the year {fourth} {title_short}.\n'
+        text += f'{str(min_year)} {min_val} was the year {fifth} {title_short}.\n'
         text += f'{sixth} the {title_split}{seventh}{round(slope_pct)} {eight}\n'
 
         if parrot: 
