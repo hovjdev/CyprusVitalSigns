@@ -79,9 +79,9 @@ if __name__ == "__main__":
 
 
         dstr= now = datetime.now(tz=tz).strftime("%A %d, %B %Y")
-        text = "This is the Cholo weather report for " + dstr + '.\n'
-        text="This is the Cyprus Vital signs report, for:\n"
-        text+=dstr
+        text="This is the Cyprus Vital signs report, for " + dstr + '.\n'
+        text+="A daily digest of tourism indicators and other socio-economic and environemental data for Cyprus."
+        text+=""
     else:
         text=''
 
