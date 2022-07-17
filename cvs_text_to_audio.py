@@ -54,7 +54,9 @@ def text_to_speach(text, output_wav_file):
                 tts.save(tmp)                
             except Exception as e:
                 print(e)
-                continue
+                silence = AudioSegment.silent(duration=300)
+                silence.export(tmp)
+                
 
             audio = AudioSegment.from_mp3(tmp)
             tmp = '0'*(4-len(str(i)))+str(i)+'.wav'

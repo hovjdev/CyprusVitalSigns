@@ -80,7 +80,9 @@ if __name__ == "__main__":
 
         dstr= now = datetime.now(tz=tz).strftime("%A %d, %B %Y")
         text="This is the Cyprus Vital signs report, for " + dstr + '.\n'
-        text+="A daily digest of tourism indicators and other socio-economic and environemental data for Cyprus."
+        for _ in range(9):
+            text += "  .\n"
+        text+="The Cyprus Vital signs report, is a daily digest of tourism indicators, and other socioeconomic and environmental data for Cyprus."
         text+=""
     else:
         text=''
