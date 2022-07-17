@@ -1,10 +1,12 @@
 import os
 import re
+import requests
 import random
 import argparse
 import eurostat
 import datetime
 
+from lxml import html
 import numpy as np
 import pandas as pd
 
@@ -61,10 +63,7 @@ def get_data(code, filters):
 
     db_print(code)
     db_print(toc_df)    
-    title=toc_df['title'].tolist()
-    assert len(title)==1
-    title=title[0]
-    db_print(f'title: {title}')
+
     db_print(dim_cy)
     db_print(df)    
 
@@ -77,6 +76,12 @@ def get_data(code, filters):
 
     db_print(df)
     db_print(df.columns.to_list())
+
+    title=toc_df['title'].tolist()
+    assert len(title)==1
+    title=title[0]
+    db_print(f'title: {title}')
+
 
     return df, title
         
@@ -268,16 +273,23 @@ def plot_df(df, title,  index, output_dir):
 
 
 
-def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parrot=None):
+def narrate_df(df, code, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parrot=None):
 
     df = df.copy()
     output_txt_file=os.path.join(output_dir, f'data_plot_{index}.txt')
 
     has_year = 'Year' in df.columns.to_list()
-    has_months=has_monthly_data(df)
+    has_months= 'Month' in df.columns.to_list()
+    db_print(f'df.columns.to_list(): {df.columns.to_list()}')
+    db_print(f'has_months: {has_months}')
+
+
 
     assert has_year
     df = df.groupby(['Year']).mean()
+
+
+    long_def=get_ind_long_def(code)
 
 
     def get_min_year_min(df):
@@ -410,6 +422,7 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
                                 " for the island of Cyprus"])
 
         text = ''
+        text += long_def + '.\n'
         text += f'{first} the {third} of the {title_split}{location}.\n'
         text += f'{str(max_year)} {max_val} was the year {fourth} {title_short}.\n'
         text += f'{str(min_year)} {min_val} was the year {fifth} {title_short}.\n'
@@ -422,7 +435,11 @@ def narrate_df(df, title,  title_short, unit, index, output_dir=OUTPUT_DIR, parr
         print(text)
         f.write(text)
 
-        
+
+def get_ind_long_def(code):
+
+
+    return ""      
 
 
 
@@ -455,9 +472,11 @@ if __name__ == "__main__":
                     'cli_act_noec',
                     'tin00196',
                     'tin00195',
-                    'tin00191']
+                    'tin00191',
+                    'prc_hicp_midx']
     
-    #code_selection=['tin00195']
+    if DEBUG:
+        code_selection=[code_selection[-1]]
 
     # ramdom selection of indicators
     MAX_N=min(MAX_N, len(code_selection))
@@ -509,7 +528,12 @@ if __name__ == "__main__":
                 'filters': {'geo\\time': ['CY'],  'purpose':['TOTAL'], 'duration':['N_GE1']}, 
                 'title':"Average expenditure per trip on holidays, leisure and recreation (Euros)",
                 'title_short':"Average expenditure",
-                'unit': "Euros"}   
+                'unit': "Euros"},
+        'prc_hicp_midx' : {
+                'filters': {'GEO': ['CY'], 'COICOP': ['CP11'], 'UNIT':['I05'], 'FREQ':['M']}, 
+                'title':"Harmonised Indices of Consumer Prices, hotels and restaurants (2005=100)",
+                'title_short':"Consumer Prices",
+                'unit': ""}
     }
 
 
@@ -543,7 +567,9 @@ if __name__ == "__main__":
         df = prep_df(df)
 
         plot_df(df, title=metadata[code]['title'],  index=index, output_dir=OUTPUT_DIR)
-        narrate_df(df, title=metadata[code]['title'],
+        narrate_df(df, 
+                    code=code,
+                    title=metadata[code]['title'],
                     title_short=metadata[code]['title_short'],
                     unit=metadata[code]['unit'],  
                     index=index, output_dir=OUTPUT_DIR, parrot=parrot)

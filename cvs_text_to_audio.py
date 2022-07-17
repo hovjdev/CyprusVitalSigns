@@ -47,17 +47,14 @@ def text_to_speach(text, output_wav_file):
         for i, t in enumerate(text_list):
             print(f'>>> gTTS({t})')
             tts=None
+            tmp = '0'*(4-len(str(i)))+str(i)+'.mp3'
+            tmp = os.path.join(tmpdirname, tmp)            
             try:
                 tts = gTTS(t)
+                tts.save(tmp)                
             except Exception as e:
                 print(e)
                 continue
-            if tts is None:
-                continue
-            tmp = '0'*(4-len(str(i)))+str(i)+'.mp3'
-            tmp = os.path.join(tmpdirname, tmp)
-            if tts:
-                tts.save(tmp)
 
             audio = AudioSegment.from_mp3(tmp)
             tmp = '0'*(4-len(str(i)))+str(i)+'.wav'
