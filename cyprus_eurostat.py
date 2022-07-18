@@ -465,7 +465,6 @@ if __name__ == "__main__":
         exit(1)
 
     code_selection=['avia_tf_cm',
-                    'tour_occ_arm',
                     't2020_rd300',
                     'env_wat_res',
                     'cli_act_noec',
@@ -473,9 +472,10 @@ if __name__ == "__main__":
                     'tin00195',
                     'tin00191',
                     'prc_hicp_midx',
+                    'tour_occ_arm',
                     'tour_occ_mnor',
-                    'tour_occ_nim',
-                    'tour_dem_extot'] 
+                    #'tour_dem_extot', #skip
+                    'tour_occ_nim'] 
     
     if DEBUG:
         code_selection=[code_selection[-1]]
@@ -493,7 +493,7 @@ if __name__ == "__main__":
                 'unit': ""},
         'tour_occ_arm': {
                 'filters': {'GEO': ['CY'], 'UNIT':['NR'], 'NACE_R2':['I551'], 'C_RESID':['FOR']}, 
-                'title':"Arrivals at tourist accommodation establishments",
+                'title':"Arrivals at tourist accommodation establishments reported monthly",
                 'title_short':"arrivals",
                 'unit': ""},
         't2020_rd300' : {
@@ -503,12 +503,12 @@ if __name__ == "__main__":
                 'unit': "tonnes"},     
         'tour_occ_mnor' : {
                 'filters': {'GEO': ['CY'], 'ACCOMUNIT': ['BEDRM']}, 
-                'title':"Net occupancy rate of bedrooms in hotels accommodations",
+                'title':"Net occupancy rate of bedrooms in hotels accommodations reported monthly",
                 'title_short':"Net occupancy rate",
                 'unit': ""},
         'env_wat_res' : {
                 'filters': {'geo\\time': ['CY'], 'wat_proc':['RFW_RES'], 'unit':['M3_HAB']}, 
-                'title':"Renewable freshwater resources (Cubic metres per inhabitant)",
+                'title':"Renewable freshwater resources (cubic metres per inhabitant)",
                 'title_short':"Freshwater resources",
                 'unit': "Cubic metres per inhabitant"},
         'cli_act_noec' : {
@@ -543,7 +543,7 @@ if __name__ == "__main__":
                 'unit': ""},
         'tour_dem_extot' : {
                 'filters': { 'GEO': ['CY'], 'UNIT': ['EUR'], 'PURPOSE':['PERS'], 'EXPEND':['AVG_TRP'], 'DURATION':['N_GE1'], 'PARTNER':['WORLD'] },  
-                'title':"Average expenditure on tourism trips",
+                'title':"Average expenditure on tourism trips (Euros)",
                 'title_short':"Average expenditure",
                 'unit': "Euros"}
     }
