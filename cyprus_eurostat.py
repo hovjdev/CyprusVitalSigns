@@ -542,7 +542,7 @@ if __name__ == "__main__":
                 'title_short':"Nights spent",
                 'unit': ""},
         'tour_dem_extot' : {
-                'filters': {'GEO': ['CY'], 'UNIT': ['EUR'], 'FREQ': ['A'], 'EXPEND':['TOTAL'],  'PARTNER':['WORLD']}, 
+                'filters': {'GEO': ['CY'], 'UNIT': ['EUR'], 'FREQ': ['A'], 'EXPEND':['TOTAL'], 'PARTNER':['WORLD'], 'DURANTION':['N_GE1']}, 
                 'title':"Nights spent at tourist accommodation establishments (monthly data)",
                 'title_short':"Nights spent",
                 'unit': ""}
