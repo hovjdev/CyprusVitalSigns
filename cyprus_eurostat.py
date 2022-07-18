@@ -23,7 +23,7 @@ from parrot import Parrot
 from paraphrase import paraphrase_text
 
 
-DEBUG=True
+DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
 MAX_N=3
 
@@ -542,10 +542,10 @@ if __name__ == "__main__":
                 'title_short':"Nights spent",
                 'unit': ""},
         'tour_dem_extot' : {
-                'filters': { 'GEO': ['CY'], 'UNIT': ['EUR'], 'PURPOSE':['PERS'], 'EXPEND':['AVG_TRP'], 'DURATION':['N_GE1'], 'PARTNER':['WORLD'] },  # 'PURPOSE':['TOTAL'],  , 'PARTNER':['DOM']
-                'title':"Nights spent at tourist accommodation establishments (monthly data)",
-                'title_short':"Nights spent",
-                'unit': ""}
+                'filters': { 'GEO': ['CY'], 'UNIT': ['EUR'], 'PURPOSE':['PERS'], 'EXPEND':['AVG_TRP'], 'DURATION':['N_GE1'], 'PARTNER':['WORLD'] },  
+                'title':"Average expenditure on tourism trips",
+                'title_short':"Average expenditure",
+                'unit': "Euros"}
     }
 
 
