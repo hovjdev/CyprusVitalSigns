@@ -23,7 +23,7 @@ from parrot import Parrot
 from paraphrase import paraphrase_text
 
 
-DEBUG=False
+DEBUG=True
 OUTPUT_DIR = 'output/cyprus_eurostat'
 MAX_N=3
 
@@ -474,7 +474,8 @@ if __name__ == "__main__":
                     'tin00191',
                     'prc_hicp_midx',
                     'tour_occ_mnor',
-                    'tour_occ_nim',] 
+                    'tour_occ_nim',
+                    'tour_dem_extot'] 
     
     if DEBUG:
         code_selection=[code_selection[-1]]
@@ -537,6 +538,11 @@ if __name__ == "__main__":
                 'unit': ""},
         'tour_occ_nim' : {
                 'filters': {'GEO': ['CY'], 'UNIT': ['NR'], 'NACE_R2': ['I551'], 'C_RESID': ['FOR']}, 
+                'title':"Nights spent at tourist accommodation establishments (monthly data)",
+                'title_short':"Nights spent",
+                'unit': ""},
+        'tour_dem_extot' : {
+                'filters': {'GEO': ['CY'], 'UNIT': ['EUR'], 'FREQ': ['A'], 'EXPEND':['TOTAL']}, 
                 'title':"Nights spent at tourist accommodation establishments (monthly data)",
                 'title_short':"Nights spent",
                 'unit': ""}
