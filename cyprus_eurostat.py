@@ -467,13 +467,14 @@ if __name__ == "__main__":
     code_selection=['avia_tf_cm',
                     'tour_occ_arm',
                     't2020_rd300',
-                    'tour_occ_mnor',
                     'env_wat_res',
                     'cli_act_noec',
                     'tin00196',
                     'tin00195',
                     'tin00191',
-                    'prc_hicp_midx']
+                    'prc_hicp_midx',
+                    'tour_occ_mnor',
+                    'tour_occ_nim',] 
     
     if DEBUG:
         code_selection=[code_selection[-1]]
@@ -533,6 +534,11 @@ if __name__ == "__main__":
                 'filters': {'GEO': ['CY'], 'COICOP': ['CP11'], 'UNIT':['I05'], 'FREQ':['M']}, 
                 'title':"Harmonised Indices of Consumer Prices, hotels and restaurants (2005=100)",
                 'title_short':"Consumer Prices",
+                'unit': ""},
+        'tour_occ_nim' : {
+                'filters': {'GEO': ['CY'], 'UNIT': ['NR'], 'NACE_R2': ['I551'], 'C_RESID': ['FOR']}, 
+                'title':"Nights spent at tourist accommodation establishments (monthly data)",
+                'title_short':"Nights spent",
                 'unit': ""}
     }
 
