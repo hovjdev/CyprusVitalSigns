@@ -1,19 +1,17 @@
-absl-py==1.1.0
+absl-py==1.0.0
 astunparse==1.6.3
 basemap==1.3.3
 basemap-data==1.3.2
-basemap-data-hires==1.3.2
 beautifulsoup4==4.11.1
 cachetools==5.2.0
-certifi==2022.5.18.1
+certifi==2022.6.15
 charset-normalizer==2.0.12
 click==8.1.3
-colorama==0.4.4
 cycler==0.11.0
 decorator==4.4.2
 deepface==0.0.75
 eurostat==0.2.3
-filelock==3.7.1
+filelock==3.7.0
 fire==0.4.0
 Flask==2.1.2
 flatbuffers==1.12
@@ -41,10 +39,13 @@ keras==2.9.0
 Keras-Preprocessing==1.1.2
 kiwisolver==1.4.2
 libclang==14.0.1
-lxml==4.9.1
+lxml==4.9.0
 Markdown==3.3.7
 MarkupSafe==2.1.1
 matplotlib==3.5.2
+midi2audio==0.1.1
+MIDIUtil==1.2.1
+mido==1.2.10
 moviepy==1.0.3
 mtcnn==0.1.1
 nltk==3.7
@@ -55,9 +56,10 @@ opt-einsum==3.3.0
 packaging==21.3
 pandas==1.4.2
 pandaSDMX==0.9
-parrot @ git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git@1de8ab390a533f6d94585af84a2c51c3d3e737df
+parrot @ git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git@4c53b28bcb2db8bc2ae055077853e2be4781f6f9
 Pillow==9.1.1
 ply==3.11
+pretty-midi==0.2.9
 proglog==0.1.10
 protobuf==3.19.4
 pyasn1==0.4.8
@@ -76,7 +78,7 @@ pytz==2022.1
 PyVimeo==1.1.0
 PyYAML==6.0
 regex==2022.6.2
-requests==2.27.1
+requests==2.28.0
 requests-oauthlib==1.3.1
 requests-toolbelt==0.9.1
 responses==0.21.0
@@ -85,7 +87,7 @@ rsa==4.8
 scikit-learn==1.1.1
 scipy==1.8.1
 seaborn==0.11.2
-sentence-transformers==2.2.2
+sentence-transformers==2.2.1
 sentencepiece==0.1.96
 six==1.16.0
 soupsieve==2.3.2.post1
@@ -100,8 +102,8 @@ termcolor==1.1.0
 threadpoolctl==3.1.0
 tinydb==4.7.0
 tokenizers==0.12.1
-torch==1.12.0
-torchvision==0.13.0
+torch==1.11.0
+torchvision==0.12.0
 tqdm==4.64.0
 transformers==4.20.1
 tuspy==0.2.5

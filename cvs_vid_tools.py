@@ -30,12 +30,16 @@ def create_vid_file(dir_path):
     print(f"audio_files: {audio_files}")
 
 
+    '''
     try:
         print(f"assert {len(image_files)} == {len(audio_files)}")
         assert len(image_files) == len(audio_files)
     except Exception as e:
         print(str(e))
+        print(f"image_files: {image_files}")
+        print(f"audio_files: {audio_files}")
         return
+    '''
 
 
     output_video_file = os.path.join(current_dir, dir_path, "video.mp4")

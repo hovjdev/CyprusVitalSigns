@@ -25,7 +25,7 @@ from paraphrase import paraphrase_text
 
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
-MAX_N=3
+MAX_N=2
 
 def db_print(s, debug=DEBUG):
     if debug:

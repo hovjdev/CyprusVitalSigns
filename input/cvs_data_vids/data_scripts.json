@@ -12,6 +12,10 @@
     "script": "cyprus_worldbank.py",
     "skip": false
   },
+  "sound": {
+    "script": "cyprus_sound.py",
+    "skip": false
+  },
   "flck": {
     "script": "cyprus_flickr.py",
     "skip": false

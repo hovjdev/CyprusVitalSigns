@@ -22,4 +22,6 @@ python-forecastio
 flickrapi
 Jinja2
 git+https://github.com/PrithivirajDamodaran/Parrot_Paraphraser.git
-
+pretty_midi
+midiutil
+midi2audio
