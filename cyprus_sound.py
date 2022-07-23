@@ -109,7 +109,7 @@ def create_sound(nyp_files, output_dir):
                 multitrack_data[-1].append(
                         (i,  
                         YY[i],
-                        .00001))
+                        .000005))
     
 
     multitrack_data_with_instruments = []
@@ -137,6 +137,7 @@ def create_sound(nyp_files, output_dir):
         fs.midi_to_audio(output_midi, output_wav)
         audio = AudioSegment.from_wav(output_wav)
         audio=audio.normalize()
+        audio=audio-5
         fade_time=300
         audio = audio.fade_in(fade_time).fade_out(fade_time)
         audio.export(output_wav)
@@ -158,7 +159,7 @@ def create_sound(nyp_files, output_dir):
             Y = (Y-Y.min())/(Y.max()-Y.min())
             ax[i].plot(Y, color='orange', linewidth=5)
 
-        plt.suptitle("Data to sound",  fontsize=30)    
+        plt.suptitle("Data sonification",  fontsize=20)    
         #plt.show()
 
         output_png = os.path.join(OUTPUT_DIR, "sound.png")
@@ -170,7 +171,7 @@ def create_sound(nyp_files, output_dir):
     txts = [
         "And now let's transform today's data into a sound representation.",
         "Let's now listen to an audio representation of today's data.",
-        "We shall now experience a sonified version of the data.",
+        "We shall now experience a sonified version of today's data.",
         "And now, let's percieve data as a sound experience."
     ]
     with open(output_txt, 'w') as f:
