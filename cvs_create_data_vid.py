@@ -154,7 +154,7 @@ def create_wav_files(dir_path, parrot=None):
 
 if __name__ == "__main__":
 
-    exit(1)
+    #exit(1)
 
     id=uuid.uuid4().hex
 
