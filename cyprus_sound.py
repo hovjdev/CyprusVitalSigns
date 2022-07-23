@@ -137,7 +137,7 @@ def create_sound(nyp_files, output_dir):
         fs.midi_to_audio(output_midi, output_wav)
         audio = AudioSegment.from_wav(output_wav)
         audio=audio.normalize()
-        audio=audio-10
+        audio=audio-5
         fade_time=300
         audio = audio.fade_in(fade_time).fade_out(fade_time)
         audio.export(output_wav)
