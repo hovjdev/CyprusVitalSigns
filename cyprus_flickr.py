@@ -29,7 +29,7 @@ OUTPUT_DIR = 'output/cyprus_flickr'
 BBOX = "32.1,34.45,34.72,35.75"
 NB_DAYS=365 #365
 USE_KDE_METHOD=True
-NB_FLICKR_FETCHES=3
+NB_FLICKR_FETCHES=5
 KERNEL_DENSITY_BANDWIDTH=1
 DEBUG=False
 
@@ -47,7 +47,8 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     def get_data(page=1, tags=tags, min_taken_date=min_taken_date,bbox=bbox, accuracy=accuracy):
         byte_str = flickr.photos.search(
                 tags=tags, 
-                format="json", extras=["geo"], 
+                format="json", 
+                extras="geo", 
                 has_geo=True,
                 page=page, 
                 min_taken_date=min_taken_date,
