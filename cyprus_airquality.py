@@ -24,6 +24,7 @@ from tools.plot_tools import get_cyprus_map
 
 OUTPUT_DIR = 'output/cyprus_airquality'
 DEBUG=False
+MAX_MAPS=2
 
 
 if __name__ == "__main__":
@@ -43,16 +44,29 @@ if __name__ == "__main__":
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
 
+    pollutant_effecs={
+        '38': "Excessive exposure to nitrogen oxides may cause health effects for the blood, the liver, the lungs and the spleen.",
+        '8': "Excessive exposure to nitrogen oxides may cause health effects for the blood, the liver, the lungs and the spleen. The presence of nitrogen dioxide can also aggravate lung diseases leading to respiratory symptoms and increased susceptibility to respiratory infection.",
+        '9': "Excessive exposure to nitrogen oxides may cause health effects for the blood, the liver, the lungs and the spleen.",
+        '1': "Excessive exposure to sulphur dioxide may cause health effects concerning eyes, lungs and throat. Inflammation of the respiratory tract causes coughing, mucus secretion, aggravation of asthma and chronic bronchitis, and makes people more prone to infections of the respiratory tract. Mortality and hospital admissions for cardiac disease increase on days with higher sulphur dioxide levels.",
+        '7': "Ground-level ozone is a powerful and aggressive oxidising agent, which can have a marked effect on human health. Moderate levels of ozone can irritate the eyes, nose, throat, and lungs. Children, especially asthmatics, are most at risk from exposure to ozone.",
+        '10': "Excessive exposure to carbon monoxide can have adverse effects to blood, brain and heart. Exposure to carbon monoxide can reduce blood's oxygen-carrying capacity, thereby reducing oxygen delivery to the body's organs and tissues.",
+        '5': "Excessive exposure to particulate matter contributes to chronic respiratory problems and can increase the risk of cardiac arrest and premature death. Several studies link particle levels to increased hospital admissions and emergency room visits, and even to death from heart or lung diseases.",
+        '6001': "Excessive exposure to particulate matter contributes to chronic respiratory problems and can increase the risk of cardiac arrest and premature death. Several studies link particle levels to increased hospital admissions and emergency room visits, and even to death from heart or lung diseases.",
+        '20': "Benzene is a known human carcinogen in long-term exposure situations, while it may also cause problems in the central nervous system, hepatic and kidney damage, may affect fertility and lead to problematic births.",
+    }
+
+
     pollutants_list = [
     #{"code":  38, "label": "NO", "fullname" :"pollutant_38", "index":1, "color": 'lightgreen', "label_en": "Nitrogen monoxide (air)", "label_el":"Μονοξείδιο Αζώτου", "levels":[-1,-1,-1]},
     {"code": 8, "label": "NO₂", "fullname" :	"pollutant_8", "index":2 , "color": 'aqua', "label_en": "Nitrogen dioxide (air)", "label_el":"Διοξείδιο Αζώτου", "levels":[100, 150, 200]},
     #{"code": 9, "label": "NOx", "fullname" :"pollutant_9", "index":3, "color": 'violet' , "label_en": "Nitrogen oxides (air)", "label_el":"Οξείδια του Αζώτου", "levels":[-1,-1,-1]},
-    #{"code": 1, "label": "SO₂", "fullname" :"pollutant_1", "index":4, "color": 'orange' , "label_en": "Sulphur dioxide (air)", "label_el":"Διοξείδιο Θείου", "levels":[-1,-1,-1]},
+    {"code": 1, "label": "SO₂", "fullname" :"pollutant_1", "index":4, "color": 'orange' , "label_en": "Sulphur dioxide (air)", "label_el":"Διοξείδιο Θείου", "levels":[150,250,350]},
     {"code": 7, "label": "O₃", "fullname" :"pollutant_7", "index":5, "color": 'green', "label_en": "Ozone (air)", "label_el":"Όζον", "levels":[100,140,180]},
     {"code": 10, "label": "CO", "fullname" :"pollutant_10", "index":6, "color": 'gray' , "label_en": "Carbon monoxide (air)", "label_el":"Μονοξείδιο Άνθρακα", "levels":[7000,15000,20000]},
-    #{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter less than 10 microns (aerosol)", "label_el":"Σωματίδια < 10 μm", "levels":[-1,-1,-1]},
+    #{"code": 5, "label": "PM₁₀", "fullname" :	"pollutant_5", "index":7, "color": 'blue' , "label_en": "Particulate matter less than 10 microns (aerosol)", "label_el":"Σωματίδια < 10 μm", "levels":[50,100,200]},
     {"code": 6001, "label": "PM₂.₅", "fullname" :"pollutant_6001", "index":8 , "color": 'red', "label_en": "Particulate matter less than 2.5 microns (aerosol)", "label_el":"Σωματίδια < 2.5 μm", "levels":[25,50,100]},
-    #{"code": 20, "label": "C₆H₆", "fullname" :	"pollutant_20", "index":9, "color": 'magenta' , "label_en": "Benzene (air)", "label_el":"Βενζόλιο", "levels":[-1,-1,-1]}
+    #{"code": 20, "label": "C₆H₆", "fullname" :	"pollutant_20", "index":9, "color": 'magenta' , "label_en": "Benzene (air)", "label_el":"Βενζόλιο", "levels":[5,10,15]}
     ]
 
 
@@ -74,38 +88,46 @@ if __name__ == "__main__":
     create_dir(OUTPUT_DIR)
     delete_previous_files(OUTPUT_DIR)
 
+
+    # Step 1. Get data
+    print('>>>Step 1. Get data')
     date_time = None
+    data={}
     for counter, p in enumerate(pollutants_list):
 
+        pollutant_code= p['code']
         pollutant_label= p['label']
         pollutant_label=unidecode(pollutant_label)
-        pollutant_code= p['code']
         pollutant_fullname=p['fullname']
         pollutant_label_en=p['label_en'].split("(")[0]
         pollutant_levels=p["levels"]
 
-        m, figure, axes =get_cyprus_map()
+        print(f"pollutant_label: {pollutant_label}")
 
         tz = timezone('EET')
         now =datetime.datetime.now(tz)
         ytd = now - datetime.timedelta(days=1)
 
-        #air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
-        air_quality = {}
 
-        xs=[]
-        ys=[]
+        #air_quality = { 'good':[], 'moderate':[],  'unhealthy':[], 'toxic':[] }
+        data[pollutant_code] = {
+                'pollutant_label':pollutant_label,
+                'pollutant_fullname':pollutant_fullname,
+                'pollutant_code':pollutant_code,
+                'pollutant_label_en':pollutant_label_en,
+                'pollutant_levels' : pollutant_levels,
+                'station_data':{},
+                'air_quality':{}
+            }
+
         for s in stations_list:
             lat=s['lat']
             lon=s['long']
-            code = s['code']
+            station_code = s['code']
             label_en=s['label_en']
             label_en = label_en.split(' ')[0]  
-            x, y = m(lon, lat)
-
-
-
-            url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
+            
+            url=f"https://www.airquality.dli.mlsi.gov.cy/station_data/{station_code}/{ytd.year}-{ytd.month}-{ytd.day}:{ytd.hour}/{now.year}-{now.month}-{now.day}:{now.hour}"
             if DEBUG:
                 print(url)
             res = requests.get(url)
@@ -120,12 +142,110 @@ if __name__ == "__main__":
                 pollution=round(float(pollution))
                 date_time=res['data'][k]['date_time']
             except Exception as e:
-                print(str(e))
-
+                print('Error', label_en, print(str(e)))
 
             if not pollution:
                 continue
 
+            if station_code not in data[pollutant_code]['station_data']:
+                data[pollutant_code]['station_data'][station_code]={}
+            data[pollutant_code]['station_data'][station_code]['label_en']= label_en
+            data[pollutant_code]['station_data'][station_code]['lat']= lat
+            data[pollutant_code]['station_data'][station_code]['lon']= lon
+            data[pollutant_code]['station_data'][station_code]['pollution']= pollution
+            fpollution= float(pollution)
+            data[pollutant_code]['station_data'][station_code]['fpollution']= fpollution
+
+
+            color=''
+            if fpollution>= 0 and fpollution <pollutant_levels[0]:
+                color="green"
+                if 'good' not in data[pollutant_code]['air_quality']:
+                    data[pollutant_code]['air_quality']['good']=[]
+                data[pollutant_code]['air_quality']['good'].append(label_en)
+            if fpollution>= pollutant_levels[0] and fpollution < pollutant_levels[1]:
+                color="orange"
+                if 'moderate' not in data[pollutant_code]['air_quality']:
+                    data[pollutant_code]['air_quality']['moderate']=[]
+                data[pollutant_code]['air_quality']['moderate'].append(label_en)
+            if fpollution>= pollutant_levels[1] and fpollution < pollutant_levels[2]:
+                color="red"
+                if 'unhealthy' not in data[pollutant_code]['air_quality']:
+                    data[pollutant_code]['air_quality']['unhealthy']=[]
+                data[pollutant_code]['air_quality']['unhealthy'].append(label_en)
+            if fpollution>= pollutant_levels[2]:
+                color="purple"
+                if 'toxic' not in data[pollutant_code]['air_quality']:
+                    data[pollutant_code]['air_quality']['toxic']=[]
+                data[pollutant_code]['air_quality']['toxic'].append(label_en)
+            
+            data[pollutant_code]['station_data'][station_code]['color']=color        
+
+
+
+
+    # Step 2. Get sort pollants by worst level
+    print('>>>Step 2. Get sort pollants by worst level')
+
+    pollutant_codes=[]
+    for counter, p in enumerate(pollutants_list):
+        pollutant_code= p['code']
+        pollutant_codes.append(pollutant_code)
+    random.shuffle(pollutant_codes)
+
+    pollutant_codes_worst_level=[]
+    for pollutant_code in pollutant_codes:
+        worst_level=-1
+        air_quality=data[pollutant_code]['air_quality']
+        if 'good' in air_quality:
+            worst_level=1                        
+        if 'moderate' in air_quality:
+            worst_level=2
+        if 'unhealthy' in air_quality:
+            worst_level=3       
+        if 'toxic' in air_quality:
+            worst_level=4
+        pollutant_codes_worst_level.append({'pollutant_code':pollutant_code, 'worst_level': worst_level})
+
+    pollutant_codes_worst_level = sorted(pollutant_codes_worst_level, key=lambda d: d['worst_level'], reverse=True) 
+
+
+    # Step 3. Make maps
+    print('>>>Step 3. Make maps')
+
+    pollutant_codes_worst_level=pollutant_codes_worst_level[:MAX_MAPS]
+    print(f'pollutant_codes_worst_level: {pollutant_codes_worst_level}')
+
+    for counter, p in enumerate(pollutant_codes_worst_level):
+        
+        pollutant_code= p['pollutant_code']
+
+        pollutant_label=data[pollutant_code]['pollutant_label']
+        pollutant_fullname= data[pollutant_code]['pollutant_fullname']
+        pollutant_code= data[pollutant_code]['pollutant_code']
+        pollutant_label_en= data[pollutant_code]['pollutant_label_en']
+        pollutant_levels= data[pollutant_code]['pollutant_levels']
+        air_quality= data[pollutant_code]['air_quality']
+
+        print(f'get_cyprus_map: {pollutant_label_en}')
+        m, figure, axes =get_cyprus_map()
+        print(f'get_cyprus_map: done')
+
+        xs, ys = [], []
+        for s in stations_list:
+
+            station_code = s['code']
+            #print(f"data[pollutant_code]['station_data']: {data[pollutant_code]['station_data']}")
+            if station_code not in data[pollutant_code]['station_data']:
+                continue
+            label_en = data[pollutant_code]['station_data'][station_code]['label_en']
+            lat = data[pollutant_code]['station_data'][station_code]['lat']
+            lon = data[pollutant_code]['station_data'][station_code]['lon']
+            pollution = data[pollutant_code]['station_data'][station_code]['pollution']            
+            fpollution = data[pollutant_code]['station_data'][station_code]['fpollution']            
+            color = data[pollutant_code]['station_data'][station_code]['color']            
+
+            x, y = m(lon, lat)
             xs.append(x)
             ys.append(y)
 
@@ -143,28 +263,6 @@ if __name__ == "__main__":
                     verticalalignment='top',
                     zorder=6,
                 )
-
-            fp=float(pollution)
-            if fp>= 0 and fp <pollutant_levels[0]:
-                color="green"
-                if 'good' not in air_quality:
-                    air_quality['good']=[]
-                air_quality['good'].append(label_en)
-            if fp>= pollutant_levels[0] and fp < pollutant_levels[1]:
-                color="orange"
-                if 'moderate' not in air_quality:
-                    air_quality['moderate']=[]
-                air_quality['moderate'].append(label_en)
-            if fp>= pollutant_levels[1] and fp < pollutant_levels[2]:
-                color="red"
-                if 'unhealthy' not in air_quality:
-                    air_quality['unhealthy']=[]
-                air_quality['unhealthy'].append(label_en)
-            if fp>= pollutant_levels[2]:
-                color="purple"
-                if 'toxic' not in air_quality:
-                    air_quality['toxic']=[]
-                air_quality['toxic'].append(label_en)
 
             plt.text(
                     x,
@@ -202,6 +300,7 @@ if __name__ == "__main__":
                 pollutant_levels[2],
                 (pollutant_levels[2]+pollutant_levels[2]*1.2)/2,
                 pollutant_levels[2]*1.2]
+
         labels = [ 
                 "Good",
                 pollutant_levels[0] , 
@@ -265,6 +364,9 @@ if __name__ == "__main__":
                                 "Let's review the data for "])
                 f.write(f"{first}the air quality in Cyprus.\n")
 
+
+            f.write(f"{pollutant_effecs[str(pollutant_code)]}\n")
+
             for t in tmp:
                 if len(t['locations'])>0:
                     locations = t['locations']
@@ -284,11 +386,12 @@ if __name__ == "__main__":
                     quality = t['quality']
                     last=[f"{cities} {locations_joined}"]
                     if len(air_quality) == 1:
-                        last=[f"in all measured locations", 
+                        last=[f"in all measuring stations", 
                                 "throughout Cyprus", 
                                 "all places", 
                                 "across the island", 
                                 "across Cyprus"]
                     last=random.choice(last)
+
                     f.write(f'{first}{pollutant_label_en} {levels} are {quality} {last}.\n')
 

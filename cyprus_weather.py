@@ -35,13 +35,17 @@ def narrate_map(forecasts, output_text_file, show_weather_icons=True, show_tempe
 
         tz = pytz.timezone('EET')
         today=datetime.datetime.now(tz=tz).strftime("%A %d, %B %Y")
+        today=random.choice([
+            f"on {today}",
+            "today"
+        ])
 
         if show_weather_icons:
-            first=random.choice(["Now,", "And here is,", "And now, let's take a look at"])
-            f.write(f"{first} the weather forecast for Cyprus on {today}.\n")
+            first=random.choice(["Now,", "And here is,", "Let's take a look at"])
+            f.write(f"{first} the weather forecast for Cyprus {today}.\n")
         else:
-            first=random.choice(["Now,", "And here is,", "And now, let's take a look at"])
-            f.write(f"And here is the temperature forecast for Cyprus on {today}.\n")
+            first=random.choice(["And here is", "Next, is", "And now "])
+            f.write(f"{first} the temperature forecast for Cyprus {today}.\n")
 
         dic_weather = {}
         dic_temp = {}

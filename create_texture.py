@@ -13,6 +13,10 @@ OUTPUT_IMAGE="frame_####.png"
 
 OUTPUT_IMAGE = os.path.join(OUTPUT_DIR, OUTPUT_IMAGE)
 
+DEBUG=False
+BLENDER_DEBUG=">/dev/null 2>&1"
+if DEBUG:
+    BLENDER_DEBUG=""
 
 if __name__ == "__main__":
 
@@ -38,9 +42,9 @@ if __name__ == "__main__":
         INPUT_BLENDER_SCRIPT=args.script
 
     if INPUT_BLENDER_SCRIPT:
-        cmd = f"{BLENDER} -b {INPUT_BLENDER_FILE} --python {INPUT_BLENDER_SCRIPT} -o {OUTPUT_IMAGE} -a"
+        cmd = f"{BLENDER} -b {INPUT_BLENDER_FILE} --python {INPUT_BLENDER_SCRIPT} -o {OUTPUT_IMAGE} -a {BLENDER_DEBUG}"
     else:
-        cmd = f"{BLENDER} -b {INPUT_BLENDER_FILE} -o {OUTPUT_IMAGE} -a"
+        cmd = f"{BLENDER} -b {INPUT_BLENDER_FILE} -o {OUTPUT_IMAGE} -a {BLENDER_DEBUG}"
 
     print(cmd)
     os.system(cmd)

@@ -25,7 +25,7 @@ from paraphrase import paraphrase_text
 
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
-MAX_N=9#2
+MAX_N=2
 
 
 CODE_SELECTION=[ 'avia_tf_cm',
