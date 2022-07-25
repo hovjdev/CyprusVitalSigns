@@ -25,7 +25,22 @@ from paraphrase import paraphrase_text
 
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_eurostat'
-MAX_N=2
+MAX_N=9#2
+
+
+CODE_SELECTION=[ 'avia_tf_cm',
+                't2020_rd300',
+                'env_wat_res',
+                'cli_act_noec',
+                #'tin00196',
+                'tin00195',
+                #'tin00191',
+                'prc_hicp_midx',
+                'tour_occ_arm',
+                'tour_occ_mnor',
+                #'tour_dem_extot', #skip
+                'tour_occ_nim'] 
+
 
 def db_print(s, debug=DEBUG):
     if debug:
@@ -464,19 +479,8 @@ if __name__ == "__main__":
         codes = get_codes(keyword = 'tourism')
         exit(1)
 
-    code_selection=['avia_tf_cm',
-                    't2020_rd300',
-                    'env_wat_res',
-                    'cli_act_noec',
-                    'tin00196',
-                    'tin00195',
-                    'tin00191',
-                    'prc_hicp_midx',
-                    'tour_occ_arm',
-                    'tour_occ_mnor',
-                    #'tour_dem_extot', #skip
-                    'tour_occ_nim'] 
-    
+    code_selection=CODE_SELECTION
+
     if DEBUG:
         code_selection=[code_selection[-1]]
 
@@ -516,16 +520,16 @@ if __name__ == "__main__":
                 'title':"Share of zero emission vehicles in newly registered passenger cars (%)",
                 'title_short':"Share of zero emission vehicle",
                 'unit': "Percent"},
-        'tin00196' : {
-                'filters': {'geo\\time': ['CY'],  'unit':['EUR']}, 
-                'title':"Average tourist expenditure per night (Euros)",
-                'title_short':"Average expenditure",
-                'unit': "Euros"},
-        'tin00191' : {
-                'filters': {'geo\\time': ['CY'],  'purpose':['PERS_HOL']}, 
-                'title':"Number of nights spent on holidays, leisure and recreation",
-                'title_short':"Number of nights spent",
-                'unit': ""},
+        #'tin00196' : {
+        #        'filters': {'geo\\time': ['CY'],  'unit':['EUR']}, 
+        #        'title':"Average tourist expenditure per night (Euros)",
+        #        'title_short':"Average expenditure",
+        #        'unit': "Euros"},
+        #'tin00191' : {
+        #        'filters': {'geo\\time': ['CY'],  'purpose':['PERS_HOL']}, 
+        #        'title':"Number of nights spent on holidays, leisure and recreation",
+        #        'title_short':"Number of nights spent",
+        #        'unit': ""},
         'tin00195' : {
                 'filters': {'geo\\time': ['CY'],  'purpose':['TOTAL'], 'duration':['N_GE1']}, 
                 'title':"Average expenditure per trip on holidays, leisure and recreation (Euros)",
@@ -541,11 +545,11 @@ if __name__ == "__main__":
                 'title':"Nights spent at tourist accommodation establishments (monthly data)",
                 'title_short':"Nights spent",
                 'unit': ""},
-        'tour_dem_extot' : {
-                'filters': { 'GEO': ['CY'], 'UNIT': ['EUR'], 'PURPOSE':['PERS'], 'EXPEND':['AVG_TRP'], 'DURATION':['N_GE1'], 'PARTNER':['WORLD'] },  
-                'title':"Average expenditure on tourism trips (Euros)",
-                'title_short':"Average expenditure",
-                'unit': "Euros"}
+        #'tour_dem_extot' : {
+        #        'filters': { 'GEO': ['CY'], 'UNIT': ['EUR'], 'PURPOSE':['PERS'], 'EXPEND':['AVG_TRP'], 'DURATION':['N_GE1'], 'PARTNER':['WORLD'] },  
+        #        'title':"Average expenditure on tourism trips (Euros)",
+        #        'title_short':"Average expenditure",
+        #        'unit': "Euros"}
     }
 
 

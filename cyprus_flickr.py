@@ -292,7 +292,13 @@ def create_flickr_map(output_dir=OUTPUT_DIR,
     ])    
 
     with open(output_text_file, "w") as f:
-        f.write(f"And now, let's take a look at places where tourists have been {first} in the last {round(NB_DAYS/30.5)} months.\n")
+        AA=random.choice([
+            "And now, let's take a look at",
+            "Let's continue by examining",
+            "Next, we shall look at",
+            "Let's discuss"
+        ])
+        f.write(f"{AA} places where tourists have been {first} over the last {round(NB_DAYS/30.5)} months.\n")
         f.write(f"The map of geotagged photo locations {second} that tourists have been {third} the most in {locations}.\n")
 
 
