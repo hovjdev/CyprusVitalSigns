@@ -23,7 +23,7 @@ USE_KDE_METHOD=True
 NB_FLICKR_FETCHES=5
 KERNEL_DENSITY_BANDWIDTH=1
 DEBUG=False
-NB_PHOTOS=12
+NB_PHOTOS=24
 
 def create_photo_display(output_dir=OUTPUT_DIR,
                       api_key = FLICKR_KEY,
