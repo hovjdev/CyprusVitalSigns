@@ -15,7 +15,7 @@ OUTPUT_IMAGE="frame_####.png"
 OUTPUT_IMAGE = os.path.join(OUTPUT_DIR, OUTPUT_IMAGE)
 
 
-DEBUG=False
+DEBUG=True
 BLENDER_DEBUG=">/dev/null 2>&1"
 if DEBUG:
     BLENDER_DEBUG=""

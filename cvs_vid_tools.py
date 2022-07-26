@@ -16,12 +16,17 @@ def create_vid_file(dir_path):
 
     current_dir = Path(__file__).parent.absolute()
 
+    print(f"current_dir: {current_dir}")
+
     image_files = list(Path(dir_path).glob("frame*.png"))
     audio_files = list(Path(dir_path).glob("*.wav"))
 
+    print(f"image_files: {image_files}")
+    print(f"audio_files: {audio_files}")
+
+
     if len(image_files) < 1: return None
     if len(audio_files) < 1: return None
-
 
     image_files.sort()
     audio_files.sort()

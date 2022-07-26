@@ -50,7 +50,6 @@ def enhance_images(dir_path, enhance_with_blender=True):
     print(f"Found images: {images}")
     print(f"Found data_files: {data_files}")
 
-
     images.sort()
     data_files.sort()
 
@@ -154,7 +153,7 @@ def create_wav_files(dir_path, parrot=None):
 
 if __name__ == "__main__":
 
-    exit(1)
+    #exit(1)
 
     id=uuid.uuid4().hex
 
