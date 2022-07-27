@@ -246,3 +246,10 @@ if __name__ == "__main__":
     cmd = f'python cvs_cleanup_output.py -d {nb_days}'
     print(cmd)
     os.system(cmd)
+
+
+    #delete vimeo videos older that 60 days
+    nb_days = 60
+    cmd='python upload_to_vimeo.py -d {nb_days}'
+    print(cmd)
+    os.system(cmd)    
