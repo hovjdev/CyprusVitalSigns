@@ -241,7 +241,7 @@ if __name__ == "__main__":
         json.dump(report_dict, fp)
 
     # cleanup folders older than 7 days
-    nb_days = 7
+    nb_days = 3
     print(f"cleanup folders older than {nb_days} days")
     cmd = f'python cvs_cleanup_output.py -d {nb_days}'
     print(cmd)
