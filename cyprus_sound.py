@@ -23,8 +23,6 @@ from tools.plot_tools import prep_plot
 
 
 
-
-
 DEBUG=False
 OUTPUT_DIR = 'output/cyprus_sound'
 
