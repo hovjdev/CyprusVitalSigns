@@ -162,7 +162,9 @@ def create_sound(nyp_files, output_dir):
         nyp_files_right=nb_nyp_files
         print(str(e))
     
+
     tmp_path=os.path.join(OUTPUT_DIR, "TMP")
+    print(f"Creating {tmp_path}")
     create_dir(tmp_path)
     output_wav_left = os.path.join(tmp_path, "1_sound_left.wav")
     output_wav_right = os.path.join(tmp_path, "1_sound_right.wav")
@@ -170,11 +172,15 @@ def create_sound(nyp_files, output_dir):
     output_wav_left=create_wave_file(nyp_files_left, output_wav_left)
     output_wav_right=create_wave_file(nyp_files_right, output_wav_right)
 
+    assert output_wav_left is not None
+    assert output_wav_right is not None
+    assert os.path.exists(output_wav_left)
+    assert os.path.exists(output_wav_right)
+
     print(output_wav_left)
     print(type(output_wav_left))
     print(output_wav_right)
     print(type(output_wav_right))
-
 
     left_channel_as = AudioSegment.from_wav(output_wav_left)
     right_channel_as = AudioSegment.from_wav(output_wav_right)

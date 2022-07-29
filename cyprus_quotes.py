@@ -15,7 +15,7 @@ from tools.misc import create_texture_image, fit_text_in_shape
 DIRNAME = os.path.dirname(__file__)
 INPUT_DIR = os.path.join(DIRNAME, 'input', 'cyprus_quotes')
 OUTPUT_DIR = os.path.join(DIRNAME, 'output', 'cyprus_quotes')
-DEBUG=True
+DEBUG=False
 
 if __name__ == "__main__":
 
