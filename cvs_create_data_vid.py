@@ -249,6 +249,6 @@ if __name__ == "__main__":
 
     #delete vimeo videos older that 60 days
     nb_days = 60
-    cmd='python upload_to_vimeo.py -d {nb_days}'
+    cmd=f'python upload_to_vimeo.py -d {nb_days}'
     print(cmd)
     os.system(cmd)    
