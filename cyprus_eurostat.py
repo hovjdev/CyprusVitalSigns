@@ -474,21 +474,6 @@ if __name__ == "__main__":
 
     print(f"OUTPUT_DIR =  {OUTPUT_DIR}")
 
-    
-    if False and DEBUG:
-        codes = get_codes(keyword = 'tourism')
-        exit(1)
-
-    code_selection=CODE_SELECTION
-
-    if DEBUG:
-        code_selection=[code_selection[-1]]
-
-    # ramdom selection of indicators
-    MAX_N=min(MAX_N, len(code_selection))
-    code_selection=random.sample(code_selection, MAX_N)
-    print(len(code_selection))
-
     metadata = {
         'avia_tf_cm': {
                 'filters':{'GEO': ['CY'], 'UNIT':['NR']}, 
@@ -552,42 +537,63 @@ if __name__ == "__main__":
         #        'unit': "Euros"}
     }
 
-
-    create_dir(OUTPUT_DIR)
-    delete_previous_files(OUTPUT_DIR)
-
     #parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5")
     parrot=None
 
-    for index, code in enumerate(code_selection):
 
-        df = None
-        title = None
+    for _ in range(10):
 
-        if df is None or title is None:
-            try:
-                df, title = get_sdmx_data(code, metadata[code]['filters'])
-            except Exception as e:
-                print(str(e))
+        try:
+            if False and DEBUG:
+                codes = get_codes(keyword = 'tourism')
+                exit(1)
 
-        if df is None or title is None:
-            #try:
-                df, title = get_data(code, metadata[code]['filters'])
-            #except Exception as e:
-            #    print(str(e))      
+            code_selection=CODE_SELECTION
 
+            if DEBUG:
+                code_selection=[code_selection[-1]]
 
-        if df is None or title is None:
-            exit(1)      
-
-        df = prep_df(df)
-
-        plot_df(df, title=metadata[code]['title'],  index=index, output_dir=OUTPUT_DIR)
-        narrate_df(df, 
-                    code=code,
-                    title=metadata[code]['title'],
-                    title_short=metadata[code]['title_short'],
-                    unit=metadata[code]['unit'],  
-                    index=index, output_dir=OUTPUT_DIR, parrot=parrot)
+            # ramdom selection of indicators
+            MAX_N=min(MAX_N, len(code_selection))
+            code_selection=random.sample(code_selection, MAX_N)
+            print(len(code_selection))
 
 
+            create_dir(OUTPUT_DIR)
+            delete_previous_files(OUTPUT_DIR)
+
+            for index, code in enumerate(code_selection):
+
+                df = None
+                title = None
+
+                if df is None or title is None:
+                    try:
+                        df, title = get_sdmx_data(code, metadata[code]['filters'])
+                    except Exception as e:
+                        print(str(e))
+
+                if df is None or title is None:
+                    #try:
+                        df, title = get_data(code, metadata[code]['filters'])
+                    #except Exception as e:
+                    #    print(str(e))      
+
+                if df is None or title is None:
+                    continue  
+
+                df = prep_df(df)
+
+                plot_df(df, title=metadata[code]['title'],  index=index, output_dir=OUTPUT_DIR)
+                narrate_df(df, 
+                            code=code,
+                            title=metadata[code]['title'],
+                            title_short=metadata[code]['title_short'],
+                            unit=metadata[code]['unit'],  
+                            index=index, output_dir=OUTPUT_DIR, parrot=parrot)
+
+        except Exception as e:
+            print(str(e))
+            print(f"Try {i} failed")
+            print(data)
+            continue
