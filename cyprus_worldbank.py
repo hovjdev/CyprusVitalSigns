@@ -448,6 +448,16 @@ def plot_df(df, title, economies, index, output_dir):
     plt.clf()
 
 
+def text_fix(text):
+    text = str(text)
+    text = text.replace("BoP", "Balance of Payments")
+    text = text.replace("PPP", "Purchasing power parity")
+    text = text.replace("sq. km", "square kilometers")
+    text = text.replace("MJ/$", "megajoules per $")
+    text = text.replace("CO2 ", "carbon dioxide ")
+    return text
+
+
 def narrate_df(df, title, economies, output_txt_file):
 
     df, countries_nocyp, countries_cyp=pref_df(df, economies)
@@ -460,14 +470,8 @@ def narrate_df(df, title, economies, output_txt_file):
     topic =  re.sub("\(.*?\)","",title)
     topic = topic.split(',')[0]
 
-    title_fix = str(title)
-    title_fix = title_fix.replace("BoP", "Balance of Payments")
-    title_fix = title_fix.replace("PPP", "Purchasing power parity")
-    title_fix = title_fix.replace("sq. km", "square kilometers")
-    title_fix = title_fix.replace("MJ/$", "megajoules per $")
-    title_fix = title_fix.replace("CO2 ", "carbon dioxide")    
-
-
+    topic = text_fix(topic)
+    title_fix = text_fix(title)
 
     def find_trend(df, c):
         trend = 'stayed more or less the same'
