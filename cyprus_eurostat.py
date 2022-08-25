@@ -541,7 +541,7 @@ if __name__ == "__main__":
     parrot=None
 
 
-    for _ in range(10):
+    for tt in range(10):
 
         try:
             if False and DEBUG:
@@ -594,6 +594,7 @@ if __name__ == "__main__":
 
         except Exception as e:
             print(str(e))
-            print(f"Try {i} failed")
-            print(data)
+            print(f"Try {tt} failed")
             continue
+
+        break
